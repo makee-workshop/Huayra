@@ -82,7 +82,7 @@
     "grunt-newer": "1.x.x",
     "grunt-nodemon": "0.4.x",
     "html5shiv": "3.x.x",
-    "moment": "2.13.x",
+    "moment": "2.19.x",
     "respond.js": "1.x.x"
   }
 }
