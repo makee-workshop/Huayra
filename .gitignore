@@ -11,7 +11,7 @@ node_modules/*
 !public/pages/*.min.css
 !public/pages/*min.js
 !public/pages/*.min.js.map
-!src/*/*.min.css
+!src/**/*.min.css
 
 # testing
 /coverage
