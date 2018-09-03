@@ -6,11 +6,8 @@ node_modules/*
 /config.js
 .nodemonignore
 
-!public/*.min.css
+!public/layouts/*.min.css
 !public/*.min.js
-!public/pages/*.min.css
-!public/pages/*min.js
-!public/pages/*.min.js.map
 !src/**/*.min.css
 
 # testing
