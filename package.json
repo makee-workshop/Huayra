@@ -7,7 +7,7 @@
     "server": "nodemon app.js",
     "client": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "standard && react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "format": "prettier --single-quote --trailing-comma=all --write \"src/**/*.js\""
   },
@@ -17,6 +17,18 @@
     "node": ">=8.0.0"
   },
   "proxy": "http://localhost:3001/",
+  "standard": {
+    "globals": [
+      "fetch",
+      "localStorage",
+      "Headers",
+      "$",
+      "callback"
+    ],
+    "ignore": [
+      "/scripts/**"
+    ]
+  },
   "dependencies": {
     "async": "1.x.x",
     "bcrypt": "*",
@@ -52,9 +64,14 @@
     "serve-static": "1.10.x"
   },
   "devDependencies": {
-    "react-scripts": "^1.0.11",
-    "standard": "*",
     "concurrently": "^3.5.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-config-standard-react": "^7.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
     "font-awesome": "4.x.x",
     "grunt": "1.x.x",
     "grunt-cli": "1.x.x",
@@ -69,6 +86,8 @@
     "grunt-nodemon": "0.4.x",
     "html5shiv": "3.x.x",
     "moment": "2.19.x",
-    "respond.js": "1.x.x"
+    "react-scripts": "^1.0.11",
+    "respond.js": "1.x.x",
+    "standard": "*"
   }
 }
