@@ -14,12 +14,12 @@ const DevTools = createDevTools(
   // Here, we put LogMonitor inside a DockMonitor.
   // Note: DockMonitor is visible by default.
   <DockMonitor
-    toggleVisibilityKey="h"
-    changePositionKey="q"
+    toggleVisibilityKey='h'
+    changePositionKey='q'
     defaultIsVisible={false}
   >
-    <LogMonitor theme="tomorrow" />
-  </DockMonitor>,
+    <LogMonitor theme='tomorrow' />
+  </DockMonitor>
 )
 
 export default DevTools

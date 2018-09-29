@@ -5,16 +5,15 @@ import UserForm from './user-form'
 import PasswordForm from './password-form'
 
 class SettingsPage extends Component {
-
-  render() {
+  render () {
     return (
-      <section className="container">
+      <section className='container'>
         <Helmet>
           <title>帳號設定</title>
         </Helmet>
-        <h1 className="page-header">帳號設定</h1>
-        <div className="row">
-          <div className="col-sm-6">
+        <h1 className='page-header'>帳號設定</h1>
+        <div className='row'>
+          <div className='col-sm-6'>
             <DetailsForm />
             <UserForm />
             <PasswordForm />

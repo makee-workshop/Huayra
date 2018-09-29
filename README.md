@@ -1,6 +1,6 @@
 # Huayra
 
-[![](https://travis-ci.org/makee-workshop/Huayra.svg?branch=master)](https://travis-ci.org/makee-workshop/Huayra) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/makee-workshop/Huayra/blob/master/LICENSE)
+[![](https://travis-ci.org/makee-workshop/Huayra.svg?branch=master)](https://travis-ci.org/makee-workshop/Huayra) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/makee-workshop/Huayra/blob/master/LICENSE)
 
 Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](https://github.com/jedireza/drywall), a website and user system starter base on Node.JS v8.*. Implemented with Express and React.
 

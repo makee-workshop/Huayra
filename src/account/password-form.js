@@ -6,7 +6,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class PasswordForm extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.input = {}
     this.state = {
@@ -20,10 +20,10 @@ class PasswordForm extends Component {
     }
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
-  
+
     this.setState({
       loading: true
     })
@@ -33,12 +33,12 @@ class PasswordForm extends Component {
     })
 
     let data = new URLSearchParams({
-      newPassword: this.input.newPassword.value(), 
+      newPassword: this.input.newPassword.value(),
       confirm: this.input.confirm.value()
     })
 
-    let sentData={
-      method:'PUT',
+    let sentData = {
+      method: 'PUT',
       credentials: 'include',
       mode: 'cors',
       header: header,
@@ -48,7 +48,7 @@ class PasswordForm extends Component {
     fetch('/1/account/settings/password/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.setState({
             success: true,
             error: '',
@@ -65,7 +65,7 @@ class PasswordForm extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -75,22 +75,22 @@ class PasswordForm extends Component {
         }
       }).catch(e => {
         console.error(e)
-      })    
+      })
   } // end handleSubmit
 
-  render() {
+  render () {
     let alerts = []
 
     if (this.state.success) {
       alerts = <Alert
-          type="success"
-          message="密碼更新成功"
-        />
+        type='success'
+        message='密碼更新成功'
+      />
     } else if (this.state.error) {
       alerts = <Alert
-          type="danger"
-          message={this.state.error}
-        />
+        type='danger'
+        message={this.state.error}
+      />
     }
 
     return (
@@ -100,28 +100,28 @@ class PasswordForm extends Component {
           {alerts}
           <TextControl
             ref={(c) => (this.input.newPassword = c)}
-            name="newPassword"
-            label="新密碼"
+            name='newPassword'
+            label='新密碼'
             hasError={this.state.hasError.newPassword}
             help={this.state.help.newPassword}
             disabled={this.state.loading}
           />
           <TextControl
             ref={(c) => (this.input.confirm = c)}
-            name="confirm"
-            label="再次輸入新密碼"
+            name='confirm'
+            label='再次輸入新密碼'
             hasError={this.state.hasError.confirm}
             help={this.state.help.confirm}
             disabled={this.state.loading}
-          />         
-          <ControlGroup hideLabel={true} hideHelp={true}>
+          />
+          <ControlGroup hideLabel hideHelp>
             <Button
-              type="submit"
+              type='submit'
               inputClasses={{ 'btn-primary': true }}
               disabled={this.props.loading}>
               更新
               <Spinner
-                space="left"
+                space='left'
                 show={this.props.loading}
               />
             </Button>

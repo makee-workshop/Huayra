@@ -1,22 +1,22 @@
 'use strict'
 
 exports.isLogin = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
 
   workflow.on('validate', function () {
-    var isLogin = { 
+    var isLogin = {
       authenticated: false,
       role: ''
     }
 
     if (req.user) {
-      isLogin = { 
+      isLogin = {
         authenticated: true,
         user: req.user.username,
         email: req.user.email,
         role: (req.user.roles.admin === '' ||
-          req.user.roles.admin === undefined ||
-          req.user.roles.admin === null) ? 'account' : 'admin'
+        req.user.roles.admin === undefined ||
+        req.user.roles.admin === null) ? 'account' : 'admin'
       }
     }
 
@@ -29,7 +29,7 @@ exports.isLogin = function (req, res, next) {
 }
 
 exports.getAccountInfo = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   workflow.outcome.data = {}
 
   req.app.db.models.Account.findById(req.user.roles.account.id, 'name company phone zip').exec(function (err, account) {
@@ -43,7 +43,7 @@ exports.getAccountInfo = function (req, res, next) {
 }
 
 exports.getUserInfo = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   workflow.outcome.data = {}
 
   req.app.db.models.User.findById(req.user.id, 'username email').exec(function (err, user) {

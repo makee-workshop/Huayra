@@ -6,7 +6,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class UserForm extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.input = {}
     this.state = {
@@ -20,31 +20,31 @@ class UserForm extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchData()
   }
 
-  fetchData = () => {
+  fetchData () {
     fetch('/1/user', {
-      credentials: 'include', 
+      credentials: 'include',
       mode: 'cors'
     })
-    .then(r => r.json())
-    .then(r => {
-      this.setState({
-        username: r.data.username,
-        email: r.data.email
+      .then(r => r.json())
+      .then(r => {
+        this.setState({
+          username: r.data.username,
+          email: r.data.email
+        })
       })
-    })
-    .catch(e => {
-      console.error(e)
-    })
+      .catch(e => {
+        console.error(e)
+      })
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
-  
+
     this.setState({
       loading: true
     })
@@ -54,12 +54,12 @@ class UserForm extends Component {
     })
 
     let data = new URLSearchParams({
-      username: this.input.username.value(), 
+      username: this.input.username.value(),
       email: this.input.email.value()
     })
 
-    let sentData={
-      method:'PUT',
+    let sentData = {
+      method: 'PUT',
       credentials: 'include',
       mode: 'cors',
       header: header,
@@ -69,7 +69,7 @@ class UserForm extends Component {
     fetch('/1/account/settings/identity/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.setState({
             success: true,
             error: '',
@@ -86,7 +86,7 @@ class UserForm extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -96,22 +96,22 @@ class UserForm extends Component {
         }
       }).catch(e => {
         console.error(e)
-      })    
+      })
   } // end handleSubmit
 
-  render() {
+  render () {
     let alerts = []
 
     if (this.state.success) {
       alerts = <Alert
-          type="success"
-          message="帳號資料更新成功"
-        />
+        type='success'
+        message='帳號資料更新成功'
+      />
     } else if (this.state.error) {
       alerts = <Alert
-          type="danger"
-          message={this.state.error}
-        />
+        type='danger'
+        message={this.state.error}
+      />
     }
 
     return (
@@ -121,32 +121,32 @@ class UserForm extends Component {
           {alerts}
           <TextControl
             ref={(c) => (this.input.username = c)}
-            name="username"
-            label="帳號"
+            name='username'
+            label='帳號'
             value={this.state.username}
-            onChange={(e) => (this.setState({username: e.target.value}))}
+            onChange={(e) => (this.setState({ username: e.target.value }))}
             hasError={this.state.hasError.username}
             help={this.state.help.username}
             disabled={this.state.loading}
           />
           <TextControl
             ref={(c) => (this.input.email = c)}
-            name="email"
-            label="email"
+            name='email'
+            label='email'
             value={this.state.email}
-            onChange={(e) => (this.setState({email: e.target.value}))}
+            onChange={(e) => (this.setState({ email: e.target.value }))}
             hasError={this.state.hasError.email}
             help={this.state.help.email}
             disabled={this.state.loading}
-          />         
-          <ControlGroup hideLabel={true} hideHelp={true}>
+          />
+          <ControlGroup hideLabel hideHelp>
             <Button
-              type="submit"
+              type='submit'
               inputClasses={{ 'btn-primary': true }}
               disabled={this.props.loading}>
               更新
               <Spinner
-                space="left"
+                space='left'
                 show={this.props.loading}
               />
             </Button>

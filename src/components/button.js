@@ -20,7 +20,7 @@ const defaultProps = {
 }
 
 class Button extends React.Component {
-  render() {
+  render () {
     const inputClasses = ClassNames(ObjectAssign({
       'btn': true
     }, this.props.inputClasses))

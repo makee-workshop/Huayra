@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 
 class Alert extends Component {
-  render() {
+  render () {
     let close
 
     if (this.props.onClose) {
       close = <button
-        type="button"
-        className="close"
+        type='button'
+        className='close'
         onClick={this.props.onClose}>
         &times;
       </button>

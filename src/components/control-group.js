@@ -16,8 +16,7 @@ const propTypes = {
 }
 
 class ControlGroup extends React.Component {
-  render() {
-
+  render () {
     const groupClasses = ClassNames(ObjectAssign({
       'form-group': true,
       'has-error': this.props.hasError
@@ -35,16 +34,16 @@ class ControlGroup extends React.Component {
 
     if (!this.props.hideLabel) {
       label = <label className={labelClasses}>
-                {this.props.label}
-              </label>
+        {this.props.label}
+      </label>
     }
 
     let help
 
     if (!this.props.hideHelp) {
       help = <span className={helpClasses}>
-                {this.props.help}
-              </span>
+        {this.props.help}
+      </span>
     }
 
     return (

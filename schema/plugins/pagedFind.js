@@ -51,6 +51,9 @@ module.exports = exports = function pagedFindPlugin (schema) {
 
     var countResults = function (callback) {
       thisSchema.count(options.filters, function (err, count) {
+        if (err) {
+          console.log('err', err)
+        }
         output.items.total = count
         callback(null, 'done counting')
       })
@@ -67,6 +70,9 @@ module.exports = exports = function pagedFindPlugin (schema) {
       query.limit(options.limit)
       query.sort(options.sort)
       query.exec(function (err, results) {
+        if (err) {
+          console.log('err', err)
+        }
         output.data = results
         callback(null, 'done getting records')
       })

@@ -8,18 +8,17 @@ const propTypes = {
 }
 
 class Spinner extends React.Component {
-  render() {
-
+  render () {
     let spaceLeft
 
     if (this.props.space === 'left') {
-        spaceLeft = '\u00A0\u00A0'
+      spaceLeft = '\u00A0\u00A0'
     }
 
     let spaceRight
 
     if (this.props.space === 'right') {
-        spaceRight = '\u00A0\u00A0'
+      spaceRight = '\u00A0\u00A0'
     }
 
     const spinnerClasses = ClassNames({
@@ -29,7 +28,7 @@ class Spinner extends React.Component {
     return (
       <span className={spinnerClasses}>
         {spaceLeft}
-        <i className="fa fa-refresh fa-spin"></i>
+        <i className='fa fa-refresh fa-spin' />
         {spaceRight}
       </span>
     )

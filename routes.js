@@ -42,7 +42,7 @@ exports = module.exports = function (app, passport) {
   app.post('/account/verification/', require('./controllers/account/verification/index').resendVerification)
   app.get('/account/verification/:token/', require('./controllers/account/verification/index').verify)
 
-  // account > settings  
+  // account > settings
   app.put('/1/account/settings/', require('./controllers/account/settings/index').update)
   app.put('/1/account/settings/identity/', require('./controllers/account/settings/index').identity)
   app.put('/1/account/settings/password/', require('./controllers/account/settings/index').password)

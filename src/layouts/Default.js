@@ -6,46 +6,52 @@ import { connect } from 'react-redux'
 const year = new Date().getFullYear()
 
 class Default extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       navBarOpen: false
     }
   }
 
-  componentWillReceiveProps() {
+  compomentDidUpdate () {
     this.setState({ navBarOpen: false })
   }
 
-  tabClass(tab) {
+  tabClass (tab) {
     return ClassNames({
       active: this.props.children.props.location.pathname === tab
     })
   }
 
-  toggleMenu() {
+  toggleMenu () {
     this.setState({ navBarOpen: !this.state.navBarOpen })
   }
 
-  render() {
-    let roleElement =[]
-    let signupElement =[]
+  render () {
+    let roleElement = []
+    let signupElement = []
 
-    if(this.props.authenticated === true) {
-      roleElement = <ul className="nav navbar-nav navbar-right">
-                      <li className={this.tabClass('/account')}>
-                        <Link to="/account" ><i className="fa fa-user"></i> {this.props.user}</Link>
-                      </li>
-                    </ul>
+    if (this.props.authenticated === true) {
+      roleElement = <ul className='nav navbar-nav navbar-right'>
+        <li className={this.tabClass('/account')}>
+          <Link to='/account'>
+            <i className='fa fa-user' />
+            {this.props.user}
+          </Link>
+        </li>
+      </ul>
     } else {
       signupElement = <li className={this.tabClass('/signup')}>
-                        <Link to="/signup" >註冊</Link>
-                      </li>
-      roleElement = <ul className="nav navbar-nav navbar-right">
-                      <li className={this.tabClass('/login')}>
-                        <Link to="/login" ><i className="fa fa-user"></i> 登入</Link>
-                      </li>
-                    </ul>
+        <Link to='/signup'> 註冊
+        </Link>
+      </li>
+      roleElement = <ul className='nav navbar-nav navbar-right'>
+        <li className={this.tabClass('/login')}>
+          <Link to='/login'>
+            <i className='fa fa-user' /> 登入
+          </Link>
+        </li>
+      </ul>
     }
 
     const navBarCollapse = ClassNames({
@@ -55,53 +61,56 @@ class Default extends Component {
 
     return (
       <div>
-        <div className="navbar navbar-default navbar-fixed-top">
-          <div className="container">
-            <div className="navbar-header">
-              <Link className="navbar-brand" to="/">
-                <img className="navbar-logo" src="/media/logo-square.png"  alt=""/>
-                <span className="navbar-brand-label">Huayra</span>
+        <div className='navbar navbar-default navbar-fixed-top'>
+          <div className='container'>
+            <div className='navbar-header'>
+              <Link className='navbar-brand' to='/'>
+                <img className='navbar-logo' src='/media/logo-square.png' alt='' />
+                <span className='navbar-brand-label'>Huayra</span>
               </Link>
-              <button
-                className="navbar-toggle collapsed"
-                onClick={this.toggleMenu.bind(this)}>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-                <span className="icon-bar"></span>
-            </button>
+              <button className='navbar-toggle collapsed' onClick={this.toggleMenu.bind(this)}>
+                <span className='icon-bar' />
+                <span className='icon-bar' />
+                <span className='icon-bar' />
+              </button>
             </div>
             <div className={navBarCollapse}>
-              <ul className="nav navbar-nav">
+              <ul className='nav navbar-nav'>
                 <li className={this.tabClass('/')}>
-                  <Link to="/" >首頁</Link>
+                  <Link to='/'> 首頁
+                  </Link>
                 </li>
                 <li className={this.tabClass('/about')}>
-                  <Link to="/about" >關於我們</Link>
+                  <Link to='/about'> 關於我們
+                  </Link>
                 </li>
                 {signupElement}
                 <li className={this.tabClass('/contact')}>
-                  <Link to="/contact" >連絡我們</Link>
+                  <Link to='/contact'> 連絡我們
+                  </Link>
                 </li>
               </ul>
               {roleElement}
             </div>
           </div>
         </div>
-        
         <div>
           {this.props.children}
         </div>
-
-        <div className="footer">
-          <div className="container">
-            <span className="copyright pull-right">
-              &copy; {year} Makee
-            </span>
-            <ul className="links">
-              <li><Link to="/" >首頁</Link></li>
-              <li><Link to="/contact" >連絡我們</Link></li>
+        <div className='footer'>
+          <div className='container'>
+            <span className='copyright pull-right'>© {year} Makee</span>
+            <ul className='links'>
+              <li>
+                <Link to='/'> 首頁
+                </Link>
+              </li>
+              <li>
+                <Link to='/contact'> 連絡我們
+                </Link>
+              </li>
             </ul>
-            <div className="clearfix"></div>
+            <div className='clearfix' />
           </div>
         </div>
       </div>
@@ -111,7 +120,7 @@ class Default extends Component {
 
 const mapStateToProps = state => ({
   user: state.index.user,
-  authenticated: state.index.authenticated,
+  authenticated: state.index.authenticated
 })
 
 export default connect(mapStateToProps, null)(Default)

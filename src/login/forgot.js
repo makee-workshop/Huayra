@@ -8,8 +8,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class ForgotPage extends Component {
-
-  constructor() {
+  constructor () {
     super()
     this.input = {}
     this.state = {
@@ -21,13 +20,13 @@ class ForgotPage extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.input.email) {
-        this.input.email.focus()
+      this.input.email.focus()
     }
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -43,7 +42,7 @@ class ForgotPage extends Component {
       email: this.input.email.value()
     })
 
-    let sentData={
+    let sentData = {
       method: 'POST',
       credentials: 'include',
       mode: 'cors',
@@ -54,7 +53,7 @@ class ForgotPage extends Component {
     fetch('/login/forgot/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.setState({
             success: true,
             error: '',
@@ -70,7 +69,7 @@ class ForgotPage extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -83,11 +82,11 @@ class ForgotPage extends Component {
       })
   }
 
-  render() {
+  render () {
     let alert = []
-    const isIE = (navigator.userAgent.search("Trident") || navigator.userAgent.search("MSIE")) > -1
+    const isIE = (navigator.userAgent.search('Trident') || navigator.userAgent.search('MSIE')) > -1
 
-    if(isIE) {
+    if (isIE) {
       this.setState({
         success: false,
         error: '本服務目前不支援 Internet Explorer 瀏覽器，請切換其他瀏覽器後繼續使用。',
@@ -96,18 +95,18 @@ class ForgotPage extends Component {
     }
 
     if (this.state.success) {
-      alert = <div key="success">
-          <Alert
-                type="success"
-                message="若此帳號存在，您將會收到一封重置的 email。"
-            />
-          <Link to="/login" className="btn btn-link">返回登入</Link>
-        </div>
+      alert = <div key='success'>
+        <Alert
+          type='success'
+          message='若此帳號存在，您將會收到一封重置的 email。'
+        />
+        <Link to='/login' className='btn btn-link'>返回登入</Link>
+      </div>
     } else if (this.state.error) {
       alert = <Alert
-          type="danger"
-          message={this.state.error}
-        />
+        type='danger'
+        message={this.state.error}
+      />
     }
 
     let formElements
@@ -116,34 +115,34 @@ class ForgotPage extends Component {
       formElements = <fieldset>
         <TextControl
           ref={(c) => (this.input.email = c)}
-          name="email"
-          label="您帳號的 email 是?"
+          name='email'
+          label='您帳號的 email 是?'
           hasError={this.state.hasError.email}
           help={this.state.help.email}
           disabled={this.state.loading}
         />
-        <ControlGroup hideLabel={true} hideHelp={true}>
+        <ControlGroup hideLabel hideHelp>
           <Button
-            type="submit"
+            type='submit'
             inputClasses={{ 'btn-primary': true }}
             disabled={this.state.loading}>
             重置
-            <Spinner space="left" show={this.state.loading} />
+            <Spinner space='left' show={this.state.loading} />
           </Button>
-          <Link to="/login" className="btn btn-link">返回登入</Link>
+          <Link to='/login' className='btn btn-link'>返回登入</Link>
         </ControlGroup>
       </fieldset>
     }
 
     return (
-      <section className="container">
+      <section className='container'>
         <Helmet>
           <title>忘記密碼</title>
         </Helmet>
-        <div className="container">
-          <h1 className="page-header">忘記您的密碼?</h1>
-          <div className="row">
-            <div className="col-sm-6">
+        <div className='container'>
+          <h1 className='page-header'>忘記您的密碼?</h1>
+          <div className='row'>
+            <div className='col-sm-6'>
               <form onSubmit={this.handleSubmit.bind(this)}>
                 {alert}
                 {formElements}

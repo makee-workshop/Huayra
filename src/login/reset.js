@@ -7,8 +7,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class ResetPage extends Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.input = {}
     this.state = {
@@ -20,13 +19,13 @@ class ResetPage extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.input.password) {
       this.input.password.focus()
     }
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -39,14 +38,14 @@ class ResetPage extends Component {
     })
 
     let data = new URLSearchParams({
-      password: this.input.password.value(), 
+      password: this.input.password.value(),
       confirm: this.input.confirm.value(),
       email: this.props.match.params.email,
-      token: this.props.match.params.key,
+      token: this.props.match.params.key
     })
 
-    let sentData={
-      method:'PUT',
+    let sentData = {
+      method: 'PUT',
       credentials: 'include',
       mode: 'cors',
       header: header,
@@ -57,7 +56,7 @@ class ResetPage extends Component {
      this.props.match.params.key + '/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.setState({
             success: true,
             error: '',
@@ -73,7 +72,7 @@ class ResetPage extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -82,15 +81,15 @@ class ResetPage extends Component {
           this.setState(state)
         }
       }).catch(e => {
-        console.error(e);
+        console.error(e)
       })
   }
 
-  render() {
+  render () {
     let alerts = []
-    const isIE = (navigator.userAgent.search("Trident") || navigator.userAgent.search("MSIE")) > -1
+    const isIE = (navigator.userAgent.search('Trident') || navigator.userAgent.search('MSIE')) > -1
 
-    if(isIE) {
+    if (isIE) {
       this.setState({
         success: false,
         error: '本服務目前不支援 Internet Explorer 瀏覽器，請切換其他瀏覽器後繼續使用。',
@@ -99,16 +98,16 @@ class ResetPage extends Component {
     }
 
     if (this.state.success) {
-      alerts.push(<div key="success">
-        <div className="alert alert-success">
+      alerts.push(<div key='success'>
+        <div className='alert alert-success'>
           您的密碼已重置，請重新登入。
         </div>
-        <Link to="/login" className="btn btn-link">返回登入</Link>
+        <Link to='/login' className='btn btn-link'>返回登入</Link>
       </div>)
     }
 
     if (this.state.error) {
-      alerts.push(<div key="danger" className="alert alert-danger">
+      alerts.push(<div key='danger' className='alert alert-danger'>
         {this.state.error}
       </div>)
     }
@@ -119,60 +118,60 @@ class ResetPage extends Component {
       formElements = <fieldset>
         <TextControl
           ref={(c) => (this.input.password = c)}
-          name="password"
-          label="新密碼"
-          type="password"
+          name='password'
+          label='新密碼'
+          type='password'
           hasError={this.state.hasError.password}
           help={this.state.help.password}
           disabled={this.state.loading}
         />
         <TextControl
           ref={(c) => (this.input.confirm = c)}
-          name="confirm"
-          label="再次輸入新密碼"
-          type="password"
+          name='confirm'
+          label='再次輸入新密碼'
+          type='password'
           hasError={this.state.hasError.confirm}
           help={this.state.help.confirm}
           disabled={this.state.loading}
         />
         <TextControl
-          name="_key"
-          label="金鑰"
+          name='_key'
+          label='金鑰'
           hasError={this.state.hasError.key}
           value={this.props.match.params.key}
           help={this.state.help.key}
-          disabled={true}
+          disabled
         />
         <TextControl
-          name="_email"
-          label="Email"
+          name='_email'
+          label='Email'
           hasError={this.state.hasError.email}
           value={this.props.match.params.email}
           help={this.state.help.email}
-          disabled={true}
+          disabled
         />
-        <ControlGroup hideLabel={true} hideHelp={true}>
+        <ControlGroup hideLabel hideHelp>
           <Button
-            type="submit"
+            type='submit'
             inputClasses={{ 'btn-primary': true }}
             disabled={this.state.loading}>
             設定密碼
-            <Spinner space="left" show={this.state.loading} />
+            <Spinner space='left' show={this.state.loading} />
           </Button>
-          <Link to="/login" className="btn btn-link">返回登入</Link>
+          <Link to='/login' className='btn btn-link'>返回登入</Link>
         </ControlGroup>
       </fieldset>
     }
 
     return (
-      <section className="container">
+      <section className='container'>
         <Helmet>
           <title>重置密碼</title>
         </Helmet>
-        <div className="container">
-          <h1 className="page-header">重置您的密碼</h1>
-          <div className="row">
-            <div className="col-sm-6">
+        <div className='container'>
+          <h1 className='page-header'>重置您的密碼</h1>
+          <div className='row'>
+            <div className='col-sm-6'>
               <form onSubmit={this.handleSubmit.bind(this)}>
                 {alerts}
                 {formElements}

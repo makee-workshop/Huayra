@@ -6,7 +6,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class DetailsForm extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.input = {}
     this.state = {
@@ -19,38 +19,38 @@ class DetailsForm extends Component {
       first: '',
       company: '',
       phone: '',
-      zip:''
+      zip: ''
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchData()
   }
 
-  fetchData = () => {
+  fetchData () {
     fetch('/1/account', {
-      credentials: 'include', 
+      credentials: 'include',
       mode: 'cors'
     })
-    .then(r => r.json())
-    .then(r => {
-      this.setState({
-        first: r.data.name.first,
-        last: r.data.name.last,
-        company: r.data.company,
-        phone: r.data.phone,
-        zip: r.data.zip
+      .then(r => r.json())
+      .then(r => {
+        this.setState({
+          first: r.data.name.first,
+          last: r.data.name.last,
+          company: r.data.company,
+          phone: r.data.phone,
+          zip: r.data.zip
+        })
       })
-    })
-    .catch(e => {
-      console.error(e)
-    })
+      .catch(e => {
+        console.error(e)
+      })
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
-  
+
     this.setState({
       loading: true
     })
@@ -60,15 +60,15 @@ class DetailsForm extends Component {
     })
 
     let data = new URLSearchParams({
-      last: this.input.last.value(), 
+      last: this.input.last.value(),
       first: this.input.first.value(),
       company: this.input.company.value(),
       phone: this.input.phone.value(),
       zip: this.input.zip.value()
     })
 
-    let sentData={
-      method:'PUT',
+    let sentData = {
+      method: 'PUT',
       credentials: 'include',
       mode: 'cors',
       header: header,
@@ -78,7 +78,7 @@ class DetailsForm extends Component {
     fetch('/1/account/settings/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.setState({
             success: true,
             error: '',
@@ -95,7 +95,7 @@ class DetailsForm extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -105,22 +105,22 @@ class DetailsForm extends Component {
         }
       }).catch(e => {
         console.error(e)
-      })    
+      })
   } // end handleSubmit
 
-  render() {
+  render () {
     let alerts = []
 
     if (this.state.success) {
       alerts = <Alert
-          type="success"
-          message="個人資料更新成功"
-        />
+        type='success'
+        message='個人資料更新成功'
+      />
     } else if (this.state.error) {
       alerts = <Alert
-          type="danger"
-          message={this.state.error}
-        />
+        type='danger'
+        message={this.state.error}
+      />
     }
 
     return (
@@ -130,62 +130,62 @@ class DetailsForm extends Component {
           {alerts}
           <TextControl
             ref={(c) => (this.input.last = c)}
-            name="last"
-            label="姓氏"
+            name='last'
+            label='姓氏'
             value={this.state.last}
-            onChange={(e) => (this.setState({last: e.target.value}))}
+            onChange={(e) => (this.setState({ last: e.target.value }))}
             hasError={this.state.hasError.last}
             help={this.state.help.last}
             disabled={this.state.loading}
           />
           <TextControl
             ref={(c) => (this.input.first = c)}
-            name="first"
-            label="名字"
+            name='first'
+            label='名字'
             value={this.state.first}
-            onChange={(e) => (this.setState({first: e.target.value}))}
+            onChange={(e) => (this.setState({ first: e.target.value }))}
             hasError={this.state.hasError.first}
             help={this.state.help.first}
             disabled={this.state.loading}
           />
           <TextControl
             ref={(c) => (this.input.company = c)}
-            name="company"
-            label="公司"
+            name='company'
+            label='公司'
             value={this.state.company}
-            onChange={(e) => (this.setState({company: e.target.value}))}
+            onChange={(e) => (this.setState({ company: e.target.value }))}
             hasError={this.state.hasError.company}
             help={this.state.help.company}
             disabled={this.state.loading}
           />
           <TextControl
             ref={(c) => (this.input.phone = c)}
-            name="phone"
-            label="電話"
+            name='phone'
+            label='電話'
             value={this.state.phone}
-            onChange={(e) => (this.setState({phone: e.target.value}))}
+            onChange={(e) => (this.setState({ phone: e.target.value }))}
             hasError={this.state.hasError.phone}
             help={this.state.help.phone}
             disabled={this.state.loading}
-          />  
+          />
           <TextControl
             ref={(c) => (this.input.zip = c)}
-            name="zip"
-            label="郵遞區號"
+            name='zip'
+            label='郵遞區號'
             value={this.state.zip}
-            onChange={(e) => (this.setState({zip: e.target.value}))}
+            onChange={(e) => (this.setState({ zip: e.target.value }))}
             hasError={this.state.hasError.zip}
             help={this.state.help.zip}
             disabled={this.state.loading}
-          />  
-          <ControlGroup hideLabel={true} hideHelp={true}>
+          />
+          <ControlGroup hideLabel hideHelp>
             <Button
-              type="submit"
+              type='submit'
               inputClasses={{ 'btn-primary': true }}
               disabled={this.props.loading}>
               更新
               <Spinner
-                space="left"
+                space='left'
                 show={this.props.loading}
               />
             </Button>

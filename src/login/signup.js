@@ -10,8 +10,7 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 class Signup extends Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.input = {}
     this.state = {
@@ -23,20 +22,20 @@ class Signup extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.input.username) {
-        this.input.username.focus();
+      this.input.username.focus()
     }
   }
 
-  handleSubmit(event) {
+  handleSubmit (event) {
     event.preventDefault()
     event.stopPropagation()
 
     this.setState({
       loading: true
     })
-    
+
     let header = new Headers({
       'Content-Type': 'application/x-www-form-urlencoded'
     })
@@ -47,7 +46,7 @@ class Signup extends Component {
       password: this.input.password.value()
     })
 
-    let sentData={
+    let sentData = {
       method: 'POST',
       credentials: 'include',
       mode: 'cors',
@@ -58,7 +57,7 @@ class Signup extends Component {
     fetch('/signup/', sentData)
       .then(r => r.json())
       .then(r => {
-        if(r.success === true) {
+        if (r.success === true) {
           this.props.loginSuccess(r.data)
           localStorage.setItem('auth', true)
           localStorage.setItem('role', r.role)
@@ -77,7 +76,7 @@ class Signup extends Component {
           }
           for (let key in r.errfor) {
             state.hasError[key] = true
-            state.help[key]= r.errfor[key]
+            state.help[key] = r.errfor[key]
           }
 
           if (r.errors[0] !== undefined) {
@@ -85,7 +84,7 @@ class Signup extends Component {
           }
           this.setState(state)
 
-          localStorage.setItem('auth', false);
+          localStorage.setItem('auth', false)
           localStorage.setItem('role', '')
         }
       }).catch(e => {
@@ -93,15 +92,15 @@ class Signup extends Component {
       })
   }
 
-  render() {
+  render () {
     let alert = []
-    const isIE = (navigator.userAgent.search("Trident") || navigator.userAgent.search("MSIE")) > -1
+    const isIE = (navigator.userAgent.search('Trident') || navigator.userAgent.search('MSIE')) > -1
 
-    if(this.state.success) {
-      return (<Redirect to='/account'/>)
+    if (this.state.success) {
+      return (<Redirect to='/account' />)
     }
 
-    if(isIE) {
+    if (isIE) {
       this.setState({
         success: false,
         error: '本服務目前不支援 Internet Explorer 瀏覽器，請切換其他瀏覽器後繼續使用。',
@@ -111,14 +110,14 @@ class Signup extends Component {
 
     if (this.state.success) {
       alert = <Alert
-          type="success"
-          message="成功，請稍後..."
-        />
+        type='success'
+        message='成功，請稍後...'
+      />
     } else if (this.state.error) {
       alert = <Alert
-          type="danger"
-          message={this.state.error}
-        />
+        type='danger'
+        message={this.state.error}
+      />
     }
 
     let formElements
@@ -127,62 +126,62 @@ class Signup extends Component {
       formElements = <fieldset>
         <TextControl
           ref={(c) => (this.input.username = c)}
-          name="username"
-          label="帳號"
+          name='username'
+          label='帳號'
           hasError={this.state.hasError.username}
           help={this.state.help.username}
           disabled={this.state.loading}
         />
         <TextControl
           ref={(c) => (this.input.email = c)}
-          name="email"
-          label="Email"
+          name='email'
+          label='Email'
           hasError={this.state.hasError.email}
           help={this.state.help.email}
           disabled={this.state.loading}
         />
         <TextControl
           ref={(c) => (this.input.password = c)}
-          name="password"
-          label="密碼"
-          type="password"
+          name='password'
+          label='密碼'
+          type='password'
           hasError={this.state.hasError.password}
           help={this.state.help.password}
           disabled={this.state.loading}
         />
-        <ControlGroup hideLabel={true} hideHelp={true}>
+        <ControlGroup hideLabel hideHelp>
           <Button
-            type="submit"
+            type='submit'
             inputClasses={{ 'btn-success': true }}
             disabled={this.state.loading}>
             建立帳號
-            <Spinner space="left" show={this.state.loading} />
+            <Spinner space='left' show={this.state.loading} />
           </Button>
         </ControlGroup>
       </fieldset>
     }
 
     return (
-      <section className="section-home container">
+      <section className='section-home container'>
         <Helmet>
           <title>註冊</title>
         </Helmet>
-        <div className="row">
-          <div className="col-sm-6">
+        <div className='row'>
+          <div className='col-sm-6'>
             <section>
-              <h1 className="page-header">註冊</h1>
+              <h1 className='page-header'>註冊</h1>
               <form onSubmit={this.handleSubmit.bind(this)}>
-                  {alert}
-                  {formElements}
+                {alert}
+                {formElements}
               </form>
             </section>
           </div>
-          <div className="col-sm-6 text-center">
-            <h1 className="page-header">加入我們</h1>
-            <p className="lead">
+          <div className='col-sm-6 text-center'>
+            <h1 className='page-header'>加入我們</h1>
+            <p className='lead'>
               不渴望能夠一躍千里，只希望每天能夠前進一步。
             </p>
-            <i className="fa fa-thumbs-o-up bamf"></i>
+            <i className='fa fa-thumbs-o-up bamf' />
           </div>
         </div>
       </section>
@@ -191,12 +190,12 @@ class Signup extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  loginSuccess(user) {
+  loginSuccess (user) {
     dispatch(loginSuccess(user))
   },
-  loginError() {
+  loginError () {
     dispatch(loginError())
-  },
+  }
 })
 
 export default connect(null, mapDispatchToProps)(Signup)

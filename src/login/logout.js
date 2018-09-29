@@ -4,29 +4,28 @@ import { connect } from 'react-redux'
 import { loginError } from '../utils/userAction'
 
 class Logout extends Component {
-
-  componentWillMount() {
+  componentDidMount () {
     this.fetch()
     localStorage.setItem('auth', false)
     localStorage.setItem('role', '')
     this.props.loginError()
   }
 
-  fetch() {
-    fetch('/1/logout', {credentials: 'include',  mode: 'cors',})
+  fetch () {
+    fetch('/1/logout', { credentials: 'include', mode: 'cors' })
   }
 
-  render() {
+  render () {
     return (
-      <Redirect to='/'/>
+      <Redirect to='/' />
     )
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  loginError() {
-    dispatch(loginError());
-  },
+  loginError () {
+    dispatch(loginError())
+  }
 })
 
 export default connect(null, mapDispatchToProps)(Logout)

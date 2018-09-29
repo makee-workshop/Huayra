@@ -21,19 +21,18 @@ const propTypes = {
 }
 
 class TextareaControl extends React.Component {
-
-  focus() {
-    return this.input.focus();
+  focus () {
+    return this.input.focus()
   }
 
-  value() {
-    return this.input.value;
+  value () {
+    return this.input.value
   }
 
-  render() {
+  render () {
     const inputClasses = ClassNames(ObjectAssign({
       'form-control': true
-    }, this.props.inputClasses));
+    }, this.props.inputClasses))
 
     return (
       <ControlGroup

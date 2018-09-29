@@ -52,18 +52,18 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: config.cryptoKey,
-  store: new mongoStore({ url: config.mongodb.uri })
+  store: new mongoStore({ url: config.mongodb.uri }) // eslint-disable-line
 }))
 app.use(passport.initialize())
 app.use(passport.session())
 // app.use(csrf({ cookie: { signed: false } }))
 helmet(app)
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-  res.header("Access-Control-Allow-Credentials", "true")
-  next();
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header('Access-Control-Allow-Credentials', 'true')
+  next()
 })
 
 // response locals
@@ -88,7 +88,7 @@ require('./passport')(app, passport)
 require('./routes')(app, passport)
 
 // setup react
-app.get('*', function(req, res) {
+app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, './build/index.html'))
 })
 

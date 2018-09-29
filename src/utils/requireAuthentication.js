@@ -2,48 +2,45 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
 
-export function requireAuthentication(Component) {
-
+export function requireAuthentication (Component) {
   class AuthenticatedComponent extends Component {
-
-    componentWillMount () {
+    componentDidMount () {
       this.fetchUser()
     }
 
-    componentWillReceiveProps (nextProps) {
+    compomentDidUpdate () {
       this.fetchUser()
     }
 
     fetchUser () {
-      fetch('/1/islogin', {credentials: 'include', mode: 'cors'})
-      .then(r => r.json())
-      .then(r => {
-        if (r.data.authenticated === true) {
-          this.props.loginSuccess(r.data)
-          localStorage.setItem('auth', true)
-          localStorage.setItem('role', r.data.role)
-        } else {
+      fetch('/1/islogin', { credentials: 'include', mode: 'cors' })
+        .then(r => r.json())
+        .then(r => {
+          if (r.data.authenticated === true) {
+            this.props.loginSuccess(r.data)
+            localStorage.setItem('auth', true)
+            localStorage.setItem('role', r.data.role)
+          } else {
+            this.props.loginError()
+            localStorage.setItem('auth', false)
+            localStorage.setItem('role', '')
+            window.location.assign('/login')
+          }
+        }).catch(e => {
           this.props.loginError()
+          console.error(e)
           localStorage.setItem('auth', false)
           localStorage.setItem('role', '')
           window.location.assign('/login')
-        }
-      }).catch(e => {
-        this.props.loginError()
-        console.error(e)
-        localStorage.setItem('auth', false)
-        localStorage.setItem('role', '')
-        window.location.assign('/login')
-      })
+        })
     }
 
     render () {
       return (
         <div>
-          { localStorage.getItem('auth') === 'true'
-            ? <Component {...this.props}/>
-            : null
-          }
+          {localStorage.getItem('auth') === 'true'
+            ? <Component {...this.props} />
+            : null}
         </div>
       )
     }
@@ -53,8 +50,8 @@ export function requireAuthentication(Component) {
     loginSuccess (user) {
       dispatch(loginSuccess(user))
     },
-    loginError() {
-      dispatch(loginError());
+    loginError () {
+      dispatch(loginError())
     }
   })
 

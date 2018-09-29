@@ -99,13 +99,13 @@ exports.identity = function (req, res, next) {
   workflow.on('validate', function () {
     if (!req.body.username) {
       workflow.outcome.errfor.username = '請輸入帳號'
-    } else if (!/^[a-zA-Z0-9\-\_]+$/.test(req.body.username)) {
-      workflow.outcome.errfor.username = '帳號僅能使用英文、數字、\'-\'、\'_\''
+    } else if (!/^[a-zA-Z0-9\-\_]+$/.test(req.body.username)) { // eslint-disable-line
+      workflow.outcome.errfor.username = "帳號僅能使用英文、數字、'-'、'_'"
     }
 
     if (!req.body.email) {
       workflow.outcome.errfor.email = '請輸入 email'
-    } else if (!/^[a-zA-Z0-9\-\_\.\+]+@[a-zA-Z0-9\-\_\.]+\.[a-zA-Z0-9\-\_]+$/.test(req.body.email)) {
+    } else if (!/^[a-zA-Z0-9\-\_\.\+]+@[a-zA-Z0-9\-\_\.]+\.[a-zA-Z0-9\-\_]+$/.test(req.body.email)) { // eslint-disable-line
       workflow.outcome.errfor.email = 'email 格式錯誤'
     }
 

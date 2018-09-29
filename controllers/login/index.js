@@ -107,7 +107,7 @@ exports.login = function (req, res) {
 
 exports.loginTwitter = function (req, res, next) {
   req._passport.instance.authenticate('twitter', function (err, user, info) {
-    if (!info || !info.profile) {
+    if (err || !info || !info.profile) {
       return res.redirect('/login/')
     }
 
@@ -140,7 +140,7 @@ exports.loginTwitter = function (req, res, next) {
 
 exports.loginGitHub = function (req, res, next) {
   req._passport.instance.authenticate('github', function (err, user, info) {
-    if (!info || !info.profile) {
+    if (err || !info || !info.profile) {
       return res.redirect('/login/')
     }
 
@@ -173,7 +173,7 @@ exports.loginGitHub = function (req, res, next) {
 
 exports.loginFacebook = function (req, res, next) {
   req._passport.instance.authenticate('facebook', { callbackURL: '/login/facebook/callback/' }, function (err, user, info) {
-    if (!info || !info.profile) {
+    if (err || !info || !info.profile) {
       return res.redirect('/login/')
     }
 
@@ -206,7 +206,7 @@ exports.loginFacebook = function (req, res, next) {
 
 exports.loginGoogle = function (req, res, next) {
   req._passport.instance.authenticate('google', { callbackURL: '/login/google/callback/' }, function (err, user, info) {
-    if (!info || !info.profile) {
+    if (err || !info || !info.profile) {
       return res.redirect('/login/')
     }
 
@@ -239,7 +239,7 @@ exports.loginGoogle = function (req, res, next) {
 
 exports.loginTumblr = function (req, res, next) {
   req._passport.instance.authenticate('tumblr', { callbackURL: '/login/tumblr/callback/' }, function (err, user, info) {
-    if (!info || !info.profile) {
+    if (err || !info || !info.profile) {
       return res.redirect('/login/')
     }
 

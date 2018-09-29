@@ -12,14 +12,14 @@
    * @param {String} content. 內容.
    */
 exports.create = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
 
   workflow.on('validate', function () {
-        // Backbone way use req.body, not req.query
+    // Backbone way use req.body, not req.query
     if (!req.body.name) workflow.outcome.errfor.name = '請填寫名稱'
     if (!req.body.content) workflow.outcome.errfor.content = '請填寫內容'
 
-        // return if we have errors already
+    // return if we have errors already
     if (workflow.hasErrors()) {
       workflow.outcome.errors.push('有欄位尚未填寫')
       return workflow.emit('response')
@@ -57,14 +57,14 @@ exports.create = function (req, res, next) {
    * @param {String} content. 內容.
    */
 exports.createByQuery = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
 
   workflow.on('validate', function () {
-        // use req.query
+    // use req.query
     if (!req.query.name) workflow.outcome.errfor.name = '請填寫名稱'
     if (!req.query.content) workflow.outcome.errfor.content = '請填寫內容'
 
-        // return if we have errors already
+    // return if we have errors already
     if (workflow.hasErrors()) {
       workflow.outcome.errors.push('有欄位尚未填寫')
       return workflow.emit('response')
@@ -95,11 +95,11 @@ exports.createByQuery = function (req, res, next) {
    * @summary read all posts
    */
 exports.readAll = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
 
-    // defaults: no limits
+  // defaults: no limits
   req.query.limit = req.query.limit ? parseInt(req.query.limit) : 999
-    // req.query.page = req.query.page ? parseInt(req.query.page) : 1;
+  // req.query.page = req.query.page ? parseInt(req.query.page) : 1
   req.query.sort = req.query.sort ? req.query.sort : '-date'
 
   workflow.on('listPost', function () {
@@ -129,7 +129,7 @@ exports.readAll = function (req, res, next) {
    * @param {String} name. 名稱.
    */
 exports.activate = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   var name = req.params.name.trim()
   var decode = decodeURIComponent(name)
 
@@ -138,7 +138,7 @@ exports.activate = function (req, res, next) {
       isActive: true
     }
 
-    req.app.db.models.Post.update({ name: decode}, fieldsToSet, { multi: true }, function (err, numAffected) {
+    req.app.db.models.Post.update({ name: decode }, fieldsToSet, { multi: true }, function (err, numAffected) {
       if (err) return workflow.emit('exception', err)
 
       workflow.outcome.numAffected = numAffected
@@ -158,7 +158,7 @@ exports.activate = function (req, res, next) {
    * @param {String} name. 名稱.
    */
 exports.inactivate = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   var name = req.params.name.trim()
   var decode = decodeURIComponent(name)
 
@@ -167,7 +167,7 @@ exports.inactivate = function (req, res, next) {
       isActive: false
     }
 
-    req.app.db.models.Post.update({ name: decode}, fieldsToSet, { multi: true }, function (err, numAffected) {
+    req.app.db.models.Post.update({ name: decode }, fieldsToSet, { multi: true }, function (err, numAffected) {
       if (err) return workflow.emit('exception', err)
 
       workflow.outcome.numAffected = numAffected
@@ -187,7 +187,7 @@ exports.inactivate = function (req, res, next) {
    * @param {String} id.
    */
 exports.delete = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   var _id = req.params.id
 
   workflow.on('deletePost', function () {
