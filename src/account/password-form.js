@@ -102,6 +102,7 @@ class PasswordForm extends Component {
             ref={(c) => (this.input.newPassword = c)}
             name='newPassword'
             label='新密碼'
+            type='password'
             hasError={this.state.hasError.newPassword}
             help={this.state.help.newPassword}
             disabled={this.state.loading}
@@ -110,6 +111,7 @@ class PasswordForm extends Component {
             ref={(c) => (this.input.confirm = c)}
             name='confirm'
             label='再次輸入新密碼'
+            type='password'
             hasError={this.state.hasError.confirm}
             help={this.state.help.confirm}
             disabled={this.state.loading}
