@@ -6,8 +6,6 @@ import { loginError } from '../utils/userAction'
 class Logout extends Component {
   componentDidMount () {
     this.fetch()
-    localStorage.setItem('auth', false)
-    localStorage.setItem('role', '')
     this.props.loginError()
   }
 

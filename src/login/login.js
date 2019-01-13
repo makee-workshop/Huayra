@@ -59,8 +59,6 @@ class Login extends Component {
       .then(r => {
         if (r.success === true) {
           this.props.loginSuccess(r.data)
-          localStorage.setItem('auth', true)
-          localStorage.setItem('role', r.role)
           this.setState({
             success: true,
             error: '',
@@ -83,10 +81,7 @@ class Login extends Component {
             state.error = r.errors[0]
           }
           this.setState(state)
-
           this.props.loginError()
-          localStorage.setItem('auth', false)
-          localStorage.setItem('role', '')
         }
       }).catch(e => {
         console.error(e)

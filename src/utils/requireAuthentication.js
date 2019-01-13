@@ -18,19 +18,13 @@ export function requireAuthentication (Component) {
         .then(r => {
           if (r.data.authenticated === true) {
             this.props.loginSuccess(r.data)
-            localStorage.setItem('auth', true)
-            localStorage.setItem('role', r.data.role)
           } else {
             this.props.loginError()
-            localStorage.setItem('auth', false)
-            localStorage.setItem('role', '')
             window.location.assign('/login')
           }
         }).catch(e => {
           this.props.loginError()
           console.error(e)
-          localStorage.setItem('auth', false)
-          localStorage.setItem('role', '')
           window.location.assign('/login')
         })
     }
@@ -38,13 +32,17 @@ export function requireAuthentication (Component) {
     render () {
       return (
         <div>
-          {localStorage.getItem('auth') === 'true'
+          {this.props.authenticated === true
             ? <Component {...this.props} />
             : null}
         </div>
       )
     }
   }
+
+  const mapStateToProps = state => ({
+    authenticated: state.index.authenticated
+  })
 
   const mapDispatchToProps = dispatch => ({
     loginSuccess (user) {
@@ -55,5 +53,5 @@ export function requireAuthentication (Component) {
     }
   })
 
-  return connect(null, mapDispatchToProps)(AuthenticatedComponent)
+  return connect(mapStateToProps, mapDispatchToProps)(AuthenticatedComponent)
 }

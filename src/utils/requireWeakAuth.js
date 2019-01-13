@@ -18,18 +18,12 @@ export function requireWeakAuth (Component) {
         .then(r => {
           if (r.data.authenticated === true) {
             this.props.loginSuccess(r.data)
-            localStorage.setItem('auth', true)
-            localStorage.setItem('role', r.data.role)
           } else {
             this.props.loginError()
-            localStorage.setItem('auth', false)
-            localStorage.setItem('role', '')
           }
         }).catch(e => {
           this.props.loginError()
           console.error(e)
-          localStorage.setItem('auth', false)
-          localStorage.setItem('role', '')
         })
     }
 
