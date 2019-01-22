@@ -1,5 +1,5 @@
 {
-  var db = connect('localhost/makeeweb')
+  var db = connect('localhost/huayra')
 
   // 1. check admingroups - if exists will be ignored.
   db.admingroups.save({ _id: 'root', name: 'Root' })
@@ -11,12 +11,6 @@
     first: '',
     last: '',
     full: 'root'
-  }, {
-    username: '<yourname>',
-    email: '<email>',
-    first: '<first name>',
-    last: '<last name>',
-    full: '<full name>'
   }]
 
   for (i in usersToInit) {

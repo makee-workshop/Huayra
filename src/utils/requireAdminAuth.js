@@ -2,10 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
 
-export function requireAuthentication (Component) {
+export function requireAdminAuth(Component) {
 
   class AuthenticatedComponent extends Component {
-    
+
     componentDidMount () {
       this.fetchUser()
     }
@@ -15,28 +15,29 @@ export function requireAuthentication (Component) {
     }
 
     fetchUser () {
-      fetch('/1/islogin', { credentials: 'include', mode: 'cors' })
-        .then(r => r.json())
-        .then(r => {
-          if (r.data.authenticated === true) {
-            this.props.loginSuccess(r.data)
-          } else {
-            this.props.loginError()
-            window.location.assign('/login')
-          }
-        }).catch(e => {
+      fetch('/1/islogin', {credentials: 'include', mode: 'cors'})
+      .then(r => r.json())
+      .then(r => {
+        if (r.data.authenticated === true && r.data.role === 'admin') {
+          this.props.loginSuccess(r.data)
+        } else {
           this.props.loginError()
-          console.error(e)
-          window.location.assign('/login')
-        })
+          window.location.assign('/')
+        }
+      }).catch(e => {
+        this.props.loginError()
+        console.error(e)
+        window.location.assign('/')
+      })
     }
 
     render () {
       return (
         <div>
-          {this.props.authenticated === true
-            ? <Component {...this.props} />
-            : null}
+          { this.props.authenticated === true
+            ? <Component {...this.props}/>
+            : null
+          }
         </div>
       )
     }
@@ -50,9 +51,9 @@ export function requireAuthentication (Component) {
     loginSuccess (user) {
       dispatch(loginSuccess(user))
     },
-    loginError () {
-      dispatch(loginError())
-    }
+    loginError() {
+      dispatch(loginError());
+    },
   })
 
   return connect(mapStateToProps, mapDispatchToProps)(AuthenticatedComponent)

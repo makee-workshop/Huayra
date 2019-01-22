@@ -21,6 +21,13 @@ function ensureAccount (req, res, next) {
   res.redirect('/')
 }
 
+function ensureAdmin (req, res, next) {
+  if (req.user.canPlayRoleOf('admin')) {
+    return next()
+  }
+  res.redirect('/')
+}
+
 exports = module.exports = function (app, passport) {
   // front end
   app.post('/1/contact/', require('./controllers/contact/index').sendMessage)
@@ -64,6 +71,17 @@ exports = module.exports = function (app, passport) {
   app.get('/1/user', ensureAuthenticated)
   app.get('/1/user', ensureAccount)
   app.get('/1/user', require('./controllers/api/account').getUserInfo)
+
+  app.all('/1/admin*', ensureAuthenticated)
+  app.all('/1/admin*', ensureAdmin)
+
+  app.get('/1/admin/count', require('./controllers/admin/index').init)
+  app.get('/1/admin/users', require('./controllers/api/account').adminGetUsers)
+  app.get('/1/admin/account/:id', require('./controllers/api/account').adminGetAccountInfo)
+  app.get('/1/admin/user/:id', require('./controllers/api/account').admingetUserInfo)
+  app.put('/1/admin/account/:id', require('./controllers/admin/accounts').update)
+  app.put('/1/admin/user/:id', require('./controllers/admin/users').update)
+  app.put('/1/admin/user/:id/password', require('./controllers/admin/users').password)
 
   // route not found
   // app.all('*', require('./controllers/http/index').http404)
