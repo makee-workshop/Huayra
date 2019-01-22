@@ -24,6 +24,9 @@ Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](ht
  - My account area
    - Stub dashboard ready to customize
    - Settings screen to update contact info and login credentials
+ - Admin back office
+   - Stub dashboard ready to customize
+   - Manage users
 
 ## Technology
 
@@ -54,16 +57,13 @@ First you need to setup your config file.
 $ mv ./config.example.js ./config.js #set mongodb and email credentials
 ```
 
-Set Admin.
+## Set Admin.
 
-```js
-db.admingroups.insert({ _id: 'root', name: 'Root' });
-db.admins.insert({ name: {first: 'Root', last: 'Admin', full: 'Root Admin'}, groups: ['root'] });
-var rootAdmin = db.admins.findOne();
-db.users.save({ username: 'root', isActive: 'yes', email: 'your@email.addy', roles: {admin: rootAdmin._id} });
-var rootUser = db.users.findOne();
-rootAdmin.user = { id: rootUser._id, name: rootUser.username };
-db.admins.save(rootAdmin);
+Register the `root` account and run command.
+
+```bash
+$ cd scripts
+$ mongo S001-init-admin-database.js
 ```
 
 ## Running the app
