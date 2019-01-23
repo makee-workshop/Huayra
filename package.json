@@ -7,7 +7,7 @@
     "server": "nodemon app.js",
     "client": "react-scripts start",
     "build": "react-scripts build",
-    "test": "standard && react-scripts test --env=jsdom",
+    "test": "standard",
     "eject": "react-scripts eject",
     "format": "prettier --single-quote --trailing-comma=all --write \"src/**/*.js\""
   },

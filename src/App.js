@@ -47,9 +47,9 @@ class App extends Component {
             <AppRoute exact path='/account' layout={AccountLayout} component={requireAuthentication(Account)} />
             <AppRoute exact path='/account/setting' layout={AccountLayout} component={requireAuthentication(Setting)} />
             <AppRoute exact path='/logout' layout={AccountLayout} component={Logout} />
-            <AppRoute exact path="/admin" layout={AdminLayout} component={requireAdminAuth(admin)} />
-            <AppRoute exact path="/admin/users" layout={AdminLayout} component={requireAdminAuth(adminUsers)} />
-            <AppRoute exact path="/admin/user/:uid/:aid/:username" layout={AdminLayout} component={requireAdminAuth(adminUserSetting)} />
+            <AppRoute exact path='/admin' layout={AdminLayout} component={requireAdminAuth(admin)} />
+            <AppRoute exact path='/admin/users' layout={AdminLayout} component={requireAdminAuth(adminUsers)} />
+            <AppRoute exact path='/admin/user/:uid/:aid/:username' layout={AdminLayout} component={requireAdminAuth(adminUserSetting)} />
             <AppRoute exact layout={DefaultLayout} component={requireWeakAuth(NotFoundPage)} />
           </Switch>
         </Provider>

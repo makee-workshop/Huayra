@@ -3,9 +3,7 @@ import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
 
 export function requireAuthentication (Component) {
-
   class AuthenticatedComponent extends Component {
-    
     componentDidMount () {
       this.fetchUser()
     }

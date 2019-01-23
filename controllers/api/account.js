@@ -87,7 +87,7 @@ exports.admingetUserInfo = function (req, res, next) {
 }
 
 exports.adminGetUsers = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
 
   req.query.limit = req.query.limit ? parseInt(req.query.limit) : 10
   req.query.page = req.query.page ? parseInt(req.query.page) : 1

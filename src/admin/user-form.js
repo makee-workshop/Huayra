@@ -107,21 +107,17 @@ class UserForm extends Component {
     let alerts = []
 
     if (this.state.success) {
-      alerts = <Alert
-        type='success'
-        message='帳號資料更新成功'
-      />
+      alerts = <Alert type='success' message='帳號資料更新成功' />
     } else if (this.state.error) {
-      alerts = <Alert
-        type='danger'
-        message={this.state.error}
-      />
+      alerts = <Alert type='danger' message={this.state.error} />
     }
 
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
         <fieldset>
-          <legend> 帳號資料 </legend>
+          <legend>
+            帳號資料
+          </legend>
           {alerts}
           <TextControl
             ref={(c) => (this.input.username = c)}
@@ -131,8 +127,7 @@ class UserForm extends Component {
             onChange={(e) => (this.setState({ username: e.target.value }))}
             hasError={this.state.hasError.username}
             help={this.state.help.username}
-            disabled={this.state.loading}
-          />
+            disabled={this.state.loading} />
           <TextControl
             ref={(c) => (this.input.email = c)}
             name='email'
@@ -141,31 +136,27 @@ class UserForm extends Component {
             onChange={(e) => (this.setState({ email: e.target.value }))}
             hasError={this.state.hasError.email}
             help={this.state.help.email}
-            disabled={this.state.loading}
-          />
+            disabled={this.state.loading} />
           <SelectControl
             ref={(c) => (this.input.isActive = c)}
-            name="isActive"
-            label="是否啟用"
+            name='isActive'
+            label='是否啟用'
             value={this.state.isActive}
             onChange={(e) => (this.setState({ isActive: e.target.value }))}
             hasError={this.state.hasError.isActive}
             help={this.state.help.isActive}
-            disabled={this.state.loading}
-          >
-            <option value="yes">啟用</option>
-            <option value="no">關閉</option>
+            disabled={this.state.loading}>
+            <option value='yes'>
+              啟用
+            </option>
+            <option value='no'>
+              關閉
+            </option>
           </SelectControl>
           <ControlGroup hideLabel hideHelp>
-            <Button
-              type='submit'
-              inputClasses={{ 'btn-primary': true }}
-              disabled={this.props.loading}>
+            <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={this.props.loading}>
               更新
-               <Spinner
-                space='left'
-                show={this.props.loading}
-              />
+              <Spinner space='left' show={this.props.loading} />
             </Button>
           </ControlGroup>
         </fieldset>

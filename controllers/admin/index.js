@@ -1,7 +1,7 @@
 'use strict'
 
 exports.init = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res)
+  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
   var sigma = {}
   var collections = ['User', 'Admin']
   var queries = []

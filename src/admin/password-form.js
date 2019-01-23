@@ -122,7 +122,7 @@ class PasswordForm extends Component {
               inputClasses={{ 'btn-primary': true }}
               disabled={this.props.loading}>
               更新
-               <Spinner
+              <Spinner
                 space='left'
                 show={this.props.loading}
               />

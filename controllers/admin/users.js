@@ -10,13 +10,13 @@ exports.update = function (req, res, next) {
 
     if (!req.body.username) {
       workflow.outcome.errfor.username = 'required'
-    } else if (!/^[a-zA-Z0-9\-\_]+$/.test(req.body.username)) {
-      workflow.outcome.errfor.username = 'only use letters, numbers, \'-\', \'_\''
+    } else if (!/^[a-zA-Z0-9-_]+$/.test(req.body.username)) {
+      workflow.outcome.errfor.username = "only use letters, numbers, '-', '_'"
     }
 
     if (!req.body.email) {
       workflow.outcome.errfor.email = 'required'
-    } else if (!/^[a-zA-Z0-9\-\_\.\+]+@[a-zA-Z0-9\-\_\.]+\.[a-zA-Z0-9\-\_]+$/.test(req.body.email)) {
+    } else if (!/^[a-zA-Z0-9\-_.+]+@[a-zA-Z0-9\-_.]+\.[a-zA-Z0-9\-_]+$/.test(req.body.email)) {
       workflow.outcome.errfor.email = 'invalid email format'
     }
 

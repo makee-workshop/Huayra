@@ -57,7 +57,7 @@ First you need to setup your config file.
 $ mv ./config.example.js ./config.js #set mongodb and email credentials
 ```
 
-## Set Admin.
+## Set Admin
 
 Register the `root` account and run command.
 
