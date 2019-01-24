@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import cx from 'classnames'
+import styles from './css/admin.module.css'
 
 class index extends Component {
   constructor (props) {
@@ -33,19 +35,19 @@ class index extends Component {
             <h1 className='page-header'>系統資訊</h1>
             <div className='row'>
               <div className='col-md-6'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.User}
                   </div>
-                  <div className='stat-label'>使用者</div>
+                  <div className={styles['stat-label']}>使用者</div>
                 </div>
               </div>
               <div className='col-md-6'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.Admin}
                   </div>
-                  <div className='stat-label'>管理者</div>
+                  <div className={styles['stat-label']}>管理者</div>
                 </div>
               </div>
             </div>

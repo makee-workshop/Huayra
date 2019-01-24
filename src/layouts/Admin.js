@@ -8,14 +8,14 @@ const year = new Date().getFullYear()
 class Default extends Component {
   tabClass (tab) {
     return ClassNames({
-      active: this.props.activeTab === tab
+      active: this.props.children.props.location.pathname === tab
     })
   }
 
   render () {
     return (
       <div>
-        <div className='navbar navbar-default navbar-fixed-top'>
+        <div className='navbar navbar-inverse navbar-fixed-top'>
           <div className='container'>
             <div className='navbar-header'>
               <Link className='navbar-brand' to='/'>
@@ -25,11 +25,11 @@ class Default extends Component {
             </div>
             <div className='navbar-collapse collapse'>
               <ul className='nav navbar-nav'>
-                <li className={this.tabClass('home')}>
+                <li className={this.tabClass('/admin')}>
                   <Link to='/admin'> 首頁
                   </Link>
                 </li>
-                <li className={this.tabClass('about')}>
+                <li className={this.tabClass('/admin/users')}>
                   <Link to='/admin/users'> 用戶管理
                   </Link>
                 </li>

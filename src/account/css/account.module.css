@@ -1,0 +1,10 @@
+.stat-label {
+	color: #777;
+	text-transform: uppercase;
+	font-weight: 700
+}
+
+.stat-value {
+	font-weight: 700;
+	font-size: 3em
+}

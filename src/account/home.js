@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Moment from 'moment'
 import { Helmet } from 'react-helmet'
+import cx from 'classnames'
+import styles from './css/account.module.css'
 
 class index extends Component {
   constructor (props) {
@@ -44,51 +46,51 @@ class index extends Component {
             <h1 className='page-header'>我的帳號</h1>
             <div className='row'>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.hour}
                   </div>
-                  <div className='stat-label'>時</div>
+                  <div className={styles['stat-label']}>時</div>
                 </div>
               </div>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.minute}
                   </div>
-                  <div className='stat-label'>分</div>
+                  <div className={styles['stat-label']}>分</div>
                 </div>
               </div>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.second}
                   </div>
-                  <div className='stat-label'>秒</div>
+                  <div className={styles['stat-label']}>秒</div>
                 </div>
               </div>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.year}
                   </div>
-                  <div className='stat-label'>年</div>
+                  <div className={styles['stat-label']}>年</div>
                 </div>
               </div>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.month}
                   </div>
-                  <div className='stat-label'>月</div>
+                  <div className={styles['stat-label']}>月</div>
                 </div>
               </div>
               <div className='col-sm-4'>
-                <div className='well text-center'>
-                  <div className='stat-value'>
+                <div className={cx(styles.well, 'well', 'text-center')}>
+                  <div className={styles['stat-value']}>
                     {this.state.day}
                   </div>
-                  <div className='stat-label'>日</div>
+                  <div className={styles['stat-label']}>日</div>
                 </div>
               </div>
             </div>
