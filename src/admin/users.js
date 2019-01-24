@@ -92,7 +92,14 @@ class UsersPage extends Component {
         accessor: 'isActive',
         width: 100,
         Cell: row => (
-          <span><span style={{ color: row.value === 'yes' ? '#0000FF' : row.value === 'no' ? '#FF0000' : '#000', transition: 'all .3s ease' }}>&#x25cf</span>
+          <span>
+            <span style={{
+              color: row.value === 'yes' ? '#0000FF'
+                : row.value === 'no' ? '#FF0000'
+                  : '#000',
+              transition: 'all .3s ease' }}>
+              &#x25cf;
+            </span>
             {row.value === 'yes' ? '啟用'
               : row.value === 'no' ? '關閉'
                 : '異常狀態'}
