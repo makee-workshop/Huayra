@@ -19,7 +19,8 @@ class Login extends Component {
       success: false,
       error: undefined,
       hasError: {},
-      help: {}
+      help: {},
+      role: ''
     }
   }
 
@@ -62,7 +63,8 @@ class Login extends Component {
           this.setState({
             success: true,
             error: '',
-            loading: false
+            loading: false,
+            role: r.data.role
           })
         } else {
           let state = {
@@ -99,8 +101,10 @@ class Login extends Component {
   }
 
   render () {
-    if (this.state.success) {
+    if (this.state.success && this.state.role == 'account') {
       return (<Redirect to='/account' />)
+    } else if (this.state.success && this.state.role == 'admin') {
+      return (<Redirect to='/admin' />)
     }
 
     let alerts = []
