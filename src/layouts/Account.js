@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import ClassNames from 'classnames'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import './css/account.min.css'
 
 const year = new Date().getFullYear()
 
