@@ -101,9 +101,9 @@ class Login extends Component {
   }
 
   render () {
-    if (this.state.success && this.state.role == 'account') {
+    if (this.state.success && this.state.role === 'account') {
       return (<Redirect to='/account' />)
-    } else if (this.state.success && this.state.role == 'admin') {
+    } else if (this.state.success && this.state.role === 'admin') {
       return (<Redirect to='/admin' />)
     }
 
