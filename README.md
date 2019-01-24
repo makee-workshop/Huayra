@@ -62,7 +62,7 @@ $ mv ./config.example.js ./config.js #set mongodb and email credentials
 Register the `root` account and run command.
 
 ```bash
-$ cd scripts
+$ cd db-scripts
 $ mongo S001-init-admin-database.js
 ```
 
