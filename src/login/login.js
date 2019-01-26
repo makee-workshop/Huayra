@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
+import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -38,26 +39,11 @@ class Login extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    post('/1/login', {
       username: this.input.username.value(),
       password: this.input.password.value()
-    })
-
-    let sentData = {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/1/login', sentData)
-      .then(r => r.json())
-      .then(r => {
+    }).then(
+      r => {
         if (r.success === true) {
           this.props.loginSuccess(r.data)
           this.setState({
@@ -85,13 +71,8 @@ class Login extends Component {
           this.setState(state)
           this.props.loginError()
         }
-      }).catch(e => {
-        console.error(e)
-        this.props.loginError()
-        this.setState({
-          loginErrorType: 2
-        })
-      })
+      }
+    )
   }
 
   handleKeyPressn (e) {

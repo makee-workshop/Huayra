@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { loginSuccess, loginError } from '../utils/userAction'
 import { Helmet } from 'react-helmet'
 import { Redirect } from 'react-router'
+import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -36,27 +37,12 @@ class Signup extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    post('/signup/', {
       username: this.input.username.value(),
       email: this.input.email.value(),
       password: this.input.password.value()
-    })
-
-    let sentData = {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/signup/', sentData)
-      .then(r => r.json())
-      .then(r => {
+    }).then(
+      r => {
         if (r.success === true) {
           this.props.loginSuccess(r.data)
           this.setState({
@@ -82,9 +68,8 @@ class Signup extends Component {
           }
           this.setState(state)
         }
-      }).catch(e => {
-        console.error(e)
-      })
+      }
+    )
   }
 
   render () {

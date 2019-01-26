@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { put } from '../utils/httpAgent'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
@@ -33,29 +34,14 @@ class ResetPage extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    put('/1/login/reset/' + this.props.match.params.email + '/' +
+    this.props.match.params.key + '/', {
       password: this.input.password.value(),
       confirm: this.input.confirm.value(),
       email: this.props.match.params.email,
       token: this.props.match.params.key
-    })
-
-    let sentData = {
-      method: 'PUT',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/1/login/reset/' + this.props.match.params.email + '/' +
-     this.props.match.params.key + '/', sentData)
-      .then(r => r.json())
-      .then(r => {
+    }).then(
+      r => {
         if (r.success === true) {
           this.setState({
             success: true,
@@ -80,9 +66,8 @@ class ResetPage extends Component {
           }
           this.setState(state)
         }
-      }).catch(e => {
-        console.error(e)
-      })
+      }
+    )
   }
 
   render () {

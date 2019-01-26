@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { connect } from 'react-redux'
+import { get } from '../utils/httpAgent'
 import { loginError } from '../utils/userAction'
 
 class Logout extends Component {
@@ -10,7 +11,7 @@ class Logout extends Component {
   }
 
   fetch () {
-    fetch('/1/logout', { credentials: 'include', mode: 'cors' })
+    get('/1/logout')
   }
 
   render () {

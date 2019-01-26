@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -34,25 +35,10 @@ class ForgotPage extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    post('/1/login', {
       email: this.input.email.value()
-    })
-
-    let sentData = {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/login/forgot/', sentData)
-      .then(r => r.json())
-      .then(r => {
+    }).then(
+      r => {
         if (r.success === true) {
           this.setState({
             success: true,
@@ -77,9 +63,8 @@ class ForgotPage extends Component {
           }
           this.setState(state)
         }
-      }).catch(e => {
-        console.error(e)
-      })
+      }
+    )
   }
 
   render () {
