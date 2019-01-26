@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { get, put } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -25,19 +26,12 @@ class UserForm extends Component {
   }
 
   fetchData () {
-    fetch('/1/user', {
-      credentials: 'include',
-      mode: 'cors'
-    })
-      .then(r => r.json())
+    get('/1/user')
       .then(r => {
         this.setState({
           username: r.data.username,
           email: r.data.email
         })
-      })
-      .catch(e => {
-        console.error(e)
       })
   }
 
@@ -49,54 +43,36 @@ class UserForm extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    put('/1/account/settings/identity/', {
       username: this.input.username.value(),
       email: this.input.email.value()
-    })
-
-    let sentData = {
-      method: 'PUT',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/1/account/settings/identity/', sentData)
-      .then(r => r.json())
-      .then(r => {
-        if (r.success === true) {
-          this.setState({
-            success: true,
-            error: '',
-            loading: false,
-            hasError: {}
-          })
-        } else {
-          let state = {
-            success: false,
-            error: '',
-            loading: false,
-            hasError: {},
-            help: {}
-          }
-          for (let key in r.errfor) {
-            state.hasError[key] = true
-            state.help[key] = r.errfor[key]
-          }
-
-          if (r.errors[0] !== undefined) {
-            state.error = r.errors[0]
-          }
-          this.setState(state)
+    }).then(r => {
+      if (r.success === true) {
+        this.setState({
+          success: true,
+          error: '',
+          loading: false,
+          hasError: {}
+        })
+      } else {
+        let state = {
+          success: false,
+          error: '',
+          loading: false,
+          hasError: {},
+          help: {}
         }
-      }).catch(e => {
-        console.error(e)
-      })
+        for (let key in r.errfor) {
+          state.hasError[key] = true
+          state.help[key] = r.errfor[key]
+        }
+
+        if (r.errors[0] !== undefined) {
+          state.error = r.errors[0]
+        }
+        this.setState(state)
+      }
+    })
   } // end handleSubmit
 
   render () {
