@@ -4,19 +4,19 @@ const header = new Headers({
 
 export async function get (uri) {
   let request = fetch(uri,
-   { credentials: 'include', mode: 'cors' })
-   .then(r => r.json())
-   .then(r => {
-     return (r)
-   }).catch(e => {
-     console.error(e)
-     return {
-       success: false,
-       error: '資料連線出現錯誤。'
-     }
-   })
+    { credentials: 'include', mode: 'cors' })
+    .then(r => r.json())
+    .then(r => {
+      return (r)
+    }).catch(e => {
+      console.error(e)
+      return {
+        success: false,
+        error: '資料連線出現錯誤。'
+      }
+    })
 
-   return request
+  return request
 }
 
 export async function post (uri, data) {
