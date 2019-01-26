@@ -33,7 +33,7 @@ exports = module.exports = function (app, passport) {
   app.post('/1/contact/', require('./controllers/contact/index').sendMessage)
 
   // sign up
-  app.post('/signup/', require('./controllers/signup/index').signup)
+  app.post('/1/signup/', require('./controllers/signup/index').signup)
 
   // login/out
   app.post('/1/login/', require('./controllers/login/index').login)

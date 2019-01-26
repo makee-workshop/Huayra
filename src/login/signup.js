@@ -37,7 +37,7 @@ class Signup extends Component {
       loading: true
     })
 
-    post('/signup/', {
+    post('/1/signup/', {
       username: this.input.username.value(),
       email: this.input.email.value(),
       password: this.input.password.value()
