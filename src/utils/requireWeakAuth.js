@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
+import { get } from './httpAgent'
 
 export function requireWeakAuth (Component) {
   class AuthenticatedComponent extends Component {
@@ -13,8 +14,7 @@ export function requireWeakAuth (Component) {
     }
 
     fetchUser () {
-      fetch('/1/islogin', { credentials: 'include', mode: 'cors' })
-        .then(r => r.json())
+      get('/1/islogin')
         .then(r => {
           if (r.data.authenticated === true) {
             this.props.loginSuccess(r.data)
