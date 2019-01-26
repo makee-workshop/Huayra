@@ -35,7 +35,7 @@ class ForgotPage extends Component {
       loading: true
     })
 
-    post('/1/login', {
+    post('/login/forgot/', {
       email: this.input.email.value()
     }).then(
       r => {
