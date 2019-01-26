@@ -5,6 +5,13 @@ import { get } from '../utils/httpAgent'
 import { loginError } from '../utils/userAction'
 
 class Logout extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      success: false
+    }
+  }
+
   componentDidMount () {
     this.fetch()
     this.props.loginError()
@@ -12,12 +19,17 @@ class Logout extends Component {
 
   fetch () {
     get('/1/logout')
+      .then(r => {
+        this.setState({ success: true })
+      })
   }
 
   render () {
-    return (
-      <Redirect to='/' />
-    )
+    if (this.state.success) {
+      return (<Redirect to='/' />)
+    } else {
+      return (null)
+    }
   }
 }
 
