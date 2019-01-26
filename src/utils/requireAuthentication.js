@@ -22,10 +22,6 @@ export function requireAuthentication (Component) {
             this.props.loginError()
             window.location.assign('/login')
           }
-        }).catch(e => {
-          this.props.loginError()
-          console.error(e)
-          window.location.assign('/login')
         })
     }
 

@@ -22,10 +22,6 @@ export function requireAdminAuth (Component) {
             this.props.loginError()
             window.location.assign('/')
           }
-        }).catch(e => {
-          this.props.loginError()
-          console.error(e)
-          window.location.assign('/')
         })
     }
 

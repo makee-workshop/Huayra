@@ -21,9 +21,6 @@ export function requireWeakAuth (Component) {
           } else {
             this.props.loginError()
           }
-        }).catch(e => {
-          this.props.loginError()
-          console.error(e)
         })
     }
 
