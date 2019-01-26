@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 import ReactTable from 'react-table'
+import { get } from '../utils/httpAgent'
 import 'react-table/react-table.css'
 
 class UsersPage extends Component {
@@ -26,8 +27,7 @@ class UsersPage extends Component {
       loading: true
     })
 
-    fetch('/1/admin/users?page=' + page + '&limit=' + limit)
-      .then(r => r.json())
+    get('/1/admin/users?page=' + page + '&limit=' + limit)
       .then(r => {
         if (r.success === true) {
           this.setState({
@@ -51,8 +51,6 @@ class UsersPage extends Component {
           }
           this.setState(state)
         }
-      }).catch(e => {
-        console.error(e)
       })
   }
 

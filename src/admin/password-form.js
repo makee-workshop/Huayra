@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { put } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -28,54 +29,36 @@ class PasswordForm extends Component {
       loading: true
     })
 
-    let header = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-
-    let data = new URLSearchParams({
+    put('/1/admin/user/' + this.props.uid + '/password', {
       newPassword: this.input.newPassword.value(),
       confirm: this.input.confirm.value()
-    })
-
-    let sentData = {
-      method: 'PUT',
-      credentials: 'include',
-      mode: 'cors',
-      header: header,
-      body: data
-    }
-
-    fetch('/1/admin/user/' + this.props.uid + '/password', sentData)
-      .then(r => r.json())
-      .then(r => {
-        if (r.success === true) {
-          this.setState({
-            success: true,
-            error: '',
-            loading: false,
-            hasError: {}
-          })
-        } else {
-          let state = {
-            success: false,
-            error: '',
-            loading: false,
-            hasError: {},
-            help: {}
-          }
-          for (let key in r.errfor) {
-            state.hasError[key] = true
-            state.help[key] = r.errfor[key]
-          }
-
-          if (r.errors[0] !== undefined) {
-            state.error = r.errors[0]
-          }
-          this.setState(state)
+    }).then(r => {
+      if (r.success === true) {
+        this.setState({
+          success: true,
+          error: '',
+          loading: false,
+          hasError: {}
+        })
+      } else {
+        let state = {
+          success: false,
+          error: '',
+          loading: false,
+          hasError: {},
+          help: {}
         }
-      }).catch(e => {
-        console.error(e)
-      })
+        for (let key in r.errfor) {
+          state.hasError[key] = true
+          state.help[key] = r.errfor[key]
+        }
+
+        if (r.errors[0] !== undefined) {
+          state.error = r.errors[0]
+        }
+        this.setState(state)
+      }
+    })
   } // end handleSubmit
 
   render () {

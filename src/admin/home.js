@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
+import { get } from '../utils/httpAgent'
 import styles from './css/admin.module.css'
 
 class index extends Component {
@@ -16,14 +17,11 @@ class index extends Component {
   }
 
   fetchData () {
-    fetch('/1/admin/count', { credentials: 'include', mode: 'cors' })
-      .then(r => r.json())
+    get('/1/admin/count')
       .then(r => {
         if (r.success === true) {
           this.setState({ ...r.data })
         }
-      }).catch(e => {
-        console.error(e)
       })
   }
 
