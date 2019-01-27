@@ -82,6 +82,7 @@ exports = module.exports = function (app, passport) {
   app.put('/1/admin/account/:id', require('./controllers/admin/accounts').update)
   app.put('/1/admin/user/:id', require('./controllers/admin/users').update)
   app.put('/1/admin/user/:id/password', require('./controllers/admin/users').password)
+  app.delete('/1/admin/users/:id', require('./controllers/admin/users').delete)
 
   // route not found
   // app.all('*', require('./controllers/http/index').http404)

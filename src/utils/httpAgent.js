@@ -70,3 +70,25 @@ export async function put (uri, data) {
 
   return request
 }
+
+export async function deleteItem (uri) {
+  const sentData = {
+    method: 'DELETE',
+    credentials: 'include',
+    mode: 'cors'
+  }
+
+  let request = fetch(uri, sentData)
+    .then(r => r.json())
+    .then(r => {
+      return (r)
+    }).catch(e => {
+      console.error(e)
+      return {
+        success: false,
+        error: '資料連線出現錯誤。'
+      }
+    })
+
+  return request
+}

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 import ReactTable from 'react-table'
-import { get } from '../utils/httpAgent'
+import { get, deleteItem } from '../utils/httpAgent'
 import 'react-table/react-table.css'
 
 class UsersPage extends Component {
@@ -50,6 +50,19 @@ class UsersPage extends Component {
             state.error = r.errors[0]
           }
           this.setState(state)
+        }
+      })
+  }
+
+  deleteUser (uid) {
+    if (!window.confirm('是否確定要刪除此使用者？')) {
+      return -1
+    }
+
+    deleteItem('/1/admin/users/' + uid)
+      .then(r => {
+        if (r.success === true) {
+          this.fetchUserList()
         }
       })
   }
@@ -113,6 +126,15 @@ class UsersPage extends Component {
       }, {
         Header: '創立時間',
         accessor: 'timeCreated'
+      }, {
+        Header: '',
+        accessor: '_id',
+        width: 50,
+        Cell: row => (
+          <button className='btn btn-danger' onClick={this.deleteUser.bind(this, row.value)}>
+            <i className='fa fa-times' />
+          </button>
+        )
       }]
 
     return (

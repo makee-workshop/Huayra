@@ -185,3 +185,43 @@ exports.password = function (req, res, next) {
 
   workflow.emit('validate')
 }
+
+exports.delete = function (req, res, next) {
+  var workflow = req.app.utility.workflow(req, res)
+
+  workflow.on('validate', function () {
+    if (!req.user.roles.admin.isMemberOf('root')) {
+      workflow.outcome.errors.push('您無法刪除使用者。')
+      return workflow.emit('response')
+    }
+
+    if (req.user._id === req.params.id) {
+      workflow.outcome.errors.push('您無法刪除自己。')
+      return workflow.emit('response')
+    }
+
+    workflow.emit('deleteAccount')
+  })
+
+  workflow.on('deleteAccount', function () {
+    req.app.db.models.Account.findByIdAndRemove(req.params.id, function (err, account) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      workflow.emit('deleteUser')
+    })
+  })
+
+  workflow.on('deleteUser', function () {
+    req.app.db.models.User.findByIdAndRemove(req.params.id, function (err, user) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      workflow.emit('response')
+    })
+  })
+
+  workflow.emit('validate')
+}
