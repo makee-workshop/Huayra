@@ -29,15 +29,17 @@ class Default extends Component {
 
   render () {
     let roleElement = []
+    let roleLinkElement = <Link to="/account" ><i className="fa fa-user"></i> {this.props.user}</Link>
     let signupElement = []
+
+    if (this.props.role === 'admin' ) {
+      roleLinkElement = <Link to="/admin" ><i className="fa fa-user"></i> {this.props.user}</Link>
+    }
 
     if (this.props.authenticated === true) {
       roleElement = <ul className='nav navbar-nav navbar-right'>
         <li className={this.tabClass('/account')}>
-          <Link to='/account'>
-            <i className='fa fa-user' />
-            {this.props.user}
-          </Link>
+          {roleLinkElement}
         </li>
       </ul>
     } else {
@@ -120,7 +122,8 @@ class Default extends Component {
 
 const mapStateToProps = state => ({
   user: state.index.user,
-  authenticated: state.index.authenticated
+  authenticated: state.index.authenticated,
+  role: state.index.role
 })
 
 export default connect(mapStateToProps, null)(Default)
