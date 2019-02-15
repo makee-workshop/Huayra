@@ -29,11 +29,11 @@ class Default extends Component {
 
   render () {
     let roleElement = []
-    let roleLinkElement = <Link to="/account" ><i className="fa fa-user"></i> {this.props.user}</Link>
+    let roleLinkElement = <Link to='/account' ><i className='fa fa-user' /> {this.props.user}</Link>
     let signupElement = []
 
-    if (this.props.role === 'admin' ) {
-      roleLinkElement = <Link to="/admin" ><i className="fa fa-user"></i> {this.props.user}</Link>
+    if (this.props.role === 'admin') {
+      roleLinkElement = <Link to='/admin' ><i className='fa fa-user' /> {this.props.user}</Link>
     }
 
     if (this.props.authenticated === true) {
