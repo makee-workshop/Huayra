@@ -24,7 +24,11 @@ app.config = config
 app.server = http.createServer(app)
 
 // setup mongoose
-app.db = mongoose.createConnection(config.mongodb.uri)
+mongoose.connect(config.mongodb.uri, {
+  useCreateIndex: true,
+  useNewUrlParser: true
+})
+app.db = mongoose.connection
 app.db.on('error', console.error.bind(console, 'mongoose connection error: '))
 app.db.once('open', function () {
   // and... we have a data store
