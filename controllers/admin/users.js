@@ -2,6 +2,8 @@
 
 exports.update = function (req, res, next) {
   var workflow = req.app.utility.workflow(req, res)
+  var userObj = null
+  var adminId = ''
 
   workflow.on('validate', function () {
     if (!req.body.isActive) {
@@ -24,7 +26,50 @@ exports.update = function (req, res, next) {
       return workflow.emit('response')
     }
 
-    workflow.emit('duplicateUsernameCheck')
+    workflow.emit('getUser')
+  })
+
+  workflow.on('getUser', function () {
+    req.app.db.models.User.findOne({ _id: req.params.id }, function (err, user) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      userObj = user
+
+      if (req.body.roles === 'admin') {
+        return workflow.emit('setAdmin', user)
+      } else {
+        return workflow.emit('duplicateUsernameCheck')
+      }
+    })
+  })
+
+  workflow.on('setAdmin', function (userObj) {
+    var fieldsToSet = {
+      user: {
+        id: userObj._id,
+        name: userObj.username
+      },
+      name: {
+        last: userObj.username
+      },
+      groups: ['root']
+    }
+
+    req.app.db.models.Admin.findOneAndUpdate(
+      { user: { id: userObj._id } },
+      fieldsToSet,
+      {safe: true, upsert: true, new: true},
+      function(err, admin) {
+        if (err) return workflow.emit('exception', err)
+
+        if (admin) {
+          adminId = admin._id
+        }
+
+        return workflow.emit('duplicateUsernameCheck')
+    })
   })
 
   workflow.on('duplicateUsernameCheck', function () {
@@ -36,9 +81,9 @@ exports.update = function (req, res, next) {
       if (user) {
         workflow.outcome.errfor.username = 'username already taken'
         return workflow.emit('response')
+      } else {
+        return workflow.emit('duplicateEmailCheck')
       }
-
-      workflow.emit('duplicateEmailCheck')
     })
   })
 
@@ -67,6 +112,18 @@ exports.update = function (req, res, next) {
         req.body.email
       ]
     }
+
+    if (req.body.roles === 'admin') {
+      fieldsToSet.roles = {
+        admin: adminId,
+        account: userObj.roles.account
+      }
+    } else if (req.body.roles === 'account') {
+      fieldsToSet.roles = {
+        account: userObj.roles.account
+      }
+    }
+
     var options = { new: true }
     req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, user) {
       if (err) {

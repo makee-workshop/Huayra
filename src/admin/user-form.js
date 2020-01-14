@@ -17,6 +17,7 @@ class UserForm extends Component {
       error: undefined,
       hasError: {},
       help: {},
+      roles: 'account',
       isActive: 'no',
       username: '',
       email: ''
@@ -33,6 +34,7 @@ class UserForm extends Component {
         this.setState({
           username: r.data.username,
           email: r.data.email,
+          roles: r.data.roles.admin ? 'admin' : 'account',
           isActive: r.data.isActive
         })
       })
@@ -50,6 +52,7 @@ class UserForm extends Component {
     })
 
     put('/1/admin/user/' + this.props.uid, {
+      roles: this.input.roles.value(),
       isActive: this.input.isActive.value(),
       username: this.input.username.value(),
       email: this.input.email.value()
@@ -116,6 +119,22 @@ class UserForm extends Component {
             hasError={this.state.hasError.email}
             help={this.state.help.email}
             disabled={this.state.loading} />
+          <SelectControl
+            ref={(c) => (this.input.roles = c)}
+            name='roles'
+            label='權限'
+            value={this.state.roles}
+            onChange={(e) => (this.setState({ roles: e.target.value }))}
+            hasError={this.state.hasError.roles}
+            help={this.state.help.roles}
+            disabled={this.state.loading}>
+            <option value='account'>
+              一般
+            </option>
+            <option value='admin'>
+              管理者
+            </option>
+          </SelectControl>
           <SelectControl
             ref={(c) => (this.input.isActive = c)}
             name='isActive'

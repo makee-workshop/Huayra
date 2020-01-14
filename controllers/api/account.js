@@ -76,7 +76,7 @@ exports.admingetUserInfo = function (req, res, next) {
   var uid = req.params.id
   workflow.outcome.data = {}
 
-  req.app.db.models.User.findById(uid, 'username email isActive').exec(function (err, user) {
+  req.app.db.models.User.findById(uid, 'username email isActive roles').exec(function (err, user) {
     if (err) {
       callback(err, null)
     }
