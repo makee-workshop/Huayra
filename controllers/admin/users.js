@@ -60,8 +60,8 @@ exports.update = function (req, res, next) {
     req.app.db.models.Admin.findOneAndUpdate(
       { user: { id: userObj._id } },
       fieldsToSet,
-      {safe: true, upsert: true, new: true},
-      function(err, admin) {
+      { safe: true, upsert: true, new: true },
+      function (err, admin) {
         if (err) return workflow.emit('exception', err)
 
         if (admin) {
@@ -69,7 +69,7 @@ exports.update = function (req, res, next) {
         }
 
         return workflow.emit('duplicateUsernameCheck')
-    })
+      })
   })
 
   workflow.on('duplicateUsernameCheck', function () {
