@@ -11,15 +11,15 @@ exports.update = function (req, res, next) {
     }
 
     if (!req.body.username) {
-      workflow.outcome.errfor.username = 'required'
+      workflow.outcome.errfor.username = '請輸入使用者名稱。'
     } else if (!/^[a-zA-Z0-9-_]+$/.test(req.body.username)) {
-      workflow.outcome.errfor.username = "only use letters, numbers, '-', '_'"
+      workflow.outcome.errfor.username = "僅允許大小寫字母、數字、'-' 和 '_'"
     }
 
     if (!req.body.email) {
-      workflow.outcome.errfor.email = 'required'
+      workflow.outcome.errfor.email = '請輸入 email。'
     } else if (!/^[a-zA-Z0-9\-_.+]+@[a-zA-Z0-9\-_.]+\.[a-zA-Z0-9\-_]+$/.test(req.body.email)) {
-      workflow.outcome.errfor.email = 'invalid email format'
+      workflow.outcome.errfor.email = '此 email 格式不正確。'
     }
 
     if (workflow.hasErrors()) {

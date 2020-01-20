@@ -6,13 +6,13 @@ exports.signup = function (req, res) {
   workflow.on('validate', function () {
     if (!req.body.username) {
       workflow.outcome.errfor.username = '請輸入使用者名稱。'
-    } else if (!/^[a-zA-Z0-9\-\_]+$/.test(req.body.username)) { // eslint-disable-line
-      workflow.outcome.errfor.username = "only use letters, numbers, '-', '_'"
+    } else if (!/^[a-zA-Z0-9\-_]+$/.test(req.body.username)) {
+      workflow.outcome.errfor.username = "僅允許大小寫字母、數字、'-' 和 '_'"
     }
 
     if (!req.body.email) {
       workflow.outcome.errfor.email = '請輸入 email。'
-    } else if (!/^[a-zA-Z0-9\-\_\.\+]+@[a-zA-Z0-9\-\_\.]+\.[a-zA-Z0-9\-\_]+$/.test(req.body.email)) { // eslint-disable-line
+    } else if (!/^[a-zA-Z0-9\-_.+]+@[a-zA-Z0-9\-_.]+\.[a-zA-Z0-9\-_]+$/.test(req.body.email)) {
       workflow.outcome.errfor.email = '此 email 格式不正確。'
     }
 
