@@ -3,16 +3,15 @@ const header = new Headers({
 })
 
 export async function get (uri) {
-  let request = fetch(uri,
+  const request = fetch(uri,
     { credentials: 'include', mode: 'cors' })
     .then(r => r.json())
-    .then(r => {
-      return (r)
-    }).catch(e => {
+    .catch(e => {
       console.error(e)
       return {
         success: false,
-        error: '資料連線出現錯誤。'
+        error: '資料連線出現錯誤。',
+        errors: []
       }
     })
 
@@ -20,9 +19,9 @@ export async function get (uri) {
 }
 
 export async function post (uri, data) {
-  let urlParams = new URLSearchParams(data)
+  const urlParams = new URLSearchParams(data)
 
-  let sentData = {
+  const sentData = {
     method: 'POST',
     credentials: 'include',
     mode: 'cors',
@@ -30,15 +29,14 @@ export async function post (uri, data) {
     body: urlParams
   }
 
-  let request = await fetch(uri, sentData)
+  const request = await fetch(uri, sentData)
     .then(r => r.json())
-    .then(r => {
-      return (r)
-    }).catch(e => {
+    .catch(e => {
       console.error(e)
       return {
         success: false,
-        error: '資料連線出現錯誤。'
+        error: '資料連線出現錯誤。',
+        errors: []
       }
     })
 
@@ -46,9 +44,9 @@ export async function post (uri, data) {
 }
 
 export async function put (uri, data) {
-  let urlParams = new URLSearchParams(data)
+  const urlParams = new URLSearchParams(data)
 
-  let sentData = {
+  const sentData = {
     method: 'PUT',
     credentials: 'include',
     mode: 'cors',
@@ -56,15 +54,14 @@ export async function put (uri, data) {
     body: urlParams
   }
 
-  let request = await fetch(uri, sentData)
+  const request = await fetch(uri, sentData)
     .then(r => r.json())
-    .then(r => {
-      return (r)
-    }).catch(e => {
+    .catch(e => {
       console.error(e)
       return {
         success: false,
-        error: '資料連線出現錯誤。'
+        error: '資料連線出現錯誤。',
+        errors: []
       }
     })
 
@@ -78,15 +75,14 @@ export async function deleteItem (uri) {
     mode: 'cors'
   }
 
-  let request = fetch(uri, sentData)
+  const request = fetch(uri, sentData)
     .then(r => r.json())
-    .then(r => {
-      return (r)
-    }).catch(e => {
+    .catch(e => {
       console.error(e)
       return {
         success: false,
-        error: '資料連線出現錯誤。'
+        error: '資料連線出現錯誤。',
+        errors: []
       }
     })
 
