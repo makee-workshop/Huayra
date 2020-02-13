@@ -1,12 +1,11 @@
-const header = new Headers({
-  'Content-Type': 'application/x-www-form-urlencoded'
+const axios = require('axios').create({
+  withCredentials: true
 })
 
-export async function get (uri) {
-  const request = fetch(uri,
-    { credentials: 'include', mode: 'cors' })
-    .then(r => r.json())
-    .catch(e => {
+export function get (uri) {
+  const request = axios.get(uri)
+    .then(r => r.data)
+    .catch(function (e) {
       console.error(e)
       return {
         success: false,
@@ -18,20 +17,10 @@ export async function get (uri) {
   return request
 }
 
-export async function post (uri, data) {
-  const urlParams = new URLSearchParams(data)
-
-  const sentData = {
-    method: 'POST',
-    credentials: 'include',
-    mode: 'cors',
-    header: header,
-    body: urlParams
-  }
-
-  const request = await fetch(uri, sentData)
-    .then(r => r.json())
-    .catch(e => {
+export function post (uri, data) {
+  const request = axios.post(uri, data)
+    .then(r => r.data)
+    .catch(function (e) {
       console.error(e)
       return {
         success: false,
@@ -43,20 +32,10 @@ export async function post (uri, data) {
   return request
 }
 
-export async function put (uri, data) {
-  const urlParams = new URLSearchParams(data)
-
-  const sentData = {
-    method: 'PUT',
-    credentials: 'include',
-    mode: 'cors',
-    header: header,
-    body: urlParams
-  }
-
-  const request = await fetch(uri, sentData)
-    .then(r => r.json())
-    .catch(e => {
+export function put (uri, data) {
+  const request = axios.put(uri, data)
+    .then(r => r.data)
+    .catch(function (e) {
       console.error(e)
       return {
         success: false,
@@ -68,16 +47,10 @@ export async function put (uri, data) {
   return request
 }
 
-export async function deleteItem (uri) {
-  const sentData = {
-    method: 'DELETE',
-    credentials: 'include',
-    mode: 'cors'
-  }
-
-  const request = fetch(uri, sentData)
-    .then(r => r.json())
-    .catch(e => {
+export function deleteItem (uri) {
+  const request = axios.delete(uri)
+    .then(r => r.data)
+    .catch(function (e) {
       console.error(e)
       return {
         success: false,
