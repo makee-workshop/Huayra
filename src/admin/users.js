@@ -20,8 +20,8 @@ class UsersPage extends Component {
   }
 
   fetchUserList (state) {
-    const page = state.page + 1
-    const limit = state.pageSize
+    const page = state ? state.page + 1 : 1
+    const limit = state ? state.pageSize : 10
 
     this.setState({
       loading: true
