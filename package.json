@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "async": "1.x.x",
+    "axios": "^0.19.2",
     "bcrypt": "*",
     "body-parser": "1.x.x",
     "classnames": "^2.2.5",
