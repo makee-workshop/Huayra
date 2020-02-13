@@ -16,7 +16,7 @@ export function requireAuthentication (Component) {
     fetchUser () {
       get('/1/islogin')
         .then(r => {
-          if (r.data.authenticated === true) {
+          if (r.success && r.data.authenticated === true) {
             this.props.loginSuccess(r.data)
           } else {
             this.props.loginError()

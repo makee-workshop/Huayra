@@ -16,7 +16,7 @@ export function requireAdminAuth (Component) {
     fetchUser () {
       get('/1/islogin')
         .then(r => {
-          if (r.data.authenticated === true && r.data.role === 'admin') {
+          if (r.success && r.data.authenticated === true && r.data.role === 'admin') {
             this.props.loginSuccess(r.data)
           } else {
             this.props.loginError()
