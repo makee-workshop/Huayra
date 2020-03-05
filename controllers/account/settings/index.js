@@ -58,11 +58,19 @@ exports.update = function (req, res, next) {
   })
 
   workflow.on('patchAccount', function () {
+    var reg = /^[\u4E00-\u9FA5]+$/
+    var fullName = ''
+    if (reg.test(req.body.first + req.body.last)) {
+      fullName = req.body.last + req.body.first
+    } else {
+      fullName = req.body.first + ' ' + req.body.last
+    }
+
     var fieldsToSet = {
       name: {
         first: req.body.first,
         last: req.body.last,
-        full: req.body.last + req.body.first
+        full: fullName
       },
       company: req.body.company,
       phone: req.body.phone,
