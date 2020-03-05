@@ -33,7 +33,7 @@
   "dependencies": {
     "async": "1.x.x",
     "axios": "^0.19.2",
-    "bcrypt": "*",
+    "bcrypt": "^3.0.8",
     "body-parser": "1.x.x",
     "classnames": "^2.2.5",
     "clean-css": "^4.1.11",
