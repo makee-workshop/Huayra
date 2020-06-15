@@ -21,7 +21,8 @@ class Login extends Component {
       error: undefined,
       hasError: {},
       help: {},
-      role: ''
+      role: '',
+      returnUrl: ''
     }
   }
 
@@ -29,6 +30,15 @@ class Login extends Component {
     if (this.input.username) {
       this.input.username.focus()
     }
+  }
+
+  getParameterByName (name) {
+    name = name.replace(/[[\]]/g, '\\$&')
+    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)')
+    const results = regex.exec(window.location.href)
+    if (!results) return null
+    if (!results[2]) return ''
+    return decodeURIComponent(results[2].replace(/\+/g, ' '))
   }
 
   handleSubmit (event) {
@@ -50,7 +60,8 @@ class Login extends Component {
             success: true,
             error: '',
             loading: false,
-            role: r.data.role
+            role: r.data.role,
+            returnUrl: this.getParameterByName('returnUrl')
           })
         } else {
           let state = {
@@ -82,7 +93,9 @@ class Login extends Component {
   }
 
   render () {
-    if (this.state.success && this.state.role === 'account') {
+    if (this.state.success && this.state.returnUrl) {
+      return (<Redirect to={this.state.returnUrl} />)
+    } else if (this.state.success && this.state.role === 'account') {
       return (<Redirect to='/account' />)
     } else if (this.state.success && this.state.role === 'admin') {
       return (<Redirect to='/admin' />)
@@ -99,12 +112,7 @@ class Login extends Component {
       })
     }
 
-    if (this.state.success) {
-      alerts = <Alert
-        type='success'
-        message='成功，請稍後...'
-      />
-    } else if (this.state.error) {
+    if (this.state.error) {
       alerts = <Alert
         type='danger'
         message={this.state.error}

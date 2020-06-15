@@ -20,7 +20,11 @@ export function requireAdminAuth (Component) {
             this.props.loginSuccess(r.data)
           } else {
             this.props.loginError()
-            window.location.assign('/')
+            if (window.location.pathname === '/') {
+              window.location.assign('/')
+            } else {
+              window.location.assign(`/?returnUrl=${window.location.pathname}`)
+            }
           }
         })
     }
