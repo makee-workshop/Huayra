@@ -26,7 +26,9 @@ app.server = http.createServer(app)
 // setup mongoose
 mongoose.connect(config.mongodb.uri, {
   useCreateIndex: true,
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true
 })
 app.db = mongoose.connection
 app.db.on('error', console.error.bind(console, 'mongoose connection error: '))
@@ -54,7 +56,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser(config.cryptoKey))
 app.use(session({
   resave: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   secret: config.cryptoKey,
   store: new mongoStore({ url: config.mongodb.uri }) // eslint-disable-line
 }))
