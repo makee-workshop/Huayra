@@ -50,7 +50,7 @@ module.exports = exports = function pagedFindPlugin (schema) {
     }
 
     var countResults = function (callback) {
-      thisSchema.count(options.filters, function (err, count) {
+      thisSchema.countDocuments(options.filters, function (err, count) {
         if (err) {
           console.log('err', err)
         }
