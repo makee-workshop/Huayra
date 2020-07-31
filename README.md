@@ -12,7 +12,7 @@ Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](ht
 | Async         | Linearicons    |              |
 | EmailJS       |                |              |
 
-![img](https://oranwind.s3.amazonaws.com/2018/Jun/SSS-1530366578247.PNG)
+![Imgur](https://i.imgur.com/LrvL3IF.png)
 
 ## Features
 
