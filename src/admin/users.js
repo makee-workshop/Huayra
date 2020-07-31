@@ -73,9 +73,14 @@ class UsersPage extends Component {
       {
         Header: 'ID',
         accessor: '_id',
-        width: 240,
+        width: 270,
         Cell: row => (
-          <span><Link to={`/admin/user/${row.value}/${row.original.roles.account._id}/${row.original.username}`} className='btn'> <i className='fa fa-edit' /> </Link> <span>{row.value}</span></span>
+          <span>
+            <Link to={`/admin/user/${row.value}/${row.original.roles.account._id}/${row.original.username}`} className='btn btn-sm'>
+              <i className='lnr lnr-pencil' />
+            </Link>
+            <span>{row.value}</span>
+          </span>
         )
       }, {
         Header: '帳號',
@@ -132,8 +137,8 @@ class UsersPage extends Component {
         accessor: '_id',
         width: 50,
         Cell: row => (
-          <button className='btn btn-danger' onClick={this.deleteUser.bind(this, row.value)}>
-            <i className='fa fa-times' />
+          <button className='btn btn-danger btn-sm' onClick={this.deleteUser.bind(this, row.value)}>
+            <i className='lnr lnr-cross' />
           </button>
         )
       }]
