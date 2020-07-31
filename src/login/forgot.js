@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -120,22 +121,21 @@ class ForgotPage extends Component {
     }
 
     return (
-      <section className='container'>
+      <Container>
         <Helmet>
           <title>忘記密碼</title>
         </Helmet>
-        <div className='container'>
-          <h1 className='page-header'>忘記您的密碼?</h1>
-          <div className='row'>
-            <div className='col-sm-6'>
-              <form onSubmit={this.handleSubmit.bind(this)}>
-                {alert}
-                {formElements}
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+
+        <h1 className='page-header'>忘記您的密碼?</h1>
+        <Row>
+          <Col sm={6}>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              {alert}
+              {formElements}
+            </form>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
 import ClassNames from 'classnames'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
+import {
+  Navbar,
+  Collapse,
+  Nav,
+  NavItem,
+  NavbarText,
+  NavbarToggler,
+  Container
+} from 'reactstrap'
 
 const year = new Date().getFullYear()
 
@@ -28,52 +37,43 @@ class Default extends Component {
   }
 
   render () {
-    const navBarCollapse = ClassNames({
-      'navbar-collapse': true,
-      collapse: !this.state.navBarOpen
-    })
-
     return (
       <div>
-        <div className='navbar navbar-inverse navbar-fixed-top'>
-          <div className='container'>
-            <div className='navbar-header'>
-              <Link className='navbar-brand' to='/'>
-                <img className='navbar-logo' src='/media/logo-square.png' alt='' />
-                <span className='navbar-brand-label'>Huayra</span>
-              </Link>
-              <button className='navbar-toggle collapsed' onClick={this.toggleMenu.bind(this)}>
-                <span className='icon-bar' />
-                <span className='icon-bar' />
-                <span className='icon-bar' />
-              </button>
-            </div>
-            <div className={navBarCollapse}>
-              <ul className='nav navbar-nav'>
-                <li className={this.tabClass('/admin')}>
-                  <Link to='/admin'> 首頁
-                  </Link>
-                </li>
-                <li className={this.tabClass('/admin/users')}>
-                  <Link to='/admin/users'> 用戶管理
-                  </Link>
-                </li>
-              </ul>
-              <ul className='nav navbar-nav navbar-right'>
-                <li>
-                  <Link to='/logout'> 登出
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div>
-          {this.props.children}
-        </div>
+        <Navbar color='dark' dark expand='md' className='fixed-top'>
+          <Container>
+            <Link to='/admin' className='navbar-brand'>
+              <img className='navbar-logo' src='/media/logo-square.png' alt='' />
+              <span className='navbar-brand-label'>Huayra</span>
+            </Link>
+            <NavbarToggler onClick={this.toggleMenu.bind(this)} />
+            <Collapse isOpen={!this.state.navBarOpen} navbar>
+              <Nav className='mr-auto' navbar>
+                <NavItem>
+                  <NavLink exact to='/admin' activeClassName='active' className='nav-link'>
+                    首頁
+                  </NavLink>
+                </NavItem>
+
+                <NavItem>
+                  <NavLink to='/admin/users' activeClassName='active' className='nav-link'>
+                    用戶管理
+                  </NavLink>
+                </NavItem>
+              </Nav>
+              <NavbarText>
+                <NavLink to='/logout'>
+                  登出
+                </NavLink>
+              </NavbarText>
+            </Collapse>
+          </Container>
+        </Navbar>
+
+        {this.props.children}
+
         <div className='footer'>
-          <div className='container'>
-            <span className='copyright pull-right'>© {year} Makee</span>
+          <Container>
+            <span className='copyright float-right'>© {year} Makee</span>
             <ul className='links'>
               <li>
                 <Link to='/'> 首頁
@@ -85,7 +85,7 @@ class Default extends Component {
               </li>
             </ul>
             <div className='clearfix' />
-          </div>
+          </Container>
         </div>
       </div>
     )

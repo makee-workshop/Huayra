@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import { put } from '../utils/httpAgent'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -149,22 +150,21 @@ class ResetPage extends Component {
     }
 
     return (
-      <section className='container'>
+      <Container>
         <Helmet>
           <title>重置密碼</title>
         </Helmet>
-        <div className='container'>
-          <h1 className='page-header'>重置您的密碼</h1>
-          <div className='row'>
-            <div className='col-sm-6'>
-              <form onSubmit={this.handleSubmit.bind(this)}>
-                {alerts}
-                {formElements}
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+
+        <h1 className='page-header'>重置您的密碼</h1>
+        <Row>
+          <Col sm={6}>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              {alerts}
+              {formElements}
+            </form>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

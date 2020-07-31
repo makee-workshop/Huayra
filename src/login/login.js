@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { loginSuccess, loginError } from '../utils/userAction'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -145,7 +146,7 @@ class Login extends Component {
             type='submit'
             inputClasses={{ 'btn-primary': true }}
             disabled={this.state.loading}>
-                  登入
+            登入
             <Spinner space='left' show={this.state.loading} />
           </Button>
           <Link to='/login/forgot' className='btn btn-link'>忘記密碼?</Link>
@@ -154,22 +155,21 @@ class Login extends Component {
     }
 
     return (
-      <section className='container'>
+      <Container>
         <Helmet>
           <title>登入</title>
         </Helmet>
-        <div className='container'>
-          <h1 className='page-header'>登入</h1>
-          <div className='row'>
-            <div className='col-sm-6'>
-              <form onSubmit={this.handleSubmit.bind(this)}>
-                {alerts}
-                {formElements}
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+
+        <h1 className='page-header'>登入</h1>
+        <Row>
+          <Col sm={6}>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              {alerts}
+              {formElements}
+            </form>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

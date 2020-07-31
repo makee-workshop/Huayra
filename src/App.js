@@ -22,6 +22,8 @@ import NotFoundPage from './NotFoundPage'
 import { requireAdminAuth } from './utils/requireAdminAuth'
 import { requireAuthentication } from './utils/requireAuthentication'
 import { requireWeakAuth } from './utils/requireWeakAuth'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route {...rest} render={props => (

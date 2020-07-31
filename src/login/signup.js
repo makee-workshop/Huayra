@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from '../utils/userAction'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import { Redirect } from 'react-router'
 import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
@@ -142,12 +143,13 @@ class Signup extends Component {
     }
 
     return (
-      <section className='section-home container'>
+      <Container>
         <Helmet>
           <title>註冊</title>
         </Helmet>
-        <div className='row'>
-          <div className='col-sm-6'>
+
+        <Row>
+          <Col sm={6}>
             <section>
               <h1 className='page-header'>註冊</h1>
               <form onSubmit={this.handleSubmit.bind(this)}>
@@ -155,16 +157,16 @@ class Signup extends Component {
                 {formElements}
               </form>
             </section>
-          </div>
-          <div className='col-sm-6 text-center'>
+          </Col>
+          <Col sm={6} className='text-center'>
             <h1 className='page-header'>加入我們</h1>
             <p className='lead'>
               不渴望能夠一躍千里，只希望每天能夠前進一步。
             </p>
-            <i className='fa fa-thumbs-o-up bamf' />
-          </div>
-        </div>
-      </section>
+            <i className='lnr lnr-rocket bamf' />
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

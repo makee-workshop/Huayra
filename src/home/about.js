@@ -1,20 +1,21 @@
 import React, { Component } from 'react'
+import { Container, Row, Col } from 'reactstrap'
 import { Helmet } from 'react-helmet'
 
 class index extends Component {
   render () {
     return (
-      <section className='section-about container'>
+      <Container>
         <Helmet>
           <title>關於我們</title>
         </Helmet>
-        <div className='row'>
-          <div className='col-sm-6'>
+        <Row>
+          <Col sm={6}>
             <h1 className='page-header'>關於我們</h1>
             <div className='media'>
               <div className='pull-left'>
                 <div className='media-object'>
-                  <i className='fa fa-camera-retro fa-4x' />
+                  <i className='lnr lnr-flag fa-4x mr-2' />
                 </div>
               </div>
               <div className='media-body'>
@@ -30,7 +31,7 @@ class index extends Component {
             <div className='media'>
               <div className='pull-left'>
                 <div className='media-object'>
-                  <i className='fa fa-camera-retro fa-4x' />
+                  <i className='lnr lnr-flag fa-4x mr-2' />
                 </div>
               </div>
               <div className='media-body'>
@@ -50,16 +51,16 @@ class index extends Component {
                 </p>
               </div>
             </div>
-          </div>
-          <div className='col-sm-6 text-center'>
+          </Col>
+          <Col sm={6} className='text-center'>
             <h1 className='page-header'>Makee.io</h1>
             <p className='lead'>
               The maker we are, the world we change.
             </p>
-            <i className='fa fa-volume-up bamf' />
-          </div>
-        </div>
-      </section>
+            <i className='lnr lnr-rocket bamf' />
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

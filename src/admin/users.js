@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import ReactTable from 'react-table'
 import { get, deleteItem } from '../utils/httpAgent'
@@ -138,15 +139,15 @@ class UsersPage extends Component {
       }]
 
     return (
-      <section className='container'>
+      <Container>
         <Helmet>
           <title>
             用戶管理
           </title>
         </Helmet>
         <h1 className='page-header'>用戶管理</h1>
-        <div className='row'>
-          <div className='col-md-12'>
+        <Row>
+          <Col md={12}>
             <ReactTable
               manual
               data={this.state.data}
@@ -162,9 +163,9 @@ class UsersPage extends Component {
               className='-striped -highlight'
               defaultPageSize={10}
               defaultSorted={[ { id: 'createDate', desc: true } ]} />
-          </div>
-        </div>
-      </section>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

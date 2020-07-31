@@ -9,7 +9,7 @@ Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](ht
 | Express       | Bootstrap      | react-scripts|
 | Mongoose      | React          | Nodemon      |
 | Passport      | Redux          | concurrently |
-| Async         | Font-Awesome   |              |
+| Async         | Linearicons    |              |
 | EmailJS       |                |              |
 
 ![img](https://oranwind.s3.amazonaws.com/2018/Jun/SSS-1530366578247.PNG)

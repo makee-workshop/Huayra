@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Helmet } from 'react-helmet'
+import { Container, Row, Col } from 'reactstrap'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -140,12 +141,12 @@ class index extends Component {
     }
 
     return (
-      <section className='section-contact container'>
+      <Container>
         <Helmet>
           <title>連絡我們</title>
         </Helmet>
-        <div className='row'>
-          <div className='col-sm-6'>
+        <Row>
+          <Col sm={6}>
             <section>
               <h1 className='page-header'>傳送訊息</h1>
               <form onSubmit={this.handleSubmit.bind(this)}>
@@ -153,19 +154,19 @@ class index extends Component {
                 {formElements}
               </form>
             </section>
-          </div>
-          <div className='col-sm-6 text-center'>
+          </Col>
+          <Col sm={6} className='text-center'>
             <h1 className='page-header'>連絡我們</h1>
             <p className='lead'>
               Makee can’t wait to hear from you.
             </p>
-            <i className='fa fa-reply-all bamf' />
+            <i className='lnr lnr-envelope bamf' />
             <div>
               Taiwan Taipei
             </div>
-          </div>
-        </div>
-      </section>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }

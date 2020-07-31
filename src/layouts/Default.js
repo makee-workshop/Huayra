@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import ClassNames from 'classnames'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
 
 const year = new Date().getFullYear()
 
@@ -29,79 +30,75 @@ class Default extends Component {
 
   render () {
     let roleElement = []
-    let roleLinkElement = <Link to='/account' ><i className='fa fa-user' /> {this.props.user}</Link>
     let signupElement = []
 
-    if (this.props.role === 'admin') {
-      roleLinkElement = <Link to='/admin' ><i className='fa fa-user' /> {this.props.user}</Link>
-    }
-
     if (this.props.authenticated === true) {
-      roleElement = <ul className='nav navbar-nav navbar-right'>
-        <li className={this.tabClass('/account')}>
-          {roleLinkElement}
-        </li>
-      </ul>
-    } else {
-      signupElement = <li className={this.tabClass('/signup')}>
-        <Link to='/signup'> 註冊
-        </Link>
-      </li>
-      roleElement = <ul className='nav navbar-nav navbar-right'>
-        <li className={this.tabClass('/login')}>
-          <Link to='/login'>
-            <i className='fa fa-user' /> 登入
-          </Link>
-        </li>
-      </ul>
-    }
+      roleElement =
+        <NavLink to='/account'>
+          <i className='lnr lnr-user' />
+          {this.props.user}
+        </NavLink>
 
-    const navBarCollapse = ClassNames({
-      'navbar-collapse': true,
-      collapse: !this.state.navBarOpen
-    })
+      if (this.props.role === 'admin') {
+        roleElement =
+          <NavLink to='/admin' >
+            <i className='lnr lnr-user' />
+            {this.props.user}
+          </NavLink>
+      }
+    } else {
+      signupElement =
+        <NavItem>
+          <NavLink to='/signup' activeClassName='active' className='nav-link'>
+            註冊
+          </NavLink>
+        </NavItem>
+      roleElement =
+        <NavLink to='/login'>
+          登入
+        </NavLink>
+    }
 
     return (
       <div>
-        <div className='navbar navbar-default navbar-fixed-top'>
-          <div className='container'>
-            <div className='navbar-header'>
-              <Link className='navbar-brand' to='/'>
-                <img className='navbar-logo' src='/media/logo-square.png' alt='' />
-                <span className='navbar-brand-label'>Huayra</span>
-              </Link>
-              <button className='navbar-toggle collapsed' onClick={this.toggleMenu.bind(this)}>
-                <span className='icon-bar' />
-                <span className='icon-bar' />
-                <span className='icon-bar' />
-              </button>
-            </div>
-            <div className={navBarCollapse}>
-              <ul className='nav navbar-nav'>
-                <li className={this.tabClass('/')}>
-                  <Link to='/'> 首頁
-                  </Link>
-                </li>
-                <li className={this.tabClass('/about')}>
-                  <Link to='/about'> 關於我們
-                  </Link>
-                </li>
+        <Navbar color='light' light expand='md' className='fixed-top'>
+          <Container>
+            <Link to='/' className='navbar-brand'>
+              <img className='navbar-logo' src='/media/logo-square.png' alt='' />
+              <span className='navbar-brand-label'>Huayra</span>
+            </Link>
+            <NavbarToggler onClick={this.toggleMenu.bind(this)} />
+            <Collapse isOpen={!this.state.navBarOpen} navbar>
+              <Nav className='mr-auto' navbar>
+                <NavItem>
+                  <NavLink exact to='/' activeClassName='active' className='nav-link'>
+                    首頁
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink exact to='/about' activeClassName='active' className='nav-link'>
+                    關於我們
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink exact to='/contact' activeClassName='active' className='nav-link'>
+                    連絡我們
+                  </NavLink>
+                </NavItem>
                 {signupElement}
-                <li className={this.tabClass('/contact')}>
-                  <Link to='/contact'> 連絡我們
-                  </Link>
-                </li>
-              </ul>
+              </Nav>
+            </Collapse>
+            <NavbarText>
               {roleElement}
-            </div>
-          </div>
-        </div>
-        <div>
-          {this.props.children}
-        </div>
+            </NavbarText>
+          </Container>
+        </Navbar>
+
+        {this.props.children}
+
         <div className='footer'>
-          <div className='container'>
-            <span className='copyright pull-right'>© {year} Makee</span>
+          <Container>
+            <span className='copyright float-right'>© {year} Makee</span>
             <ul className='links'>
               <li>
                 <Link to='/'> 首頁
@@ -113,7 +110,7 @@ class Default extends Component {
               </li>
             </ul>
             <div className='clearfix' />
-          </div>
+          </Container>
         </div>
       </div>
     )

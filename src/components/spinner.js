@@ -1,13 +1,14 @@
 import ClassNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Spinner } from 'reactstrap'
 
 const propTypes = {
   show: PropTypes.bool,
   space: PropTypes.string
 }
 
-class Spinner extends React.Component {
+class SpinnerComponent extends React.Component {
   render () {
     let spaceLeft
 
@@ -28,13 +29,13 @@ class Spinner extends React.Component {
     return (
       <span className={spinnerClasses}>
         {spaceLeft}
-        <i className='fa fa-refresh fa-spin' />
+        <Spinner size='sm' color='light' />
         {spaceRight}
       </span>
     )
   }
 }
 
-Spinner.propTypes = propTypes
+SpinnerComponent.propTypes = propTypes
 
-export default Spinner
+export default SpinnerComponent
