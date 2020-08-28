@@ -33,7 +33,7 @@
   "dependencies": {
     "async": "1.x.x",
     "axios": "^0.19.2",
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "body-parser": "1.x.x",
     "bootstrap": "^4.5.0",
     "classnames": "^2.2.5",
@@ -53,7 +53,7 @@
     "hoek": "^4.2.1",
     "jade": "1.x.x",
     "js-yaml": "^3.13.1",
-    "lodash": "4.17.13",
+    "lodash": "^4.17.19",
     "lodash-es": "^4.17.14",
     "lodash.template": "^4.5.0",
     "method-override": "2.3.10",
