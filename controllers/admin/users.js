@@ -257,21 +257,35 @@ exports.delete = function (req, res, next) {
       return workflow.emit('response')
     }
 
-    workflow.emit('deleteAccount')
-  })
-
-  workflow.on('deleteAccount', function () {
-    req.app.db.models.Account.findByIdAndRemove(req.params.id, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
-      workflow.emit('deleteUser')
-    })
+    workflow.emit('deleteUser')
   })
 
   workflow.on('deleteUser', function () {
     req.app.db.models.User.findByIdAndRemove(req.params.id, function (err, user) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      if (user.roles.account) {
+        workflow.emit('deleteAccount', user.roles.account)
+      } else {
+        workflow.emit('deleteAdmin')
+      }
+    })
+  })
+
+  workflow.on('deleteAccount', function (accountId) {
+    req.app.db.models.Account.findByIdAndRemove(accountId, function (err, account) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      workflow.emit('deleteAdmin')
+    })
+  })
+
+  workflow.on('deleteAdmin', function () {
+    req.app.db.models.Admin.findOneAndRemove({ 'user.id': req.params.id }, function (err, admin) {
       if (err) {
         return workflow.emit('exception', err)
       }
