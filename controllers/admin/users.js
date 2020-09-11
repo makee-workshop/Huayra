@@ -183,6 +183,20 @@ exports.update = function (req, res, next) {
       }
 
       workflow.outcome.user = populatedUser
+      if (req.body.roles === 'account') {
+        workflow.emit('deleteAdmin')
+      } else {
+        workflow.emit('response')
+      }
+    })
+  })
+
+  workflow.on('deleteAdmin', function () {
+    req.app.db.models.Admin.findOneAndRemove({ 'user.id': req.params.id }, function (err, admin) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
       workflow.emit('response')
     })
   })
