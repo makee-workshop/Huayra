@@ -110,14 +110,14 @@ class UsersPage extends Component {
         Cell: row => (
           <span>
             <span style={{
-              color: row.value === 'yes' ? '#0000FF'
-                : row.value === 'no' ? '#FF0000'
+              color: row.value === true ? '#0000FF'
+                : row.value === false ? '#FF0000'
                   : '#000',
               transition: 'all .3s ease' }}>
               &#x25cf;
             </span>
-            {row.value === 'yes' ? '啟用'
-              : row.value === 'no' ? '關閉'
+            {row.value === true ? '啟用'
+              : row.value === false ? '關閉'
                 : '異常狀態'}
           </span>
         )

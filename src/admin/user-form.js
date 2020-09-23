@@ -18,7 +18,7 @@ class UserForm extends Component {
       hasError: {},
       help: {},
       roles: 'account',
-      isActive: 'no',
+      isActive: false,
       username: '',
       email: ''
     }
@@ -144,10 +144,10 @@ class UserForm extends Component {
             hasError={this.state.hasError.isActive}
             help={this.state.help.isActive}
             disabled={this.state.loading}>
-            <option value='yes'>
+            <option value='true'>
               啟用
             </option>
-            <option value='no'>
+            <option value='false'>
               關閉
             </option>
           </SelectControl>

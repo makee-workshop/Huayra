@@ -6,9 +6,7 @@ exports.update = function (req, res, next) {
   var adminId = ''
 
   workflow.on('validate', function () {
-    if (!req.body.isActive) {
-      req.body.isActive = 'no'
-    }
+    req.body.isActive = req.body.isActive === 'true'
 
     if (!req.body.username) {
       workflow.outcome.errfor.username = '請輸入使用者名稱。'

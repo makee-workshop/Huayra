@@ -64,7 +64,7 @@ exports.signup = function (req, res) {
       }
 
       var fieldsToSet = {
-        isActive: 'yes',
+        isActive: true,
         username: req.body.username,
         email: req.body.email.toLowerCase(),
         password: hash,
