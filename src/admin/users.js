@@ -70,15 +70,14 @@ class UsersPage extends Component {
   render () {
     const columns = [
       {
-        Header: 'ID',
+        Header: '操作',
         accessor: '_id',
-        width: 270,
+        width: 55,
         Cell: row => (
           <span>
             <Link to={`/admin/user/${row.value}/${row.original.roles.account._id}/${row.original.username}`} className='btn btn-sm'>
               <i className='lnr lnr-pencil' />
             </Link>
-            <span>{row.value}</span>
           </span>
         )
       }, {
@@ -130,7 +129,10 @@ class UsersPage extends Component {
         )
       }, {
         Header: '創立時間',
-        accessor: 'timeCreated'
+        accessor: 'timeCreated',
+        Cell: row => (
+          <span>{new Date(row.value).toLocaleString('tw')}</span>
+        )
       }, {
         Header: '',
         accessor: '_id',
