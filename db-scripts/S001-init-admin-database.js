@@ -64,17 +64,6 @@
       search: [
         user.username
       ],
-      userCreated: {
-        name: ''
-      },
-      notes: [],
-      statusLog: [],
-      status: {
-        userCreated: {
-          name: ''
-        },
-        name: ''
-      },
       zip: '',
       phone: '',
       company: '',
