@@ -3,6 +3,7 @@ import ClassNames from 'classnames'
 import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
+import config from '../config'
 
 const year = new Date().getFullYear()
 
@@ -35,7 +36,7 @@ class Default extends Component {
           <Container>
             <Link to='/account' className='navbar-brand'>
               <img className='navbar-logo' src='/media/logo-square.png' alt='' />
-              <span className='navbar-brand-label'>ASPEED</span>
+              <span className='navbar-brand-label'>{config.projectName}</span>
             </Link>
             <NavbarToggler onClick={this.toggleMenu.bind(this)} />
             <Collapse isOpen={!this.state.navBarOpen} navbar>
@@ -62,7 +63,7 @@ class Default extends Component {
 
         <div className='footer'>
           <Container>
-            <span className='copyright float-right'>© {year} Makee</span>
+            <span className='copyright float-right'>© {year} {config.companyName}</span>
             <ul className='links'>
               <li>
                 <Link to='/'> 首頁
