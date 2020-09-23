@@ -54,8 +54,8 @@ class UsersPage extends Component {
       })
   }
 
-  deleteUser (uid) {
-    if (!window.confirm('是否確定要刪除此使用者？')) {
+  deleteUser (uid, username) {
+    if (!window.confirm(`是否確定要刪除使用者 ${username}？`)) {
       return -1
     }
 
@@ -136,7 +136,7 @@ class UsersPage extends Component {
         accessor: '_id',
         width: 50,
         Cell: row => (
-          <button className='btn btn-danger btn-sm' onClick={this.deleteUser.bind(this, row.value)}>
+          <button className='btn btn-danger btn-sm' onClick={this.deleteUser.bind(this, row.value, row.original.username)}>
             <i className='lnr lnr-cross' />
           </button>
         )
