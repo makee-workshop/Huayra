@@ -5,9 +5,9 @@ import Logout from './login/logout'
 import Reset from './login/reset'
 import Signup from './login/signup'
 import Store from './utils/reducer'
-import admin from './admin/home'
-import adminUsers from './admin/users'
-import adminUserSetting from './admin/user-setting'
+import Admin from './admin/home'
+import AdminUsers from './admin/users'
+import AdminUserSetting from './admin/user-setting'
 import Account from './account/home'
 import Setting from './account/setting'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
@@ -23,6 +23,7 @@ import { requireAdminAuth } from './utils/requireAdminAuth'
 import { requireAuthentication } from './utils/requireAuthentication'
 import { requireWeakAuth } from './utils/requireWeakAuth'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-table/react-table.css'
 import './App.css'
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
@@ -49,9 +50,9 @@ class App extends Component {
             <AppRoute exact path='/account' layout={AccountLayout} component={requireAuthentication(Account)} />
             <AppRoute exact path='/account/setting' layout={AccountLayout} component={requireAuthentication(Setting)} />
             <AppRoute exact path='/logout' layout={AccountLayout} component={Logout} />
-            <AppRoute exact path='/admin' layout={AdminLayout} component={requireAdminAuth(admin)} />
-            <AppRoute exact path='/admin/users' layout={AdminLayout} component={requireAdminAuth(adminUsers)} />
-            <AppRoute exact path='/admin/user/:uid/:aid/:username' layout={AdminLayout} component={requireAdminAuth(adminUserSetting)} />
+            <AppRoute exact path='/admin' layout={AdminLayout} component={requireAdminAuth(Admin)} />
+            <AppRoute exact path='/admin/users' layout={AdminLayout} component={requireAdminAuth(AdminUsers)} />
+            <AppRoute exact path='/admin/user/:uid/:aid/:username' layout={AdminLayout} component={requireAdminAuth(AdminUserSetting)} />
             <AppRoute exact layout={DefaultLayout} component={requireWeakAuth(NotFoundPage)} />
           </Switch>
         </Provider>

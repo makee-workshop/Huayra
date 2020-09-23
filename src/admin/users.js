@@ -4,7 +4,6 @@ import { Container, Row, Col } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import ReactTable from 'react-table'
 import { get, deleteItem } from '../utils/httpAgent'
-import 'react-table/react-table.css'
 
 class UsersPage extends Component {
   constructor (props) {
