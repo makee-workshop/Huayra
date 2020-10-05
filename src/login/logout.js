@@ -18,8 +18,9 @@ class Logout extends Component {
   }
 
   fetch () {
-    get('/1/logout')
+    get('/1/account/logout')
       .then(r => {
+        localStorage.removeItem('token')
         this.setState({ success: true })
       })
   }

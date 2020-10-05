@@ -5,8 +5,6 @@ var config = require('./config')
 var express = require('express')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
-var session = require('express-session')
-var mongoStore = require('connect-mongo')(session)
 var http = require('http')
 var path = require('path')
 var passport = require('passport')
@@ -54,14 +52,7 @@ app.use(require('method-override')())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser(config.cryptoKey))
-app.use(session({
-  resave: true,
-  saveUninitialized: false,
-  secret: config.cryptoKey,
-  store: new mongoStore({ url: config.mongodb.uri }) // eslint-disable-line
-}))
 app.use(passport.initialize())
-app.use(passport.session())
 // app.use(csrf({ cookie: { signed: false } }))
 helmet(app)
 

@@ -1,4 +1,6 @@
 'use strict'
+var jwt = require('jsonwebtoken')
+var ms = require('ms')
 
 exports = module.exports = function (app, mongoose) {
   var userSchema = new mongoose.Schema({
@@ -13,6 +15,11 @@ exports = module.exports = function (app, mongoose) {
     timeCreated: { type: Date, default: Date.now },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    jwt: [{
+      _id: false,
+      token: { type: String },
+      expiredAt: { type: Number }
+    }],
     search: [String]
   })
   userSchema.methods.canPlayRoleOf = function (role) {
@@ -56,14 +63,37 @@ exports = module.exports = function (app, mongoose) {
       done(err, res)
     })
   }
+  userSchema.methods.generateAuthToken = function () {
+    var opt = {}
+    var expiredAt = 0
+    if (app.config.expiresIn) {
+      opt = { expiresIn: app.config.expiresIn }
+      if (typeof (app.config.expiresIn) === 'string') {
+        expiredAt = ms(app.config.expiresIn)
+      } else if (typeof (app.config.expiresIn) === 'number') {
+        expiredAt = app.config.expiresIn
+      }
+      expiredAt = new Date().getTime() + expiredAt
+    }
+    var token = jwt.sign({
+      _id: this._doc._id,
+      username: this._doc.username,
+      email: this._doc.email,
+      roles: this._doc.roles
+    }, app.config.secretkey,
+    opt)
+
+    this.jwt = this.jwt.concat({
+      token: token,
+      expiredAt: expiredAt
+    })
+    this.save()
+    return token
+  }
   userSchema.plugin(require('./plugins/pagedFind'))
   userSchema.index({ username: 1 }, { unique: true })
   userSchema.index({ email: 1 }, { unique: true })
   userSchema.index({ timeCreated: 1 })
-  userSchema.index({ 'twitter.id': 1 })
-  userSchema.index({ 'github.id': 1 })
-  userSchema.index({ 'facebook.id': 1 })
-  userSchema.index({ 'google.id': 1 })
   userSchema.index({ search: 1 })
   userSchema.set('autoIndex', (app.get('env') === 'development'))
   app.db.model('User', userSchema)

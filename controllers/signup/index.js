@@ -138,7 +138,7 @@ exports.signup = function (req, res) {
   })
 
   workflow.on('logUserIn', function () {
-    req._passport.instance.authenticate('local', function (err, user, info) {
+    req._passport.instance.authenticate('local', { session: false }, function (err, user, info) {
       if (err) {
         return workflow.emit('exception', err)
       }
@@ -147,21 +147,15 @@ exports.signup = function (req, res) {
         workflow.outcome.errors.push('Login failed. That is strange.')
         return workflow.emit('response')
       } else {
-        req.login(user, function (err) {
-          if (err) {
-            return workflow.emit('exception', err)
-          }
+        workflow.outcome.data = {
+          token: user.generateAuthToken(),
+          authenticated: true,
+          user: user.username,
+          email: user.email,
+          role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
+        }
 
-          workflow.outcome.data = {
-            authenticated: true,
-            user: user.username,
-            email: user.email,
-            role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
-          }
-
-          workflow.outcome.defaultReturnUrl = user.defaultReturnUrl()
-          workflow.emit('response')
-        })
+        workflow.emit('response')
       }
     })(req, res)
   })

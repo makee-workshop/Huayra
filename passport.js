@@ -2,6 +2,8 @@
 
 exports = module.exports = function (app, passport) {
   var LocalStrategy = require('passport-local').Strategy
+  var JwtStrategy = require('passport-jwt').Strategy
+  var ExtractJwt = require('passport-jwt').ExtractJwt
 
   passport.use(new LocalStrategy(
     function (username, password, done) {
@@ -18,7 +20,7 @@ exports = module.exports = function (app, passport) {
         }
 
         if (!user) {
-          return done(null, false, { message: 'Unknown user' })
+          return done(null, false, { message: '未知的使用者' })
         }
 
         app.db.models.User.validatePassword(password, user.password, function (err, isValid) {
@@ -27,7 +29,7 @@ exports = module.exports = function (app, passport) {
           }
 
           if (!isValid) {
-            return done(null, false, { message: 'Invalid password' })
+            return done(null, false, { message: '無效的密碼' })
           }
 
           return done(null, user)
@@ -36,19 +38,32 @@ exports = module.exports = function (app, passport) {
     }
   ))
 
-  passport.serializeUser(function (user, done) {
-    done(null, user._id)
-  })
+  passport.use(new JwtStrategy(
+    { jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: app.config.secretkey, passReqToCallback: true },
+    (request, jwtPayload, done) => {
+      app.db.models.User.findById(jwtPayload._id).populate('roles.admin').populate('roles.account').exec(function (err, user) {
+        if (app.config.expiresIn) {
+          var now = new Date().getTime()
+          var tokens = user.jwt.filter(j => j.expiredAt > now)
+          if (user.jwt.length !== tokens.length) {
+            user.jwt = tokens
+            user.save()
+          }
+        }
 
-  passport.deserializeUser(function (id, done) {
-    app.db.models.User.findOne({ _id: id }).populate('roles.admin').populate('roles.account').exec(function (err, user) {
-      if (user && user.roles && user.roles.admin) {
-        user.roles.admin.populate('groups', function (err, admin) {
-          done(err, user)
-        })
-      } else {
-        done(err, user)
-      }
-    })
-  })
+        var token = request.headers.authorization.replace('Bearer ', '')
+        if (user.jwt.filter(j => j.token === token).length === 0) {
+          done(null, false)
+        } else {
+          if (user && user.roles && user.roles.admin) {
+            user.roles.admin.populate('groups', function (err, admin) {
+              done(err, user)
+            })
+          } else {
+            done(err, user)
+          }
+        }
+      })
+    }
+  ))
 }

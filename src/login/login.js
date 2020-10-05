@@ -56,6 +56,8 @@ class Login extends Component {
     }).then(
       r => {
         if (r.success === true) {
+          localStorage.setItem('token', r.data.token)
+          delete r.data.token
           this.props.loginSuccess(r.data)
           this.setState({
             success: true,

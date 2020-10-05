@@ -1,29 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
-import { get } from './httpAgent'
 
 export function requireWeakAuth (Component) {
   class AuthenticatedComponent extends Component {
-    componentDidMount () {
-      this.fetchUser()
-    }
-
-    compomentDidUpdate () {
-      this.fetchUser()
-    }
-
-    fetchUser () {
-      get('/1/islogin')
-        .then(r => {
-          if (r.success && r.data.authenticated === true) {
-            this.props.loginSuccess(r.data)
-          } else {
-            this.props.loginError()
-          }
-        })
-    }
-
     render () {
       return (
         <div>

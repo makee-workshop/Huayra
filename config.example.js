@@ -8,6 +8,8 @@ exports.companyName = 'Makee'
 exports.projectName = 'Huayra'
 exports.systemEmail = 'your@email.addy'
 exports.cryptoKey = 'k3yb0ardc4t'
+exports.secretkey = 'b1ae027d534'
+exports.expiresIn = '15 days'
 exports.loginAttempts = {
   forIp: 50,
   forIpAndUser: 7,

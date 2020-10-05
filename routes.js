@@ -1,13 +1,7 @@
 'use strict'
+const passport = require('passport')
 
-function ensureAuthenticated (req, res, next) {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-  res.set('X-Auth-Required', 'true')
-  req.session.returnUrl = req.originalUrl
-  res.redirect('/login/')
-}
+var ensureAuthenticated = passport.authenticate('jwt', { session: false })
 
 function ensureAccount (req, res, next) {
   if (req.user.canPlayRoleOf('account')) {
@@ -39,7 +33,6 @@ exports = module.exports = function (app, passport) {
   app.post('/1/login/', require('./controllers/login/index').login)
   app.post('/login/forgot/', require('./controllers/login/forgot/index').send)
   app.put('/1/login/reset/:email/:token/', require('./controllers/login/reset/index').set)
-  app.get('/1/logout/', require('./controllers/logout/index').logout)
 
   // account
   app.all('/account*', ensureAuthenticated)
@@ -48,6 +41,11 @@ exports = module.exports = function (app, passport) {
   // account > verification
   app.post('/account/verification/', require('./controllers/account/verification/index').resendVerification)
   app.get('/account/verification/:token/', require('./controllers/account/verification/index').verify)
+
+  app.all('/1/account*', ensureAuthenticated)
+  app.all('/1/account*', ensureAccount)
+
+  app.get('/1/account/logout/', require('./controllers/logout/index').logout)
 
   // account > settings
   app.put('/1/account/settings/', require('./controllers/account/settings/index').update)
@@ -61,8 +59,6 @@ exports = module.exports = function (app, passport) {
   app.put('/1/post/:name/publish', require('./controllers/api/post').activate)
   app.put('/1/post/:name/unpublish', require('./controllers/api/post').inactivate)
   app.delete('/1/post/:id', require('./controllers/api/post').delete)
-
-  app.get('/1/islogin', require('./controllers/api/account').isLogin)
 
   app.get('/1/account', ensureAuthenticated)
   app.get('/1/account', ensureAccount)
