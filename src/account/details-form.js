@@ -31,13 +31,15 @@ class DetailsForm extends Component {
   fetchData () {
     get('/1/account')
       .then(r => {
-        this.setState({
-          first: r.data.name.first,
-          last: r.data.name.last,
-          company: r.data.company,
-          phone: r.data.phone,
-          zip: r.data.zip
-        })
+        if (r.data) {
+          this.setState({
+            first: r.data.name.first,
+            last: r.data.name.last,
+            company: r.data.company,
+            phone: r.data.phone,
+            zip: r.data.zip
+          })
+        }
       })
   }
 

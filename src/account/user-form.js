@@ -28,10 +28,12 @@ class UserForm extends Component {
   fetchData () {
     get('/1/user')
       .then(r => {
-        this.setState({
-          username: r.data.username,
-          email: r.data.email
-        })
+        if (r.data) {
+          this.setState({
+            username: r.data.username,
+            email: r.data.email
+          })
+        }
       })
   }
 
