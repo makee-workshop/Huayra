@@ -107,15 +107,6 @@ class Login extends Component {
     }
 
     let alerts = []
-    const isIE = (navigator.userAgent.search('Trident') || navigator.userAgent.search('MSIE')) > -1
-
-    if (isIE) {
-      this.setState({
-        success: false,
-        error: '本服務目前不支援 Internet Explorer 瀏覽器，請切換其他瀏覽器後繼續使用。',
-        disabled: 'disabled'
-      })
-    }
 
     if (this.state.error) {
       alerts = <Alert
