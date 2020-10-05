@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { Redirect } from 'react-router'
 import { Helmet } from 'react-helmet'
 import { Container, Row, Col } from 'reactstrap'
 import { post } from '../utils/httpAgent'
@@ -88,6 +90,8 @@ class ForgotPage extends Component {
         />
         <Link to='/login' className='btn btn-link'>返回登入</Link>
       </div>
+    } else if (this.props.authenticated) {
+      return (<Redirect to='/' />)
     } else if (this.state.error) {
       alert = <Alert
         type='danger'
@@ -140,4 +144,8 @@ class ForgotPage extends Component {
   }
 }
 
-export default ForgotPage
+const mapStateToProps = state => ({
+  authenticated: state.index.authenticated
+})
+
+export default connect(mapStateToProps, null)(ForgotPage)

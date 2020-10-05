@@ -81,6 +81,8 @@ class Signup extends Component {
 
     if (this.state.success) {
       return (<Redirect to='/account' />)
+    } else if (this.props.authenticated) {
+      return (<Redirect to='/' />)
     }
 
     if (isIE) {
@@ -173,6 +175,10 @@ class Signup extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  authenticated: state.index.authenticated
+})
+
 const mapDispatchToProps = dispatch => ({
   loginSuccess (user) {
     dispatch(loginSuccess(user))
@@ -182,4 +188,4 @@ const mapDispatchToProps = dispatch => ({
   }
 })
 
-export default connect(null, mapDispatchToProps)(Signup)
+export default connect(mapStateToProps, mapDispatchToProps)(Signup)

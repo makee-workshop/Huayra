@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { Container, Row, Col } from 'reactstrap'
+import { Redirect } from 'react-router'
 import { put } from '../utils/httpAgent'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
@@ -90,6 +92,8 @@ class ResetPage extends Component {
         </div>
         <Link to='/login' className='btn btn-link'>返回登入</Link>
       </div>)
+    } else if (this.props.authenticated) {
+      return (<Redirect to='/' />)
     }
 
     if (this.state.error) {
@@ -169,4 +173,8 @@ class ResetPage extends Component {
   }
 }
 
-export default ResetPage
+const mapStateToProps = state => ({
+  authenticated: state.index.authenticated
+})
+
+export default connect(mapStateToProps, null)(ResetPage)

@@ -43,10 +43,10 @@ class App extends Component {
             <AppRoute exact path='/' layout={DefaultLayout} component={requireWeakAuth(Home)} />
             <AppRoute exact path='/about' layout={DefaultLayout} component={requireWeakAuth(About)} />
             <AppRoute exact path='/contact' layout={DefaultLayout} component={requireWeakAuth(Contact)} />
-            <AppRoute exact path='/login' layout={DefaultLayout} component={Login} />
-            <AppRoute exact path='/login/forgot' layout={DefaultLayout} component={Forgot} />
-            <AppRoute exact path='/login/reset/:email/:key/' layout={DefaultLayout} component={Reset} />
-            <AppRoute exact path='/signup' layout={DefaultLayout} component={Signup} />
+            <AppRoute exact path='/login' layout={DefaultLayout} component={requireWeakAuth(Login)} />
+            <AppRoute exact path='/login/forgot' layout={DefaultLayout} component={requireWeakAuth(Forgot)} />
+            <AppRoute exact path='/login/reset/:email/:key/' layout={DefaultLayout} component={requireWeakAuth(Reset)} />
+            <AppRoute exact path='/signup' layout={DefaultLayout} component={requireWeakAuth(Signup)} />
             <AppRoute exact path='/account' layout={AccountLayout} component={requireAuthentication(Account)} />
             <AppRoute exact path='/account/setting' layout={AccountLayout} component={requireAuthentication(Setting)} />
             <AppRoute exact path='/logout' layout={AccountLayout} component={Logout} />

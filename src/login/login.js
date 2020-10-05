@@ -102,6 +102,8 @@ class Login extends Component {
       return (<Redirect to='/account' />)
     } else if (this.state.success && this.state.role === 'admin') {
       return (<Redirect to='/admin' />)
+    } else if (this.props.authenticated) {
+      return (<Redirect to='/' />)
     }
 
     let alerts = []
@@ -176,6 +178,10 @@ class Login extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  authenticated: state.index.authenticated
+})
+
 const mapDispatchToProps = dispatch => ({
   loginSuccess (user) {
     dispatch(loginSuccess(user))
@@ -185,4 +191,4 @@ const mapDispatchToProps = dispatch => ({
   }
 })
 
-export default connect(null, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
