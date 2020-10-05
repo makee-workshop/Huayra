@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Container, Row, Col, Card } from 'reactstrap'
+import { Helmet } from 'react-helmet'
 import { get } from '../utils/httpAgent'
 import styles from './css/admin.module.css'
 
@@ -28,6 +29,9 @@ class index extends Component {
   render () {
     return (
       <Container>
+        <Helmet>
+          <title>系統資訊</title>
+        </Helmet>
         <Row>
           <Col md={6}>
             <h1 className='page-header'>系統資訊</h1>
