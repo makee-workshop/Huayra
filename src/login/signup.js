@@ -105,47 +105,6 @@ class Signup extends Component {
       />
     }
 
-    let formElements
-
-    if (!this.state.success) {
-      formElements = <fieldset>
-        <TextControl
-          ref={(c) => (this.input.username = c)}
-          name='username'
-          label='帳號'
-          hasError={this.state.hasError.username}
-          help={this.state.help.username}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.email = c)}
-          name='email'
-          label='Email'
-          hasError={this.state.hasError.email}
-          help={this.state.help.email}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.password = c)}
-          name='password'
-          label='密碼'
-          type='password'
-          hasError={this.state.hasError.password}
-          help={this.state.help.password}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-success': true }}
-            disabled={this.state.loading}>
-            建立帳號
-            <Spinner space='left' show={this.state.loading} />
-          </Button>
-        </ControlGroup>
-      </fieldset>
-    }
-
     return (
       <Container>
         <Helmet>
@@ -158,7 +117,40 @@ class Signup extends Component {
               <h1 className='page-header'>註冊</h1>
               <form onSubmit={this.handleSubmit.bind(this)}>
                 {alert}
-                {formElements}
+                <TextControl
+                  ref={(c) => (this.input.username = c)}
+                  name='username'
+                  label='帳號'
+                  hasError={this.state.hasError.username}
+                  help={this.state.help.username}
+                  disabled={this.state.loading}
+                />
+                <TextControl
+                  ref={(c) => (this.input.email = c)}
+                  name='email'
+                  label='Email'
+                  hasError={this.state.hasError.email}
+                  help={this.state.help.email}
+                  disabled={this.state.loading}
+                />
+                <TextControl
+                  ref={(c) => (this.input.password = c)}
+                  name='password'
+                  label='密碼'
+                  type='password'
+                  hasError={this.state.hasError.password}
+                  help={this.state.help.password}
+                  disabled={this.state.loading}
+                />
+                <ControlGroup hideLabel hideHelp>
+                  <Button
+                    type='submit'
+                    inputClasses={{ 'btn-success': true }}
+                    disabled={this.state.loading}>
+                    建立帳號
+                    <Spinner space='left' show={this.state.loading} />
+                  </Button>
+                </ControlGroup>
               </form>
             </section>
           </Col>

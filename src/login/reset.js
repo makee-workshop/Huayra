@@ -102,57 +102,6 @@ class ResetPage extends Component {
       </div>)
     }
 
-    let formElements
-
-    if (!this.state.success) {
-      formElements = <fieldset>
-        <TextControl
-          ref={(c) => (this.input.password = c)}
-          name='password'
-          label='新密碼'
-          type='password'
-          hasError={this.state.hasError.password}
-          help={this.state.help.password}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.confirm = c)}
-          name='confirm'
-          label='再次輸入新密碼'
-          type='password'
-          hasError={this.state.hasError.confirm}
-          help={this.state.help.confirm}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          name='_key'
-          label='金鑰'
-          hasError={this.state.hasError.key}
-          value={this.props.match.params.key}
-          help={this.state.help.key}
-          disabled
-        />
-        <TextControl
-          name='_email'
-          label='Email'
-          hasError={this.state.hasError.email}
-          value={this.props.match.params.email}
-          help={this.state.help.email}
-          disabled
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.state.loading}>
-            設定密碼
-            <Spinner space='left' show={this.state.loading} />
-          </Button>
-          <Link to='/login' className='btn btn-link'>返回登入</Link>
-        </ControlGroup>
-      </fieldset>
-    }
-
     return (
       <Container>
         <Helmet>
@@ -164,7 +113,50 @@ class ResetPage extends Component {
           <Col sm={6}>
             <form onSubmit={this.handleSubmit.bind(this)}>
               {alerts}
-              {formElements}
+              <TextControl
+                ref={(c) => (this.input.password = c)}
+                name='password'
+                label='新密碼'
+                type='password'
+                hasError={this.state.hasError.password}
+                help={this.state.help.password}
+                disabled={this.state.loading}
+              />
+              <TextControl
+                ref={(c) => (this.input.confirm = c)}
+                name='confirm'
+                label='再次輸入新密碼'
+                type='password'
+                hasError={this.state.hasError.confirm}
+                help={this.state.help.confirm}
+                disabled={this.state.loading}
+              />
+              <TextControl
+                name='_key'
+                label='金鑰'
+                hasError={this.state.hasError.key}
+                value={this.props.match.params.key}
+                help={this.state.help.key}
+                disabled
+              />
+              <TextControl
+                name='_email'
+                label='Email'
+                hasError={this.state.hasError.email}
+                value={this.props.match.params.email}
+                help={this.state.help.email}
+                disabled
+              />
+              <ControlGroup hideLabel hideHelp>
+                <Button
+                  type='submit'
+                  inputClasses={{ 'btn-primary': true }}
+                  disabled={this.state.loading}>
+                  設定密碼
+                  <Spinner space='left' show={this.state.loading} />
+                </Button>
+                <Link to='/login' className='btn btn-link'>返回登入</Link>
+              </ControlGroup>
             </form>
           </Col>
         </Row>

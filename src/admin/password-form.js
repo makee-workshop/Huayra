@@ -78,40 +78,38 @@ class PasswordForm extends Component {
 
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
-        <fieldset>
-          <legend> 重設密碼 </legend>
-          {alerts}
-          <TextControl
-            ref={(c) => (this.input.newPassword = c)}
-            name='newPassword'
-            label='新密碼'
-            type='password'
-            hasError={this.state.hasError.newPassword}
-            help={this.state.help.newPassword}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.confirm = c)}
-            name='confirm'
-            label='再次輸入新密碼'
-            type='password'
-            hasError={this.state.hasError.confirm}
-            help={this.state.help.confirm}
-            disabled={this.state.loading}
-          />
-          <ControlGroup hideLabel hideHelp>
-            <Button
-              type='submit'
-              inputClasses={{ 'btn-primary': true }}
-              disabled={this.props.loading}>
-              更新
-              <Spinner
-                space='left'
-                show={this.props.loading}
-              />
-            </Button>
-          </ControlGroup>
-        </fieldset>
+        <legend> 重設密碼 </legend>
+        {alerts}
+        <TextControl
+          ref={(c) => (this.input.newPassword = c)}
+          name='newPassword'
+          label='新密碼'
+          type='password'
+          hasError={this.state.hasError.newPassword}
+          help={this.state.help.newPassword}
+          disabled={this.state.loading}
+        />
+        <TextControl
+          ref={(c) => (this.input.confirm = c)}
+          name='confirm'
+          label='再次輸入新密碼'
+          type='password'
+          hasError={this.state.hasError.confirm}
+          help={this.state.help.confirm}
+          disabled={this.state.loading}
+        />
+        <ControlGroup hideLabel hideHelp>
+          <Button
+            type='submit'
+            inputClasses={{ 'btn-primary': true }}
+            disabled={this.props.loading}>
+            更新
+            <Spinner
+              space='left'
+              show={this.props.loading}
+            />
+          </Button>
+        </ControlGroup>
       </form>
     )
   }

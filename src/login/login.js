@@ -124,40 +124,6 @@ class Login extends Component {
       />
     }
 
-    let formElements
-
-    if (!this.state.success) {
-      formElements = <fieldset>
-        <TextControl
-          ref={(c) => (this.input.username = c)}
-          name='username'
-          label='帳號'
-          hasError={this.state.hasError.username}
-          help={this.state.help.username}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.password = c)}
-          name='password'
-          label='密碼'
-          type='password'
-          hasError={this.state.hasError.password}
-          help={this.state.help.password}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.state.loading}>
-            登入
-            <Spinner space='left' show={this.state.loading} />
-          </Button>
-          <Link to='/login/forgot' className='btn btn-link'>忘記密碼?</Link>
-        </ControlGroup>
-      </fieldset>
-    }
-
     return (
       <Container>
         <Helmet>
@@ -169,7 +135,33 @@ class Login extends Component {
           <Col sm={6}>
             <form onSubmit={this.handleSubmit.bind(this)}>
               {alerts}
-              {formElements}
+              <TextControl
+                ref={(c) => (this.input.username = c)}
+                name='username'
+                label='帳號'
+                hasError={this.state.hasError.username}
+                help={this.state.help.username}
+                disabled={this.state.loading}
+              />
+              <TextControl
+                ref={(c) => (this.input.password = c)}
+                name='password'
+                label='密碼'
+                type='password'
+                hasError={this.state.hasError.password}
+                help={this.state.help.password}
+                disabled={this.state.loading}
+              />
+              <ControlGroup hideLabel hideHelp>
+                <Button
+                  type='submit'
+                  inputClasses={{ 'btn-primary': true }}
+                  disabled={this.state.loading}>
+                  登入
+                  <Spinner space='left' show={this.state.loading} />
+                </Button>
+                <Link to='/login/forgot' className='btn btn-link'>忘記密碼?</Link>
+              </ControlGroup>
             </form>
           </Col>
         </Row>

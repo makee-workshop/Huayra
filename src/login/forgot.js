@@ -99,31 +99,6 @@ class ForgotPage extends Component {
       />
     }
 
-    let formElements
-
-    if (!this.state.success) {
-      formElements = <fieldset>
-        <TextControl
-          ref={(c) => (this.input.email = c)}
-          name='email'
-          label='您帳號的 email 是?'
-          hasError={this.state.hasError.email}
-          help={this.state.help.email}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.state.loading}>
-            重置
-            <Spinner space='left' show={this.state.loading} />
-          </Button>
-          <Link to='/login' className='btn btn-link'>返回登入</Link>
-        </ControlGroup>
-      </fieldset>
-    }
-
     return (
       <Container>
         <Helmet>
@@ -135,7 +110,24 @@ class ForgotPage extends Component {
           <Col sm={6}>
             <form onSubmit={this.handleSubmit.bind(this)}>
               {alert}
-              {formElements}
+              <TextControl
+                ref={(c) => (this.input.email = c)}
+                name='email'
+                label='您帳號的 email 是?'
+                hasError={this.state.hasError.email}
+                help={this.state.help.email}
+                disabled={this.state.loading}
+              />
+              <ControlGroup hideLabel hideHelp>
+                <Button
+                  type='submit'
+                  inputClasses={{ 'btn-primary': true }}
+                  disabled={this.state.loading}>
+                  重置
+                  <Spinner space='left' show={this.state.loading} />
+                </Button>
+                <Link to='/login' className='btn btn-link'>返回登入</Link>
+              </ControlGroup>
             </form>
           </Col>
         </Row>

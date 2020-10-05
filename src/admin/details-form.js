@@ -101,72 +101,70 @@ class DetailsForm extends Component {
 
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
-        <fieldset>
-          <legend> 個人資料 </legend>
-          {alerts}
-          <TextControl
-            ref={(c) => (this.input.last = c)}
-            name='last'
-            label='姓氏'
-            value={this.state.last}
-            onChange={(e) => (this.setState({ last: e.target.value }))}
-            hasError={this.state.hasError.last}
-            help={this.state.help.last}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.first = c)}
-            name='first'
-            label='名字'
-            value={this.state.first}
-            onChange={(e) => (this.setState({ first: e.target.value }))}
-            hasError={this.state.hasError.first}
-            help={this.state.help.first}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.company = c)}
-            name='company'
-            label='公司'
-            value={this.state.company}
-            onChange={(e) => (this.setState({ company: e.target.value }))}
-            hasError={this.state.hasError.company}
-            help={this.state.help.company}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.phone = c)}
-            name='phone'
-            label='電話'
-            value={this.state.phone}
-            onChange={(e) => (this.setState({ phone: e.target.value }))}
-            hasError={this.state.hasError.phone}
-            help={this.state.help.phone}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.zip = c)}
-            name='zip'
-            label='郵遞區號'
-            value={this.state.zip}
-            onChange={(e) => (this.setState({ zip: e.target.value }))}
-            hasError={this.state.hasError.zip}
-            help={this.state.help.zip}
-            disabled={this.state.loading}
-          />
-          <ControlGroup hideLabel hideHelp>
-            <Button
-              type='submit'
-              inputClasses={{ 'btn-primary': true }}
-              disabled={this.props.loading}>
-              更新
-              <Spinner
-                space='left'
-                show={this.props.loading}
-              />
-            </Button>
-          </ControlGroup>
-        </fieldset>
+        <legend> 個人資料 </legend>
+        {alerts}
+        <TextControl
+          ref={(c) => (this.input.last = c)}
+          name='last'
+          label='姓氏'
+          value={this.state.last}
+          onChange={(e) => (this.setState({ last: e.target.value }))}
+          hasError={this.state.hasError.last}
+          help={this.state.help.last}
+          disabled={this.state.loading}
+        />
+        <TextControl
+          ref={(c) => (this.input.first = c)}
+          name='first'
+          label='名字'
+          value={this.state.first}
+          onChange={(e) => (this.setState({ first: e.target.value }))}
+          hasError={this.state.hasError.first}
+          help={this.state.help.first}
+          disabled={this.state.loading}
+        />
+        <TextControl
+          ref={(c) => (this.input.company = c)}
+          name='company'
+          label='公司'
+          value={this.state.company}
+          onChange={(e) => (this.setState({ company: e.target.value }))}
+          hasError={this.state.hasError.company}
+          help={this.state.help.company}
+          disabled={this.state.loading}
+        />
+        <TextControl
+          ref={(c) => (this.input.phone = c)}
+          name='phone'
+          label='電話'
+          value={this.state.phone}
+          onChange={(e) => (this.setState({ phone: e.target.value }))}
+          hasError={this.state.hasError.phone}
+          help={this.state.help.phone}
+          disabled={this.state.loading}
+        />
+        <TextControl
+          ref={(c) => (this.input.zip = c)}
+          name='zip'
+          label='郵遞區號'
+          value={this.state.zip}
+          onChange={(e) => (this.setState({ zip: e.target.value }))}
+          hasError={this.state.hasError.zip}
+          help={this.state.help.zip}
+          disabled={this.state.loading}
+        />
+        <ControlGroup hideLabel hideHelp>
+          <Button
+            type='submit'
+            inputClasses={{ 'btn-primary': true }}
+            disabled={this.props.loading}>
+            更新
+            <Spinner
+              space='left'
+              show={this.props.loading}
+            />
+          </Button>
+        </ControlGroup>
       </form>
     )
   }
