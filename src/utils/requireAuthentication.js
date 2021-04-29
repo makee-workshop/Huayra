@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { loginError } from './userAction'
 
 export function requireAuthentication (Component) {
-  class AuthenticatedComponent extends Component {
+  class AuthenticatedComponent extends React.Component {
     componentDidMount () {
       try {
         var token = localStorage.getItem('token')
