@@ -1,6 +1,6 @@
 {
   "name": "huayra",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "async": "1.x.x",
+    "async": "^3.2.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "1.x.x",
