@@ -60,7 +60,7 @@
     "morgan": ">=1.9.1",
     "ms": "^2.1.2",
     "object-assign": "^4.1.1",
-    "passport": "0.3.x",
+    "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "1.x.x",
     "prop-types": "^15.6.0",
