@@ -106,6 +106,7 @@ exports.readAll = function (req, res, next) {
     req.app.db.models.Post.pagedFind({
       keys: 'name content date',
       limit: req.query.limit,
+      // page: req.query.page,
       sort: req.query.sort
     }, function (err, posts) {
       if (err) return workflow.emit('exception', err)

@@ -68,6 +68,7 @@ exports.adminGetUsers = function (req, res, next) {
   workflow.on('listUsers', function () {
     req.app.db.models.User.pagedFind({
       limit: req.query.limit,
+      page: req.query.page,
       sort: req.query.sort,
       populateKey: 'roles.account',
       populateFor: 'name.full phone gender company tax zip address'
