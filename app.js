@@ -10,6 +10,7 @@ var path = require('path')
 var passport = require('passport')
 var mongoose = require('mongoose')
 var helmet = require('helmet')
+var cors = require('cors')
 // var csrf = require('csurf')
 
 // create express app
@@ -53,15 +54,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser(config.cryptoKey))
 app.use(passport.initialize())
+app.use(cors())
 // app.use(csrf({ cookie: { signed: false } }))
 helmet(app)
-
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  res.header('Access-Control-Allow-Credentials', 'true')
-  next()
-})
 
 // response locals
 app.use(function (req, res, next) {

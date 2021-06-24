@@ -41,6 +41,7 @@
     "compression": "1.x.x",
     "constantinople": "^3.1.1",
     "cookie-parser": "1.x.x",
+    "cors": "^2.8.5",
     "cryptiles": "^4.1.2",
     "csurf": "1.x.x",
     "debug": "^2.6.9",
