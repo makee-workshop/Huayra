@@ -42,6 +42,15 @@ exports = module.exports = function (app, passport) {
     { jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: app.config.secretkey, passReqToCallback: true },
     (request, jwtPayload, done) => {
       app.db.models.User.findById(jwtPayload._id).populate('roles.admin').populate('roles.account').exec(function (err, user) {
+        if (err) {
+          return done(err)
+        }
+
+        if (!user) {
+          return done(null, false, { message: 'Unknown user' })
+        }
+
+        const token = request.headers.authorization.replace('Bearer ', '')
         if (app.config.expiresIn) {
           var now = new Date().getTime()
           var tokens = user.jwt.filter(j => j.expiredAt > now)
@@ -51,7 +60,6 @@ exports = module.exports = function (app, passport) {
           }
         }
 
-        var token = request.headers.authorization.replace('Bearer ', '')
         if (user.jwt.filter(j => j.token === token).length === 0) {
           done(null, false)
         } else {
