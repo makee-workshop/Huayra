@@ -23,16 +23,21 @@ app.config = config
 app.server = http.createServer(app)
 
 // setup mongoose
-mongoose.connect(config.mongodb.uri, {
-  useCreateIndex: true,
+const mongoConnectSetting = {
   useNewUrlParser: true,
-  useFindAndModify: false,
   useUnifiedTopology: true
-})
+}
+mongoose.connect(config.mongodb.uri, mongoConnectSetting)
 app.db = mongoose.connection
-app.db.on('error', console.error.bind(console, 'mongoose connection error: '))
-app.db.once('open', function () {
-  // and... we have a data store
+
+app.db.on('error', function (error) {
+  console.error('Error in MongoDb connection: ' + error)
+  mongoose.disconnect()
+})
+
+app.db.on('disconnected', function () {
+  console.log('MongoDB disconnected!')
+  mongoose.connect(config.mongodb.uri, mongoConnectSetting)
 })
 
 // config data models
