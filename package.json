@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon app.js --ignore 'src/**",
+    "server": "nodemon app.js --ignore 'src/**'",
     "client": "react-scripts start",
     "build": "react-scripts build",
     "test": "standard && react-scripts test",
