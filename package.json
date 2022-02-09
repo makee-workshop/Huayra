@@ -46,7 +46,7 @@
     "csurf": "1.x.x",
     "debug": "^2.6.9",
     "dotenv": "^4.0.0",
-    "emailjs": "2.2.0",
+    "emailjs": "3.7.0",
     "express": "^4.17.2",
     "helmet": "2.x.x",
     "hoek": "^4.2.1",
