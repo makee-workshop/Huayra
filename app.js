@@ -47,7 +47,7 @@ require('./models')(app, mongoose)
 app.disable('x-powered-by')
 app.set('port', config.port)
 app.set('views', path.join(__dirname, 'controllers'))
-app.set('view engine', 'jade')
+app.set('view engine', 'pug')
 
 // middleware
 app.use(require('morgan')('dev'))
