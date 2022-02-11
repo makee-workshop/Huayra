@@ -97,6 +97,7 @@ app.utility = {}
 app.utility.sendmail = require('./util/sendmail')
 app.utility.slugify = require('./util/slugify')
 app.utility.workflow = require('./util/workflow')
+app.utility.ODMService = require('./util/odm-service')
 
 // listen up
 app.server.listen(app.config.port, function () {

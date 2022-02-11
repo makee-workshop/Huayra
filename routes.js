@@ -59,6 +59,8 @@ exports = module.exports = function (app, passport) {
   app.put('/1/post/:name/publish', require('./controllers/example/post').activate)
   app.put('/1/post/:name/unpublish', require('./controllers/example/post').inactivate)
   app.delete('/1/post/:id', require('./controllers/example/post').delete)
+  app.post('/2/post', require('./controllers/example/post2').create)
+  app.put('/2/post/:id', require('./controllers/example/post2').update)
 
   app.get('/1/account', ensureAuthenticated)
   app.get('/1/account', ensureAccount)
