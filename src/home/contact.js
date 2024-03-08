@@ -87,7 +87,6 @@ class index extends Component {
 
   render () {
     let alert = []
-    let formElements
 
     if (this.state.success) {
       alert = <Alert
@@ -101,45 +100,6 @@ class index extends Component {
       />
     }
 
-    if (!this.state.success) {
-      formElements = <fieldset>
-        <TextControl
-          ref={(c) => (this.input.name = c)}
-          name='稱呼'
-          label='您的稱呼'
-          hasError={this.state.hasError.name}
-          help={this.state.help.name}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.email = c)}
-          name='email'
-          label='您的 email'
-          hasError={this.state.hasError.email}
-          help={this.state.help.email}
-          disabled={this.state.loading}
-        />
-        <TextareaControl
-          ref={(c) => (this.input.message = c)}
-          name='message'
-          label='訊息'
-          rows='5'
-          hasError={this.state.hasError.message}
-          help={this.state.help.message}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.state.loading}>
-            傳送
-            <Spinner space='left' show={this.state.loading} />
-          </Button>
-        </ControlGroup>
-      </fieldset>
-    }
-
     return (
       <Container>
         <Helmet>
@@ -147,13 +107,44 @@ class index extends Component {
         </Helmet>
         <Row>
           <Col sm={6}>
-            <section>
-              <h1 className='page-header'>傳送訊息</h1>
-              <form onSubmit={this.handleSubmit.bind(this)}>
-                {alert}
-                {formElements}
-              </form>
-            </section>
+            <h1 className='page-header'>傳送訊息</h1>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              {alert}
+              <TextControl
+                ref={(c) => (this.input.name = c)}
+                name='稱呼'
+                label='您的稱呼'
+                hasError={this.state.hasError.name}
+                help={this.state.help.name}
+                disabled={this.state.loading}
+              />
+              <TextControl
+                ref={(c) => (this.input.email = c)}
+                name='email'
+                label='您的 email'
+                hasError={this.state.hasError.email}
+                help={this.state.help.email}
+                disabled={this.state.loading}
+              />
+              <TextareaControl
+                ref={(c) => (this.input.message = c)}
+                name='message'
+                label='訊息'
+                rows='5'
+                hasError={this.state.hasError.message}
+                help={this.state.help.message}
+                disabled={this.state.loading}
+              />
+              <ControlGroup hideLabel hideHelp>
+                <Button
+                  type='submit'
+                  inputClasses={{ 'btn-primary': true }}
+                  disabled={this.state.loading}>
+                  傳送
+                  <Spinner space='left' show={this.state.loading} />
+                </Button>
+              </ControlGroup>
+            </form>
           </Col>
           <Col sm={6} className='text-center'>
             <h1 className='page-header'>連絡我們</h1>
