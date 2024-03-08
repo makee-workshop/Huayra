@@ -1,39 +1,34 @@
-import React, { Component } from 'react'
-import { loginSuccess, loginError } from '../utils/userAction'
+import React, { useState, useRef, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { Container, Row, Col } from 'reactstrap'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
 import { post } from '../utils/httpAgent'
+import { loginSuccess, loginError } from '../utils/userAction'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-class Login extends Component {
-  constructor (props) {
-    super(props)
-    this.input = {}
-    this.state = {
-      loading: false,
-      success: false,
-      error: undefined,
-      hasError: {},
-      help: {},
-      role: '',
-      returnUrl: ''
-    }
-  }
+const Login = (props) => {
+  const inputRef = useRef({})
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(undefined)
+  const [hasError, setHasError] = useState({})
+  const [help, setHelp] = useState({})
+  const [role, setRole] = useState('')
+  const [returnUrl, setReturnUrl] = useState('')
 
-  componentDidMount () {
-    if (this.input.username) {
-      this.input.username.focus()
+  useEffect(() => {
+    if (inputRef.current.username) {
+      inputRef.current.username.focus()
     }
-  }
+  }, [])
 
-  getParameterByName (name) {
+  const getParameterByName = (name) => {
     name = name.replace(/[[\]]/g, '\\$&')
     const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)')
     const results = regex.exec(window.location.href)
@@ -42,134 +37,131 @@ class Login extends Component {
     return decodeURIComponent(results[2].replace(/\+/g, ' '))
   }
 
-  handleSubmit (event) {
+  const handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({
-      loading: true
-    })
+    setLoading(true)
 
     post('/1/login', {
-      username: this.input.username.value(),
-      password: this.input.password.value()
-    }).then(
-      r => {
-        if (r.success === true) {
-          localStorage.setItem('token', r.data.token)
-          delete r.data.token
-          this.props.loginSuccess(r.data)
-          this.setState({
-            success: true,
-            error: '',
-            loading: false,
-            role: r.data.role,
-            returnUrl: this.getParameterByName('returnUrl')
-          })
+      username: inputRef.current.username.value(),
+      password: inputRef.current.password.value()
+    })
+      .then((response) => {
+        if (response.success === true) {
+          localStorage.setItem('token', response.data.token)
+          delete response.data.token
+          props.loginSuccess(response.data)
+          setSuccess(true)
+          setError('')
+          setLoading(false)
+          setRole(response.data.role)
+          setReturnUrl(getParameterByName('returnUrl'))
         } else {
-          let state = {
+          const newState = {
             success: false,
             error: '',
             loading: false,
             hasError: {},
             help: {}
           }
-          for (let key in r.errfor) {
-            state.hasError[key] = true
-            state.help[key] = r.errfor[key]
+          for (const key in response.errfor) {
+            newState.hasError[key] = true
+            newState.help[key] = response.errfor[key]
           }
 
-          if (r.errors[0] !== undefined) {
-            state.error = r.errors[0]
+          if (response.errors[0] !== undefined) {
+            newState.error = response.errors[0]
           }
-          this.setState(state)
-          this.props.loginError()
+          setHasError(newState.hasError)
+          setHelp(newState.help)
+          setError(newState.error)
+          setLoading(newState.loading)
+          props.loginError()
         }
-      }
-    )
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
-  handleKeyPressn (e) {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      this.setLogin()
+      handleSubmit(e)
     }
   }
 
-  render () {
-    if (this.state.success && this.state.returnUrl) {
-      return (<Redirect to={this.state.returnUrl} />)
-    } else if (this.state.success && this.state.role === 'account') {
-      return (<Redirect to='/account' />)
-    } else if (this.state.success && this.state.role === 'admin') {
-      return (<Redirect to='/admin' />)
-    } else if (this.props.authenticated) {
-      return (<Redirect to='/' />)
-    }
-
-    let alerts = []
-
-    if (this.state.error) {
-      alerts = <Alert
-        type='danger'
-        message={this.state.error}
-      />
-    }
-
-    return (
-      <Container>
-        <Helmet>
-          <title>登入</title>
-        </Helmet>
-
-        <h1 className='page-header'>登入</h1>
-        <Row>
-          <Col sm={6}>
-            <form onSubmit={this.handleSubmit.bind(this)}>
-              {alerts}
-              <TextControl
-                ref={(c) => (this.input.username = c)}
-                name='username'
-                label='帳號'
-                hasError={this.state.hasError.username}
-                help={this.state.help.username}
-                disabled={this.state.loading}
-              />
-              <TextControl
-                ref={(c) => (this.input.password = c)}
-                name='password'
-                label='密碼'
-                type='password'
-                hasError={this.state.hasError.password}
-                help={this.state.help.password}
-                disabled={this.state.loading}
-              />
-              <ControlGroup hideLabel hideHelp>
-                <Button
-                  type='submit'
-                  inputClasses={{ 'btn-primary': true }}
-                  disabled={this.state.loading}>
-                  登入
-                  <Spinner space='left' show={this.state.loading} />
-                </Button>
-                <Link to='/login/forgot' className='btn btn-link'>忘記密碼?</Link>
-              </ControlGroup>
-            </form>
-          </Col>
-        </Row>
-      </Container>
-    )
+  if (success && returnUrl) {
+    return <Redirect to={returnUrl} />
+  } else if (success && role === 'account') {
+    return <Redirect to='/account' />
+  } else if (success && role === 'admin') {
+    return <Redirect to='/admin' />
+  } else if (props.authenticated) {
+    return <Redirect to='/' />
   }
+
+  let alerts = null
+
+  if (error) {
+    alerts = <Alert type='danger' message={error} />
+  }
+
+  return (
+    <Container>
+      <Helmet>
+        <title>登入</title>
+      </Helmet>
+
+      <h1 className='page-header'>登入</h1>
+      <Row>
+        <Col sm={6}>
+          <form onSubmit={handleSubmit}>
+            {alerts}
+            <TextControl
+              ref={(c) => (inputRef.current.username = c)}
+              name='username'
+              label='帳號'
+              hasError={hasError.username}
+              help={help.username}
+              disabled={loading}
+              onKeyPress={handleKeyPress}
+            />
+            <TextControl
+              ref={(c) => (inputRef.current.password = c)}
+              name='password'
+              label='密碼'
+              type='password'
+              hasError={hasError.password}
+              help={help.password}
+              disabled={loading}
+              onKeyPress={handleKeyPress}
+            />
+            <ControlGroup hideLabel hideHelp>
+              <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={loading}>
+                登入
+                <Spinner space='left' show={loading} />
+              </Button>
+              <Link to='/login/forgot' className='btn btn-link'>
+                忘記密碼?
+              </Link>
+            </ControlGroup>
+          </form>
+        </Col>
+      </Row>
+    </Container>
+  )
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   authenticated: state.index.authenticated
 })
 
-const mapDispatchToProps = dispatch => ({
-  loginSuccess (user) {
+const mapDispatchToProps = (dispatch) => ({
+  loginSuccess: (user) => {
     dispatch(loginSuccess(user))
   },
-  loginError () {
+  loginError: () => {
     dispatch(loginError())
   }
 })
