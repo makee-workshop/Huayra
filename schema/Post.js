@@ -2,7 +2,7 @@
 
 // Post
 exports = module.exports = function (app, mongoose) {
-  var schema = new mongoose.Schema({
+  const schema = new mongoose.Schema({
     name: { type: String, default: '' },
     content: { type: String, default: '' },
     isActive: { type: Boolean, default: true },

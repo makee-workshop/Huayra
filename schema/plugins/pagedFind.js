@@ -2,7 +2,7 @@
 
 module.exports = exports = function pagedFindPlugin (schema) {
   schema.statics.pagedFind = function (options, cb) {
-    var thisSchema = this
+    const thisSchema = this
 
     if (!options.filters) {
       options.filters = {}
@@ -32,7 +32,7 @@ module.exports = exports = function pagedFindPlugin (schema) {
       options.populateFor = ''
     }
 
-    var output = {
+    const output = {
       data: null,
       pages: {
         current: options.page,
@@ -49,7 +49,7 @@ module.exports = exports = function pagedFindPlugin (schema) {
       }
     }
 
-    var countResults = function (callback) {
+    const countResults = function (callback) {
       thisSchema.countDocuments(options.filters, function (err, count) {
         if (err) {
           console.log('err', err)
@@ -59,8 +59,8 @@ module.exports = exports = function pagedFindPlugin (schema) {
       })
     }
 
-    var getResults = function (callback) {
-      var query = thisSchema.find(options.filters, options.keys)
+    const getResults = function (callback) {
+      let query = thisSchema.find(options.filters, options.keys)
 
       if (options.populateKey !== '' && options.populateFor !== '') {
         query.populate(options.populateKey, options.populateFor)

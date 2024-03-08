@@ -1,9 +1,9 @@
 'use strict'
-var jwt = require('jsonwebtoken')
-var ms = require('ms')
+const jwt = require('jsonwebtoken')
+const ms = require('ms')
 
 exports = module.exports = function (app, mongoose) {
-  var schema = new mongoose.Schema({
+  const schema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: String,
     email: { type: String, unique: true },
@@ -34,7 +34,7 @@ exports = module.exports = function (app, mongoose) {
     return false
   }
   schema.methods.defaultReturnUrl = function () {
-    var returnUrl = '/'
+    let returnUrl = '/'
     if (this.canPlayRoleOf('account')) {
       returnUrl = '/account/'
     }
@@ -46,7 +46,7 @@ exports = module.exports = function (app, mongoose) {
     return returnUrl
   }
   schema.statics.encryptPassword = function (password, done) {
-    var bcrypt = require('bcrypt')
+    const bcrypt = require('bcrypt')
     bcrypt.genSalt(10, function (err, salt) {
       if (err) {
         return done(err)
@@ -58,14 +58,14 @@ exports = module.exports = function (app, mongoose) {
     })
   }
   schema.statics.validatePassword = function (password, hash, done) {
-    var bcrypt = require('bcrypt')
+    const bcrypt = require('bcrypt')
     bcrypt.compare(password, hash, function (err, res) {
       done(err, res)
     })
   }
   schema.methods.generateAuthToken = function () {
-    var opt = {}
-    var expiredAt = 0
+    let opt = {}
+    let expiredAt = 0
     if (app.config.expiresIn) {
       opt = { expiresIn: app.config.expiresIn }
       if (typeof (app.config.expiresIn) === 'string') {
@@ -75,7 +75,7 @@ exports = module.exports = function (app, mongoose) {
       }
       expiredAt = new Date().getTime() + expiredAt
     }
-    var token = jwt.sign({
+    const token = jwt.sign({
       _id: this._doc._id,
       username: this._doc.username,
       email: this._doc.email,
@@ -84,8 +84,8 @@ exports = module.exports = function (app, mongoose) {
     opt)
 
     this.jwt = this.jwt.concat({
-      token: token,
-      expiredAt: expiredAt
+      token,
+      expiredAt
     })
     this.save()
     return token

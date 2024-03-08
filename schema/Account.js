@@ -1,7 +1,7 @@
 'use strict'
 
 exports = module.exports = function (app, mongoose) {
-  var schema = new mongoose.Schema({
+  const schema = new mongoose.Schema({
     user: {
       id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: { type: String, default: '' }
