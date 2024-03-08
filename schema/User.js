@@ -3,7 +3,7 @@ var jwt = require('jsonwebtoken')
 var ms = require('ms')
 
 exports = module.exports = function (app, mongoose) {
-  var userSchema = new mongoose.Schema({
+  var schema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: String,
     email: { type: String, unique: true },
@@ -22,7 +22,7 @@ exports = module.exports = function (app, mongoose) {
     }],
     search: [String]
   })
-  userSchema.methods.canPlayRoleOf = function (role) {
+  schema.methods.canPlayRoleOf = function (role) {
     if (role === 'admin' && this.roles.admin) {
       return true
     }
@@ -33,7 +33,7 @@ exports = module.exports = function (app, mongoose) {
 
     return false
   }
-  userSchema.methods.defaultReturnUrl = function () {
+  schema.methods.defaultReturnUrl = function () {
     var returnUrl = '/'
     if (this.canPlayRoleOf('account')) {
       returnUrl = '/account/'
@@ -45,7 +45,7 @@ exports = module.exports = function (app, mongoose) {
 
     return returnUrl
   }
-  userSchema.statics.encryptPassword = function (password, done) {
+  schema.statics.encryptPassword = function (password, done) {
     var bcrypt = require('bcrypt')
     bcrypt.genSalt(10, function (err, salt) {
       if (err) {
@@ -57,13 +57,13 @@ exports = module.exports = function (app, mongoose) {
       })
     })
   }
-  userSchema.statics.validatePassword = function (password, hash, done) {
+  schema.statics.validatePassword = function (password, hash, done) {
     var bcrypt = require('bcrypt')
     bcrypt.compare(password, hash, function (err, res) {
       done(err, res)
     })
   }
-  userSchema.methods.generateAuthToken = function () {
+  schema.methods.generateAuthToken = function () {
     var opt = {}
     var expiredAt = 0
     if (app.config.expiresIn) {
@@ -90,11 +90,11 @@ exports = module.exports = function (app, mongoose) {
     this.save()
     return token
   }
-  userSchema.plugin(require('./plugins/pagedFind'))
-  userSchema.index({ username: 1 }, { unique: true })
-  userSchema.index({ email: 1 }, { unique: true })
-  userSchema.index({ timeCreated: 1 })
-  userSchema.index({ search: 1 })
-  userSchema.set('autoIndex', (app.get('env') === 'development'))
-  app.db.model('User', userSchema)
+  schema.plugin(require('./plugins/pagedFind'))
+  schema.index({ username: 1 }, { unique: true })
+  schema.index({ email: 1 }, { unique: true })
+  schema.index({ timeCreated: 1 })
+  schema.index({ search: 1 })
+  schema.set('autoIndex', (app.get('env') === 'development'))
+  app.db.model('User', schema)
 }

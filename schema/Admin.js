@@ -1,7 +1,7 @@
 'use strict'
 
 exports = module.exports = function (app, mongoose) {
-  var adminSchema = new mongoose.Schema({
+  var schema = new mongoose.Schema({
     user: {
       id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: { type: String, default: '' }
@@ -20,7 +20,7 @@ exports = module.exports = function (app, mongoose) {
     timeCreated: { type: Date, default: Date.now },
     search: [String]
   })
-  adminSchema.methods.hasPermissionTo = function (something) {
+  schema.methods.hasPermissionTo = function (something) {
     // check group permissions
     var groupHasPermission = false
     for (var i = 0; i < this.groups.length; i++) {
@@ -46,7 +46,7 @@ exports = module.exports = function (app, mongoose) {
 
     return groupHasPermission
   }
-  adminSchema.methods.isMemberOf = function (group) {
+  schema.methods.isMemberOf = function (group) {
     for (var i = 0; i < this.groups.length; i++) {
       if (this.groups[i]._id === group) {
         return true
@@ -55,9 +55,9 @@ exports = module.exports = function (app, mongoose) {
 
     return false
   }
-  adminSchema.plugin(require('./plugins/pagedFind'))
-  adminSchema.index({ 'user.id': 1 })
-  adminSchema.index({ search: 1 })
-  adminSchema.set('autoIndex', (app.get('env') === 'development'))
-  app.db.model('Admin', adminSchema)
+  schema.plugin(require('./plugins/pagedFind'))
+  schema.index({ 'user.id': 1 })
+  schema.index({ search: 1 })
+  schema.set('autoIndex', (app.get('env') === 'development'))
+  app.db.model('Admin', schema)
 }

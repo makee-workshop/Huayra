@@ -1,7 +1,7 @@
 'use strict'
 
 exports = module.exports = function (app, mongoose) {
-  var accountSchema = new mongoose.Schema({
+  var schema = new mongoose.Schema({
     user: {
       id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: { type: String, default: '' }
@@ -19,9 +19,9 @@ exports = module.exports = function (app, mongoose) {
     zip: { type: String, default: '' },
     search: [String]
   })
-  accountSchema.plugin(require('./plugins/pagedFind'))
-  accountSchema.index({ user: 1 })
-  accountSchema.index({ search: 1 })
-  accountSchema.set('autoIndex', (app.get('env') === 'development'))
-  app.db.model('Account', accountSchema)
+  schema.plugin(require('./plugins/pagedFind'))
+  schema.index({ user: 1 })
+  schema.index({ search: 1 })
+  schema.set('autoIndex', (app.get('env') === 'development'))
+  app.db.model('Account', schema)
 }
