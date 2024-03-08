@@ -13,8 +13,6 @@ import {
 } from 'reactstrap'
 import config from '../config'
 
-const year = new Date().getFullYear()
-
 class Default extends Component {
   constructor (props) {
     super(props)
@@ -74,7 +72,7 @@ class Default extends Component {
 
         <div className='footer'>
           <Container>
-            <span className='copyright float-right'>© {year} {config.companyName}</span>
+            <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
             <ul className='links'>
               <li>
                 <Link to='/'> 首頁

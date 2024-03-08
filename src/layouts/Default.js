@@ -5,8 +5,6 @@ import { connect } from 'react-redux'
 import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
 import config from '../config'
 
-const year = new Date().getFullYear()
-
 class Default extends Component {
   constructor (props) {
     super(props)
@@ -34,30 +32,34 @@ class Default extends Component {
     let signupElement = []
 
     if (this.props.authenticated === true) {
-      roleElement =
+      roleElement = (
         <NavLink to='/account'>
           <i className='lnr lnr-user' />
           {this.props.user}
         </NavLink>
+      )
 
       if (this.props.role === 'admin') {
-        roleElement =
-          <NavLink to='/admin' >
+        roleElement = (
+          <NavLink to='/admin'>
             <i className='lnr lnr-user' />
             {this.props.user}
           </NavLink>
+        )
       }
     } else {
-      signupElement =
+      signupElement = (
         <NavItem>
           <NavLink to='/signup' activeClassName='active' className='nav-link'>
             註冊
           </NavLink>
         </NavItem>
-      roleElement =
+      )
+      roleElement = (
         <NavLink to='/login'>
           登入
         </NavLink>
+      )
     }
 
     return (
@@ -99,7 +101,7 @@ class Default extends Component {
 
         <div className='footer'>
           <Container>
-            <span className='copyright float-right'>© {year} {config.companyName}</span>
+            <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
             <ul className='links'>
               <li>
                 <Link to='/'> 首頁
