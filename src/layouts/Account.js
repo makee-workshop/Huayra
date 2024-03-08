@@ -1,83 +1,65 @@
-import React, { Component } from 'react'
-import ClassNames from 'classnames'
+import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
 import config from '../config'
 
-class Default extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      navBarOpen: false
-    }
+const Account = (props) => {
+  const [navBarOpen, setNavBarOpen] = useState(false)
+
+  const toggleMenu = () => {
+    setNavBarOpen(!navBarOpen)
   }
 
-  compomentDidUpdate () {
-    this.setState({ navBarOpen: false })
-  }
-
-  tabClass (tab) {
-    return ClassNames({
-      active: this.props.children.props.location.pathname === tab
-    })
-  }
-
-  toggleMenu () {
-    this.setState({ navBarOpen: !this.state.navBarOpen })
-  }
-
-  render () {
-    return (
-      <div>
-        <Navbar color='light' light expand='md' className='fixed-top'>
-          <Container>
-            <Link to='/account' className='navbar-brand'>
-              <img className='navbar-logo' src='/media/logo-square.png' alt='' />
-              <span className='navbar-brand-label'>{config.projectName}</span>
-            </Link>
-            <NavbarToggler onClick={this.toggleMenu.bind(this)} />
-            <Collapse isOpen={!this.state.navBarOpen} navbar>
-              <Nav className='mr-auto' navbar>
-                <NavItem>
-                  <NavLink exact to='/account' activeClassName='active' className='nav-link'> 首頁
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink to='/account/setting' activeClassName='active' className='nav-link'> 設定
-                  </NavLink>
-                </NavItem>
-              </Nav>
-              <NavbarText>
-                <NavLink to='/logout'>
-                  登出
+  return (
+    <div>
+      <Navbar color='light' light expand='md' className='fixed-top'>
+        <Container>
+          <Link to='/account' className='navbar-brand'>
+            <img className='navbar-logo' src='/media/logo-square.png' alt='' />
+            <span className='navbar-brand-label'>{config.projectName}</span>
+          </Link>
+          <NavbarToggler onClick={toggleMenu} />
+          <Collapse isOpen={!navBarOpen} navbar>
+            <Nav className='mr-auto' navbar>
+              <NavItem>
+                <NavLink exact to='/account' activeClassName='active' className='nav-link'> 首頁
                 </NavLink>
-              </NavbarText>
-            </Collapse>
-          </Container>
-        </Navbar>
+              </NavItem>
+              <NavItem>
+                <NavLink to='/account/setting' activeClassName='active' className='nav-link'> 設定
+                </NavLink>
+              </NavItem>
+            </Nav>
+            <NavbarText>
+              <NavLink to='/logout'>
+                登出
+              </NavLink>
+            </NavbarText>
+          </Collapse>
+        </Container>
+      </Navbar>
 
-        {this.props.children}
+      {props.children}
 
-        <div className='footer'>
-          <Container>
-            <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
-            <ul className='links'>
-              <li>
-                <Link to='/'> 首頁
-                </Link>
-              </li>
-              <li>
-                <Link to='/logout'> 登出
-                </Link>
-              </li>
-            </ul>
-            <div className='clearfix' />
-          </Container>
-        </div>
+      <div className='footer'>
+        <Container>
+          <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
+          <ul className='links'>
+            <li>
+              <Link to='/'> 首頁
+              </Link>
+            </li>
+            <li>
+              <Link to='/logout'> 登出
+              </Link>
+            </li>
+          </ul>
+          <div className='clearfix' />
+        </Container>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 const mapStateToProps = state => ({
@@ -85,4 +67,4 @@ const mapStateToProps = state => ({
   authenticated: state.index.authenticated
 })
 
-export default connect(mapStateToProps, null)(Default)
+export default connect(mapStateToProps, null)(Account)
