@@ -1,13 +1,13 @@
 'use strict'
 
 exports = module.exports = function (app, passport) {
-  var LocalStrategy = require('passport-local').Strategy
-  var JwtStrategy = require('passport-jwt').Strategy
-  var ExtractJwt = require('passport-jwt').ExtractJwt
+  const LocalStrategy = require('passport-local').Strategy
+  const JwtStrategy = require('passport-jwt').Strategy
+  const ExtractJwt = require('passport-jwt').ExtractJwt
 
   passport.use(new LocalStrategy(
     function (username, password, done) {
-      var conditions = { isActive: true }
+      const conditions = { isActive: true }
       if (username.indexOf('@') === -1) {
         conditions.username = username
       } else {
@@ -52,8 +52,8 @@ exports = module.exports = function (app, passport) {
 
         const token = request.headers.authorization.replace('Bearer ', '')
         if (app.config.expiresIn) {
-          var now = new Date().getTime()
-          var tokens = user.jwt.filter(j => j.expiredAt > now)
+          const now = new Date().getTime()
+          const tokens = user.jwt.filter(j => j.expiredAt > now)
           if (user.jwt.length !== tokens.length) {
             user.jwt = tokens
             user.save()

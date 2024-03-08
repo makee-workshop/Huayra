@@ -1,20 +1,20 @@
 'use strict'
 
 // dependencies
-var config = require('./config')
-var express = require('express')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
-var http = require('http')
-var path = require('path')
-var passport = require('passport')
-var mongoose = require('mongoose')
-var helmet = require('helmet')
-var cors = require('cors')
+const config = require('./config')
+const express = require('express')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const http = require('http')
+const path = require('path')
+const passport = require('passport')
+const mongoose = require('mongoose')
+const helmet = require('helmet')
+const cors = require('cors')
 // var csrf = require('csurf')
 
 // create express app
-var app = express()
+const app = express()
 
 // keep reference to config
 app.config = config
