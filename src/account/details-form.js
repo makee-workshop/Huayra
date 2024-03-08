@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import { get, put } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -6,172 +6,148 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-class DetailsForm extends Component {
-  constructor (props) {
-    super(props)
-    this.input = {}
-    this.state = {
-      loading: false,
-      success: false,
-      error: undefined,
-      hasError: {},
-      help: {},
-      last: '',
-      first: '',
-      company: '',
-      phone: '',
-      zip: ''
-    }
+const DetailsForm = () => {
+  const [formData, setFormData] = useState({
+    loading: false,
+    success: false,
+    error: undefined,
+    hasError: {},
+    help: {},
+    last: '',
+    first: '',
+    company: '',
+    phone: '',
+    zip: ''
+  })
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = () => {
+    get('/1/account').then((response) => {
+      if (response.data) {
+        setFormData({
+          ...formData,
+          last: response.data.name.last,
+          first: response.data.name.first,
+          company: response.data.company,
+          phone: response.data.phone,
+          zip: response.data.zip
+        })
+      }
+    })
   }
 
-  componentDidMount () {
-    this.fetchData()
-  }
-
-  fetchData () {
-    get('/1/account')
-      .then(r => {
-        if (r.data) {
-          this.setState({
-            first: r.data.name.first,
-            last: r.data.name.last,
-            company: r.data.company,
-            phone: r.data.phone,
-            zip: r.data.zip
-          })
-        }
-      })
-  }
-
-  handleSubmit (event) {
+  const handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({
-      loading: true
-    })
+    setFormData({ ...formData, loading: true })
 
     put('/1/account/settings/', {
-      last: this.input.last.value(),
-      first: this.input.first.value(),
-      company: this.input.company.value(),
-      phone: this.input.phone.value(),
-      zip: this.input.zip.value()
-    }).then(r => {
-      if (r.success === true) {
-        this.setState({
+      last: formData.last,
+      first: formData.first,
+      company: formData.company,
+      phone: formData.phone,
+      zip: formData.zip
+    }).then((response) => {
+      if (response.success === true) {
+        setFormData({
+          ...formData,
           success: true,
           error: '',
           loading: false,
           hasError: {}
         })
       } else {
-        let state = {
+        const state = {
           success: false,
           error: '',
           loading: false,
           hasError: {},
           help: {}
         }
-        for (let key in r.errfor) {
+        for (const key in response.errfor) {
           state.hasError[key] = true
-          state.help[key] = r.errfor[key]
+          state.help[key] = response.errfor[key]
         }
 
-        if (r.errors[0] !== undefined) {
-          state.error = r.errors[0]
+        if (response.errors[0] !== undefined) {
+          state.error = response.errors[0]
         }
-        this.setState(state)
+        setFormData(state)
       }
     })
   } // end handleSubmit
 
-  render () {
-    let alerts = []
+  let alerts = []
 
-    if (this.state.success) {
-      alerts = <Alert
-        type='success'
-        message='個人資料更新成功'
-      />
-    } else if (this.state.error) {
-      alerts = <Alert
-        type='danger'
-        message={this.state.error}
-      />
-    }
-
-    return (
-      <form onSubmit={this.handleSubmit.bind(this)}>
-        <fieldset>
-          <legend>個人資料</legend>
-          {alerts}
-          <TextControl
-            ref={(c) => (this.input.last = c)}
-            name='last'
-            label='姓氏'
-            value={this.state.last}
-            onChange={(e) => (this.setState({ last: e.target.value }))}
-            hasError={this.state.hasError.last}
-            help={this.state.help.last}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.first = c)}
-            name='first'
-            label='名字'
-            value={this.state.first}
-            onChange={(e) => (this.setState({ first: e.target.value }))}
-            hasError={this.state.hasError.first}
-            help={this.state.help.first}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.company = c)}
-            name='company'
-            label='公司'
-            value={this.state.company}
-            onChange={(e) => (this.setState({ company: e.target.value }))}
-            hasError={this.state.hasError.company}
-            help={this.state.help.company}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.phone = c)}
-            name='phone'
-            label='電話'
-            value={this.state.phone}
-            onChange={(e) => (this.setState({ phone: e.target.value }))}
-            hasError={this.state.hasError.phone}
-            help={this.state.help.phone}
-            disabled={this.state.loading}
-          />
-          <TextControl
-            ref={(c) => (this.input.zip = c)}
-            name='zip'
-            label='郵遞區號'
-            value={this.state.zip}
-            onChange={(e) => (this.setState({ zip: e.target.value }))}
-            hasError={this.state.hasError.zip}
-            help={this.state.help.zip}
-            disabled={this.state.loading}
-          />
-          <ControlGroup hideLabel hideHelp>
-            <Button
-              type='submit'
-              inputClasses={{ 'btn-primary': true }}
-              disabled={this.props.loading}>
-              更新
-              <Spinner
-                space='left'
-                show={this.props.loading}
-              />
-            </Button>
-          </ControlGroup>
-        </fieldset>
-      </form>
-    )
+  if (formData.success) {
+    alerts = <Alert type='success' message='個人資料更新成功' />
+  } else if (formData.error) {
+    alerts = <Alert type='danger' message={formData.error} />
   }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <fieldset>
+        <legend>個人資料</legend>
+        {alerts}
+        <TextControl
+          name='last'
+          label='姓氏'
+          value={formData.last}
+          onChange={(e) => setFormData({ ...formData, last: e.target.value })}
+          hasError={formData.hasError.last}
+          help={formData.help.last}
+          disabled={formData.loading}
+        />
+        <TextControl
+          name='first'
+          label='名字'
+          value={formData.first}
+          onChange={(e) => setFormData({ ...formData, first: e.target.value })}
+          hasError={formData.hasError.first}
+          help={formData.help.first}
+          disabled={formData.loading}
+        />
+        <TextControl
+          name='company'
+          label='公司'
+          value={formData.company}
+          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+          hasError={formData.hasError.company}
+          help={formData.help.company}
+          disabled={formData.loading}
+        />
+        <TextControl
+          name='phone'
+          label='電話'
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          hasError={formData.hasError.phone}
+          help={formData.help.phone}
+          disabled={formData.loading}
+        />
+        <TextControl
+          name='zip'
+          label='郵遞區號'
+          value={formData.zip}
+          onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+          hasError={formData.hasError.zip}
+          help={formData.help.zip}
+          disabled={formData.loading}
+        />
+        <ControlGroup hideLabel hideHelp>
+          <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={formData.loading}>
+            更新
+            <Spinner space='left' show={formData.loading} />
+          </Button>
+        </ControlGroup>
+      </fieldset>
+    </form>
+  )
 }
 
 export default DetailsForm
