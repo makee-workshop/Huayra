@@ -2,7 +2,7 @@
 
 [![](https://travis-ci.org/makee-workshop/Huayra.svg?branch=master)](https://travis-ci.org/makee-workshop/Huayra) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/makee-workshop/Huayra/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/makee-workshop/Huayra/blob/master/CONTRIBUTING.md)
 
-Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](https://github.com/jedireza/drywall), a website and user system starter base on Node.JS v14.*. Implemented with Express and React.
+Built heavily based on [Aqua](https://github.com/jedireza/aqua) and [Drywall](https://github.com/jedireza/drywall), a website and user system starter base on Node.JS v16.14.0. Implemented with Express and React.
 
 | On The Server | On The Client  | Development  |
 | ------------- | -------------- | ------------ |
