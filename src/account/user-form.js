@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { get, put } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -6,131 +6,127 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-class UserForm extends Component {
-  constructor (props) {
-    super(props)
-    this.input = {}
-    this.state = {
-      loading: false,
-      success: false,
-      error: undefined,
-      hasError: {},
-      help: {},
-      username: '',
-      email: ''
+const UserForm = () => {
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(undefined)
+  const [hasError, setHasError] = useState({})
+  const [help, setHelp] = useState({})
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+
+  const usernameInput = useRef(null)
+  const emailInput = useRef(null)
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const response = await get('/1/user')
+      if (response.data) {
+        setUsername(response.data.username)
+        setEmail(response.data.email)
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
-  componentDidMount () {
-    this.fetchData()
-  }
-
-  fetchData () {
-    get('/1/user')
-      .then(r => {
-        if (r.data) {
-          this.setState({
-            username: r.data.username,
-            email: r.data.email
-          })
-        }
-      })
-  }
-
-  handleSubmit (event) {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({
-      loading: true
-    })
+    setLoading(true)
+    setError(undefined)
+    setSuccess(false)
+    setHasError({})
+    setHelp({})
 
-    put('/1/account/settings/identity/', {
-      username: this.input.username.value(),
-      email: this.input.email.value()
-    }).then(r => {
-      if (r.success === true) {
-        this.setState({
-          success: true,
-          error: '',
-          loading: false,
-          hasError: {}
-        })
+    try {
+      const response = await put('/1/account/settings/identity/', {
+        username: usernameInput.current.value(),
+        email: emailInput.current.value()
+      })
+
+      if (response.success === true) {
+        setSuccess(true)
+        setError('')
+        setHasError({})
       } else {
-        let state = {
+        const state = {
           success: false,
           error: '',
-          loading: false,
           hasError: {},
           help: {}
         }
-        for (let key in r.errfor) {
+
+        for (const key in response.errfor) {
           state.hasError[key] = true
-          state.help[key] = r.errfor[key]
+          state.help[key] = response.errfor[key]
         }
 
-        if (r.errors[0] !== undefined) {
-          state.error = r.errors[0]
+        if (response.errors[0] !== undefined) {
+          state.error = response.errors[0]
         }
-        this.setState(state)
+
+        setHasError(state.hasError)
+        setHelp(state.help)
+        setError(state.error)
       }
-    })
-  } // end handleSubmit
-
-  render () {
-    let alerts = []
-
-    if (this.state.success) {
-      alerts = <Alert
-        type='success'
-        message='帳號資料更新成功'
-      />
-    } else if (this.state.error) {
-      alerts = <Alert
-        type='danger'
-        message={this.state.error}
-      />
+    } catch (error) {
+      console.error(error)
+      setError('出現錯誤，請稍後再試。')
+    } finally {
+      setLoading(false)
     }
-
-    return (
-      <form onSubmit={this.handleSubmit.bind(this)}>
-        <legend>帳號資料</legend>
-        {alerts}
-        <TextControl
-          ref={(c) => (this.input.username = c)}
-          name='username'
-          label='帳號'
-          value={this.state.username}
-          onChange={(e) => (this.setState({ username: e.target.value }))}
-          hasError={this.state.hasError.username}
-          help={this.state.help.username}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.email = c)}
-          name='email'
-          label='email'
-          value={this.state.email}
-          onChange={(e) => (this.setState({ email: e.target.value }))}
-          hasError={this.state.hasError.email}
-          help={this.state.help.email}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.props.loading}>
-            更新
-            <Spinner
-              space='left'
-              show={this.props.loading}
-            />
-          </Button>
-        </ControlGroup>
-      </form>
-    )
   }
+
+  let alerts = []
+
+  if (success) {
+    alerts = <Alert type='success' message='帳號資料更新成功' />
+  } else if (error) {
+    alerts = <Alert type='danger' message={error} />
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <legend>帳號資料</legend>
+      {alerts}
+      <TextControl
+        ref={usernameInput}
+        name='username'
+        label='帳號'
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        hasError={hasError.username}
+        help={help.username}
+        disabled={loading}
+      />
+      <TextControl
+        ref={emailInput}
+        name='email'
+        label='email'
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        hasError={hasError.email}
+        help={help.email}
+        disabled={loading}
+      />
+      <ControlGroup hideLabel hideHelp>
+        <Button
+          type='submit'
+          inputClasses={{ 'btn-primary': true }}
+          disabled={loading}
+        >
+          更新
+          <Spinner space='left' show={loading} />
+        </Button>
+      </ControlGroup>
+    </form>
+  )
 }
 
 export default UserForm

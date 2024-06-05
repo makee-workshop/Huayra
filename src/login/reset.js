@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { Container, Row, Col } from 'reactstrap'
 import { Redirect } from 'react-router'
@@ -10,153 +10,163 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-class ResetPage extends Component {
-  constructor (props) {
-    super(props)
-    this.input = {}
-    this.state = {
-      loading: false,
-      success: false,
-      error: undefined,
-      hasError: {},
-      help: {}
-    }
-  }
+const ResetPage = ({ authenticated }) => {
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(undefined)
+  const [hasError, setHasError] = useState({})
+  const [help, setHelp] = useState({})
 
-  componentDidMount () {
-    if (this.input.password) {
-      this.input.password.focus()
-    }
-  }
+  const { email, key } = useParams()
 
-  handleSubmit (event) {
+  const passwordInput = useRef(null)
+  const confirmInput = useRef(null)
+
+  useEffect(() => {
+    if (passwordInput.current) {
+      passwordInput.current.focus()
+    }
+  }, [])
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({
-      loading: true
-    })
+    setLoading(true)
 
-    put('/1/login/reset/' + this.props.match.params.email + '/' +
-    this.props.match.params.key + '/', {
-      password: this.input.password.value(),
-      confirm: this.input.confirm.value(),
-      email: this.props.match.params.email,
-      token: this.props.match.params.key
-    }).then(
-      r => {
-        if (r.success === true) {
-          this.setState({
-            success: true,
-            error: '',
-            loading: false
-          })
-        } else {
-          let state = {
-            success: false,
-            error: '',
-            loading: false,
-            hasError: {},
-            help: {}
-          }
-          for (let key in r.errfor) {
-            state.hasError[key] = true
-            state.help[key] = r.errfor[key]
-          }
+    try {
+      const response = await put(`/1/login/reset/${email}/${key}/`, {
+        password: passwordInput.current.value(),
+        confirm: confirmInput.current.value(),
+        email,
+        token: key
+      })
 
-          if (r.errors[0] !== undefined) {
-            state.error = r.errors[0]
-          }
-          this.setState(state)
+      if (response.success === true) {
+        setSuccess(true)
+        setError('')
+        setLoading(false)
+      } else {
+        const state = {
+          success: false,
+          error: '',
+          loading: false,
+          hasError: {},
+          help: {}
         }
+
+        for (const key in response.errfor) {
+          state.hasError[key] = true
+          state.help[key] = response.errfor[key]
+        }
+
+        if (response.errors[0] !== undefined) {
+          state.error = response.errors[0]
+        }
+
+        setHasError(state.hasError)
+        setHelp(state.help)
+        setError(state.error)
+        setLoading(false)
       }
+    } catch (error) {
+      console.error(error)
+      setError('出現錯誤，請稍後再試。')
+      setLoading(false)
+    }
+  }
+
+  if (authenticated) {
+    return <Redirect to='/' />
+  }
+
+  const alerts = []
+
+  if (success) {
+    alerts.push(
+      <div key='success'>
+        <div className='alert alert-success'>您的密碼已重置，請重新登入。</div>
+        <Link to='/login' className='btn btn-link'>
+          返回登入
+        </Link>
+      </div>
     )
   }
 
-  render () {
-    let alerts = []
-
-    if (this.state.success) {
-      alerts.push(<div key='success'>
-        <div className='alert alert-success'>
-          您的密碼已重置，請重新登入。
-        </div>
-        <Link to='/login' className='btn btn-link'>返回登入</Link>
-      </div>)
-    } else if (this.props.authenticated) {
-      return (<Redirect to='/' />)
-    }
-
-    if (this.state.error) {
-      alerts.push(<div key='danger' className='alert alert-danger'>
-        {this.state.error}
-      </div>)
-    }
-
-    return (
-      <Container>
-        <Helmet>
-          <title>重置密碼</title>
-        </Helmet>
-
-        <h1 className='page-header'>重置您的密碼</h1>
-        <Row>
-          <Col sm={6}>
-            <form onSubmit={this.handleSubmit.bind(this)}>
-              {alerts}
-              <TextControl
-                ref={(c) => (this.input.password = c)}
-                name='password'
-                label='新密碼'
-                type='password'
-                hasError={this.state.hasError.password}
-                help={this.state.help.password}
-                disabled={this.state.loading}
-              />
-              <TextControl
-                ref={(c) => (this.input.confirm = c)}
-                name='confirm'
-                label='再次輸入新密碼'
-                type='password'
-                hasError={this.state.hasError.confirm}
-                help={this.state.help.confirm}
-                disabled={this.state.loading}
-              />
-              <TextControl
-                name='_key'
-                label='金鑰'
-                hasError={this.state.hasError.key}
-                value={this.props.match.params.key}
-                help={this.state.help.key}
-                disabled
-              />
-              <TextControl
-                name='_email'
-                label='Email'
-                hasError={this.state.hasError.email}
-                value={this.props.match.params.email}
-                help={this.state.help.email}
-                disabled
-              />
-              <ControlGroup hideLabel hideHelp>
-                <Button
-                  type='submit'
-                  inputClasses={{ 'btn-primary': true }}
-                  disabled={this.state.loading}>
-                  設定密碼
-                  <Spinner space='left' show={this.state.loading} />
-                </Button>
-                <Link to='/login' className='btn btn-link'>返回登入</Link>
-              </ControlGroup>
-            </form>
-          </Col>
-        </Row>
-      </Container>
+  if (error) {
+    alerts.push(
+      <div key='danger' className='alert alert-danger'>
+        {error}
+      </div>
     )
   }
+
+  return (
+    <Container>
+      <Helmet>
+        <title>重置密碼</title>
+      </Helmet>
+
+      <h1 className='page-header'>重置您的密碼</h1>
+      <Row>
+        <Col sm={6}>
+          <form onSubmit={handleSubmit}>
+            {alerts}
+            <TextControl
+              ref={passwordInput}
+              name='password'
+              label='新密碼'
+              type='password'
+              hasError={hasError.password}
+              help={help.password}
+              disabled={loading}
+            />
+            <TextControl
+              ref={confirmInput}
+              name='confirm'
+              label='再次輸入新密碼'
+              type='password'
+              hasError={hasError.confirm}
+              help={help.confirm}
+              disabled={loading}
+            />
+            <TextControl
+              name='_key'
+              label='金鑰'
+              hasError={hasError.key}
+              value={key}
+              help={help.key}
+              disabled
+            />
+            <TextControl
+              name='_email'
+              label='Email'
+              hasError={hasError.email}
+              value={email}
+              help={help.email}
+              disabled
+            />
+            <ControlGroup hideLabel hideHelp>
+              <Button
+                type='submit'
+                inputClasses={{ 'btn-primary': true }}
+                disabled={loading}
+              >
+                設定密碼
+                <Spinner space='left' show={loading} />
+              </Button>
+              <Link to='/login' className='btn btn-link'>
+                返回登入
+              </Link>
+            </ControlGroup>
+          </form>
+        </Col>
+      </Row>
+    </Container>
+  )
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   authenticated: state.index.authenticated
 })
 

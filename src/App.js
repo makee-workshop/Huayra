@@ -3,7 +3,7 @@ import Login from './login/login'
 import Forgot from './login/forgot'
 import Logout from './login/logout'
 import Reset from './login/reset'
-import Signup from './login/signup'
+import SignupPage from './login/signup'
 import Store from './utils/reducer'
 import Admin from './admin/home'
 import AdminUsers from './admin/users'
@@ -48,7 +48,7 @@ class App extends Component {
             <AppRoute exact path='/login' layout={DefaultLayout} component={requireWeakAuth(Login)} />
             <AppRoute exact path='/login/forgot' layout={DefaultLayout} component={requireWeakAuth(Forgot)} />
             <AppRoute exact path='/login/reset/:email/:key/' layout={DefaultLayout} component={requireWeakAuth(Reset)} />
-            <AppRoute exact path='/signup' layout={DefaultLayout} component={requireWeakAuth(Signup)} />
+            <AppRoute exact path='/signup' layout={DefaultLayout} component={requireWeakAuth(SignupPage)} />
             <AppRoute exact path='/account' layout={AccountLayout} component={requireAuthentication(Account)} />
             <AppRoute exact path='/account/setting' layout={AccountLayout} component={requireAuthentication(Setting)} />
             <AppRoute exact path='/logout' layout={AccountLayout} component={Logout} />

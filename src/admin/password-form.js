@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useRef } from 'react'
 import { put } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -6,113 +6,103 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-class PasswordForm extends Component {
-  constructor (props) {
-    super(props)
-    this.input = {}
-    this.state = {
-      loading: false,
-      success: false,
-      error: undefined,
-      hasError: {},
-      help: {},
-      newPassword: '',
-      confirm: ''
-    }
-  }
+const PasswordForm = ({ uid, loading }) => {
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(undefined)
+  const [hasError, setHasError] = useState({})
+  const [help, setHelp] = useState({})
 
-  handleSubmit (event) {
+  const newPasswordInput = useRef(null)
+  const confirmInput = useRef(null)
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({
-      loading: true
-    })
+    setError(undefined)
+    setSuccess(false)
+    setHasError({})
+    setHelp({})
 
-    put('/1/admin/user/' + this.props.uid + '/password', {
-      newPassword: this.input.newPassword.value(),
-      confirm: this.input.confirm.value()
-    }).then(r => {
-      if (r.success === true) {
-        this.setState({
-          success: true,
-          error: '',
-          loading: false,
-          hasError: {}
-        })
+    try {
+      const response = await put(`/1/admin/user/${uid}/password`, {
+        newPassword: newPasswordInput.current.value(),
+        confirm: confirmInput.current.value()
+      })
+
+      if (response.success === true) {
+        setSuccess(true)
+        setError('')
+        setHasError({})
       } else {
-        let state = {
+        const state = {
           success: false,
           error: '',
-          loading: false,
           hasError: {},
           help: {}
         }
-        for (let key in r.errfor) {
+
+        for (const key in response.errfor) {
           state.hasError[key] = true
-          state.help[key] = r.errfor[key]
+          state.help[key] = response.errfor[key]
         }
 
-        if (r.errors[0] !== undefined) {
-          state.error = r.errors[0]
+        if (response.errors[0] !== undefined) {
+          state.error = response.errors[0]
         }
-        this.setState(state)
+
+        setHasError(state.hasError)
+        setHelp(state.help)
+        setError(state.error)
       }
-    })
-  } // end handleSubmit
-
-  render () {
-    let alerts = []
-
-    if (this.state.success) {
-      alerts = <Alert
-        type='success'
-        message='密碼更新成功'
-      />
-    } else if (this.state.error) {
-      alerts = <Alert
-        type='danger'
-        message={this.state.error}
-      />
+    } catch (error) {
+      console.error(error)
+      setError('出現錯誤，請稍後再試。')
     }
-
-    return (
-      <form onSubmit={this.handleSubmit.bind(this)}>
-        <legend> 重設密碼 </legend>
-        {alerts}
-        <TextControl
-          ref={(c) => (this.input.newPassword = c)}
-          name='newPassword'
-          label='新密碼'
-          type='password'
-          hasError={this.state.hasError.newPassword}
-          help={this.state.help.newPassword}
-          disabled={this.state.loading}
-        />
-        <TextControl
-          ref={(c) => (this.input.confirm = c)}
-          name='confirm'
-          label='再次輸入新密碼'
-          type='password'
-          hasError={this.state.hasError.confirm}
-          help={this.state.help.confirm}
-          disabled={this.state.loading}
-        />
-        <ControlGroup hideLabel hideHelp>
-          <Button
-            type='submit'
-            inputClasses={{ 'btn-primary': true }}
-            disabled={this.props.loading}>
-            更新
-            <Spinner
-              space='left'
-              show={this.props.loading}
-            />
-          </Button>
-        </ControlGroup>
-      </form>
-    )
   }
+
+  let alerts = []
+
+  if (success) {
+    alerts = <Alert type='success' message='密碼更新成功' />
+  } else if (error) {
+    alerts = <Alert type='danger' message={error} />
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <legend>重設密碼</legend>
+      {alerts}
+      <TextControl
+        ref={newPasswordInput}
+        name='newPassword'
+        label='新密碼'
+        type='password'
+        hasError={hasError.newPassword}
+        help={help.newPassword}
+        disabled={loading}
+      />
+      <TextControl
+        ref={confirmInput}
+        name='confirm'
+        label='再次輸入新密碼'
+        type='password'
+        hasError={hasError.confirm}
+        help={help.confirm}
+        disabled={loading}
+      />
+      <ControlGroup hideLabel hideHelp>
+        <Button
+          type='submit'
+          inputClasses={{ 'btn-primary': true }}
+          disabled={loading}
+        >
+          更新
+          <Spinner space='left' show={loading} />
+        </Button>
+      </ControlGroup>
+    </form>
+  )
 }
 
 export default PasswordForm
