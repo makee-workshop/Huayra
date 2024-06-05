@@ -22,12 +22,6 @@ const Login = (props) => {
   const [role, setRole] = useState('')
   const [returnUrl, setReturnUrl] = useState('')
 
-  useEffect(() => {
-    if (inputRef.current.username) {
-      inputRef.current.username.focus()
-    }
-  }, [])
-
   const getParameterByName = (name) => {
     name = name.replace(/[[\]]/g, '\\$&')
     const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)')
@@ -36,6 +30,13 @@ const Login = (props) => {
     if (!results[2]) return ''
     return decodeURIComponent(results[2].replace(/\+/g, ' '))
   }
+
+  useEffect(() => {
+    setReturnUrl(getParameterByName('returnUrl'))
+    if (inputRef.current.username) {
+      inputRef.current.username.focus()
+    }
+  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -56,7 +57,6 @@ const Login = (props) => {
           setError('')
           setLoading(false)
           setRole(response.data.role)
-          setReturnUrl(getParameterByName('returnUrl'))
         } else {
           const newState = {
             success: false,
@@ -97,8 +97,6 @@ const Login = (props) => {
     return <Redirect to='/account' />
   } else if (success && role === 'admin') {
     return <Redirect to='/admin' />
-  } else if (props.authenticated) {
-    return <Redirect to='/' />
   }
 
   let alerts = null
