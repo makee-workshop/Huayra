@@ -27,11 +27,13 @@ import 'react-table/react-table.css'
 import './App.css'
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
-  <Route {...rest} render={props => (
-    <Layout>
-      <Component {...props} />
-    </Layout>
-  )} />
+  <Route
+    {...rest} render={props => (
+      <Layout>
+        <Component {...props} />
+      </Layout>
+    )}
+  />
 )
 
 class App extends Component {
