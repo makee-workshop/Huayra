@@ -1,46 +1,42 @@
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { loginError } from './userAction'
+import { useHistory, useLocation } from 'react-router-dom'
 
-export function requireAdminAuth (Component) {
-  class AuthenticatedComponent extends React.Component {
-    componentDidMount () {
-      try {
-        var token = localStorage.getItem('token')
-        if (token) {
-          const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
-          if (!jwtPayload._id || !jwtPayload.roles.admin) {
-            this.loginError()
-          }
-        } else {
-          this.loginError()
-        }
-      } catch (_error) {
-        this.loginError()
-      }
-    }
+const requireAdminAuth = (Component) => {
+  const AuthenticatedComponent = ({ loginError, ...restProps }) => {
+    const history = useHistory()
+    const location = useLocation()
 
-    loginError () {
-      this.props.loginError()
-      if (window.location.pathname === '/') {
-        window.location.assign('/')
+    const handleLoginError = useCallback(() => {
+      loginError()
+      if (location.pathname === '/') {
+        history.replace('/')
       } else {
-        window.location.assign(`/login?returnUrl=${window.location.pathname}`)
+        history.replace(`/login?returnUrl=${location.pathname}`)
       }
-    }
+    }, [loginError, history, location])
 
-    render () {
-      return (
-        <Component {...this.props} />
-      )
-    }
+    useEffect(() => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
+        if (!jwtPayload._id || !jwtPayload.roles.admin) {
+          handleLoginError()
+        }
+      } else {
+        handleLoginError()
+      }
+    }, [handleLoginError])
+
+    return <Component {...restProps} />
   }
 
-  const mapDispatchToProps = dispatch => ({
-    loginError () {
-      dispatch(loginError())
-    }
+  const mapDispatchToProps = (dispatch) => ({
+    loginError: () => dispatch(loginError())
   })
 
   return connect(null, mapDispatchToProps)(AuthenticatedComponent)
 }
+
+export default requireAdminAuth
