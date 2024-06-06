@@ -1,56 +1,41 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { Container, Row, Col } from 'reactstrap'
 import { Link } from 'react-router-dom'
-import ReactTable from 'react-table'
+import DataTable from 'react-data-table-component'
 import { get, deleteItem } from '../utils/httpAgent'
 
 const UsersPage = () => {
-  const [state, setState] = useState({
-    loading: false,
-    success: false,
-    error: undefined,
-    hasError: {},
-    data: [],
-    pages: null
-  })
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [totalRows, setTotalRows] = useState(0)
+  const [perPage, setPerPage] = useState(10)
+  const [cuerrntPage, setCurrentPage] = useState(1)
 
-  const fetchUserList = (state) => {
-    const page = state ? state.page + 1 : 1
-    const limit = state ? state.pageSize : 10
-    let sorted = state ? state.sorted ? state.sorted : [] : []
+  useEffect(() => {
+    fetchData(cuerrntPage)
+  }, [])
 
-    if (sorted.length > 0) {
-      sorted = `${sorted[0].desc ? '-' : ''}${sorted[0].id}`
-    }
-
-    setState({ ...state, loading: true })
-
-    get(`/1/admin/users?page=${page}&limit=${limit}&sort=${sorted}`).then((response) => {
-      if (response.success === true) {
-        setState({
-          ...state,
-          loading: false,
-          success: true,
-          error: '',
-          data: response.data,
-          pages: response.pages.total
-        })
-      } else {
-        const newState = {
-          loading: false,
-          success: false,
-          error: '',
-          hasError: {},
-          help: {}
+  const fetchData = (page, limit = perPage) => {
+    setLoading(true)
+    setCurrentPage(page)
+    get(`/1/admin/users?page=${page}&limit=${limit}`) // &sort=${sorted}
+      .then(r => {
+        if (r.success === true) {
+          setData(r.data)
+          setTotalRows(r.items.total)
+          setLoading(false)
         }
+      })
+  }
 
-        if (response.errors[0] !== undefined) {
-          newState.error = response.errors[0]
-        }
-        setState(newState)
-      }
-    })
+  const handlePageChange = page => {
+    fetchData(page)
+  }
+
+  const handlePerRowsChange = async (newPerPage, page) => {
+    setPerPage(newPerPage)
+    fetchData(page, newPerPage)
   }
 
   const deleteUser = (uid, username) => {
@@ -60,55 +45,51 @@ const UsersPage = () => {
 
     deleteItem(`/1/admin/users/${uid}`).then((response) => {
       if (response.success === true) {
-        fetchUserList()
+        fetchData(cuerrntPage)
       }
     })
   }
 
   const columns = [
     {
-      Header: '操作',
-      accessor: '_id',
-      width: 55,
-      Cell: (row) => (
+      name: '操作',
+      width: '60px',
+      selector: row => (
         <span>
-          <Link to={`/admin/user/${row.value}/${row.original.roles.account._id}/${row.original.username}`} className='btn btn-sm'>
+          <Link to={`/admin/user/${row._id}/${row.roles.account._id}/${row.username}`} className='btn btn-sm'>
             <i className='lnr lnr-pencil' />
           </Link>
         </span>
       )
     }, {
-      Header: '帳號',
-      accessor: 'username',
-      width: 100
+      name: '帳號',
+      width: '100px',
+      sortable: true,
+      selector: row => row.username
     }, {
-      Header: '姓名',
-      accessor: 'roles',
-      width: 100,
-      Cell: (row) => (
-        <span>{row.value.account.name.full}</span>
-      )
+      name: '姓名',
+      width: '100px',
+      sortable: true,
+      selector: row => row.roles.account.name.full
     }, {
-      Header: 'email',
-      accessor: 'email',
-      width: 200
+      name: 'email',
+      width: '200px',
+      sortable: true,
+      selector: row => row.email
     }, {
-      Header: '電話',
-      accessor: 'roles',
-      width: 100,
-      Cell: (row) => (
-        <span>{row.value.account.phone}</span>
-      )
+      name: '電話',
+      width: '120px',
+      sortable: true,
+      selector: row => row.roles.account.phone
     }, {
-      Header: '是否啟用',
-      accessor: 'isActive',
-      width: 100,
-      Cell: (row) => (
+      name: '是否啟用',
+      width: '100px',
+      selector: (row) => (
         <span>
           <span style={{
-            color: row.value === true
+            color: row.isActive === true
               ? '#0000FF'
-              : row.value === false
+              : row.isActive === false
                 ? '#FF0000'
                 : '#000',
             transition: 'all .3s ease'
@@ -116,32 +97,35 @@ const UsersPage = () => {
           >
             &#x25cf;
           </span>
-          {row.value === true
+          {row.isActive === true
             ? '啟用'
-            : row.value === false
+            : row.isActive === false
               ? '關閉'
               : '異常狀態'}
         </span>
       )
     }, {
-      Header: '權限',
-      accessor: 'roles',
-      width: 60,
-      Cell: (row) => (
-        <span>{row.value && row.value.admin ? '管理者' : '一般'}</span>
+      name: '權限',
+      width: '80px',
+      selector: (row) => (
+        <span>{row.roles && row.roles.admin ? '管理者' : '一般'}</span>
       )
     }, {
-      Header: '創立時間',
-      accessor: 'timeCreated',
-      Cell: (row) => (
-        <span>{new Date(row.value).toLocaleString('tw')}</span>
+      name: '創立時間',
+      sortable: true,
+      sortFunction: (rowA, rowB) => {
+        if (rowA.timeCreated > rowB.timeCreated) return 1
+        if (rowA.timeCreated < rowB.timeCreated) return -1
+        return 0
+      },
+      selector: (row) => (
+        <span>{new Date(row.timeCreated).toLocaleString('tw')}</span>
       )
     }, {
-      Header: '',
-      accessor: '_id',
-      width: 50,
-      Cell: (row) => (
-        <button className='btn btn-danger btn-sm' onClick={() => deleteUser(row.value, row.original.username)}>
+      name: '',
+      width: '65px',
+      selector: (row) => (
+        <button className='btn btn-danger btn-sm' onClick={() => deleteUser(row._id, row.username)}>
           <i className='lnr lnr-cross' />
         </button>
       )
@@ -157,21 +141,31 @@ const UsersPage = () => {
       <h1 className='page-header'>用戶管理</h1>
       <Row>
         <Col md={12}>
-          <ReactTable
-            manual
-            data={state.data}
-            pages={state.pages}
-            loading={state.loading}
-            onFetchData={fetchUserList}
+          <DataTable
+            title=''
             columns={columns}
-            previousText='上一頁'
-            nextText='下一頁'
-            pageText='頁'
-            ofText='/'
-            rowsText='筆'
-            className='-striped -highlight'
-            defaultPageSize={10}
-            defaultSorted={[{ id: 'timeCreated', desc: true }]}
+            data={data}
+            progressPending={loading}
+            progressComponent={
+              <div
+                class='spinner-border text-primary'
+                role='status'
+                style={{ width: '5rem', height: '5rem' }}
+              >
+                <span class='sr-only'>Loading...</span>
+              </div>
+            }
+            paginationTotalRows={totalRows}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handlePerRowsChange}
+            pagination
+            paginationServer
+            paginationComponentOptions={{
+              rowsPerPageText: '每頁顯示',
+              rangeSeparatorText: '之'
+            }}
+            defaultSortFieldId={8}
+            defaultSortAsc={false}
           />
         </Col>
       </Row>
