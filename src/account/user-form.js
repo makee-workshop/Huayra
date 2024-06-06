@@ -24,7 +24,7 @@ const UserForm = () => {
 
   const fetchData = async () => {
     try {
-      const response = await get('/1/user')
+      const response = await get('/1/account/user')
       if (response.data) {
         setUsername(response.data.username)
         setEmail(response.data.email)

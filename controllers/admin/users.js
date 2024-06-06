@@ -1,9 +1,9 @@
 'use strict'
 
 exports.update = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
-  var userObj = null
-  var adminId = ''
+  const workflow = req.app.utility.workflow(req, res)
+  let userObj = null
+  let adminId = ''
 
   workflow.on('validate', function () {
     req.body.isActive = req.body.isActive === 'true'
@@ -44,7 +44,7 @@ exports.update = function (req, res, next) {
   })
 
   workflow.on('setAdmin', function (userObj) {
-    var fieldsToSet = {
+    const fieldsToSet = {
       user: {
         id: userObj._id,
         name: userObj.username
@@ -101,7 +101,7 @@ exports.update = function (req, res, next) {
   })
 
   workflow.on('patchUser', function () {
-    var fieldsToSet = {
+    const fieldsToSet = {
       isActive: req.body.isActive,
       username: req.body.username,
       email: req.body.email.toLowerCase(),
@@ -122,7 +122,7 @@ exports.update = function (req, res, next) {
       }
     }
 
-    var options = { new: true }
+    const options = { new: true }
     req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, user) {
       if (err) {
         return workflow.emit('exception', err)
@@ -134,13 +134,13 @@ exports.update = function (req, res, next) {
 
   workflow.on('patchAdmin', function (user) {
     if (user.roles.admin) {
-      var fieldsToSet = {
+      const fieldsToSet = {
         user: {
           id: req.params.id,
           name: user.username
         }
       }
-      var options = { new: true }
+      const options = { new: true }
       req.app.db.models.Admin.findByIdAndUpdate(user.roles.admin, fieldsToSet, options, function (err, admin) {
         if (err) {
           return workflow.emit('exception', err)
@@ -155,13 +155,13 @@ exports.update = function (req, res, next) {
 
   workflow.on('patchAccount', function (user) {
     if (user.roles.account) {
-      var fieldsToSet = {
+      const fieldsToSet = {
         user: {
           id: req.params.id,
           name: user.username
         }
       }
-      var options = { new: true }
+      const options = { new: true }
       req.app.db.models.Account.findByIdAndUpdate(user.roles.account, fieldsToSet, options, function (err, account) {
         if (err) {
           return workflow.emit('exception', err)
@@ -203,7 +203,7 @@ exports.update = function (req, res, next) {
 }
 
 exports.password = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.newPassword) {
@@ -231,8 +231,8 @@ exports.password = function (req, res, next) {
         return workflow.emit('exception', err)
       }
 
-      var fieldsToSet = { password: hash }
-      var options = { new: true }
+      const fieldsToSet = { password: hash }
+      const options = { new: true }
       req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, user) {
         if (err) {
           return workflow.emit('exception', err)
@@ -256,7 +256,7 @@ exports.password = function (req, res, next) {
 }
 
 exports.delete = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.user.roles.admin.isMemberOf('root')) {

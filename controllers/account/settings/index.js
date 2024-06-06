@@ -1,9 +1,9 @@
 'use strict'
 
-var renderSettings = function (req, res, next, oauthMessage) {
-  var outcome = {}
+const renderSettings = function (req, res, next, oauthMessage) {
+  const outcome = {}
 
-  var getAccountData = function (callback) {
+  const getAccountData = function (callback) {
     req.app.db.models.Account.findById(req.user.roles.account.id, 'name company phone zip').exec(function (err, account) {
       if (err) {
         return callback(err, null)
@@ -14,7 +14,7 @@ var renderSettings = function (req, res, next, oauthMessage) {
     })
   }
 
-  var getUserData = function (callback) {
+  const getUserData = function (callback) {
     req.app.db.models.User.findById(req.user.id, 'username email').exec(function (err, user) {
       if (err) {
         callback(err, null)
@@ -25,7 +25,7 @@ var renderSettings = function (req, res, next, oauthMessage) {
     })
   }
 
-  var asyncFinally = function (err, results) {
+  const asyncFinally = function (err, results) {
     if (err) {
       return next(err)
     }
@@ -39,7 +39,7 @@ exports.init = function (req, res, next) {
 }
 
 exports.update = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.first) {
@@ -58,15 +58,15 @@ exports.update = function (req, res, next) {
   })
 
   workflow.on('patchAccount', function () {
-    var reg = /^[\u4E00-\u9FA5]+$/
-    var fullName = ''
+    const reg = /^[\u4E00-\u9FA5]+$/
+    let fullName = ''
     if (reg.test(req.body.first + req.body.last)) {
       fullName = req.body.last + req.body.first
     } else {
       fullName = req.body.first + ' ' + req.body.last
     }
 
-    var fieldsToSet = {
+    const fieldsToSet = {
       name: {
         first: req.body.first,
         last: req.body.last,
@@ -84,7 +84,7 @@ exports.update = function (req, res, next) {
         req.body.zip
       ]
     }
-    var options = {
+    const options = {
       select: 'name company phone zip',
       new: true
     }
@@ -102,7 +102,7 @@ exports.update = function (req, res, next) {
 }
 
 exports.identity = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.username) {
@@ -155,7 +155,7 @@ exports.identity = function (req, res, next) {
   })
 
   workflow.on('patchUser', function () {
-    var fieldsToSet = {
+    const fieldsToSet = {
       username: req.body.username,
       email: req.body.email.toLowerCase(),
       search: [
@@ -163,7 +163,7 @@ exports.identity = function (req, res, next) {
         req.body.email
       ]
     }
-    var options = {
+    const options = {
       select: 'username email',
       new: true
     }
@@ -178,13 +178,13 @@ exports.identity = function (req, res, next) {
 
   workflow.on('patchAdmin', function (user) {
     if (user.roles.admin) {
-      var fieldsToSet = {
+      const fieldsToSet = {
         user: {
           id: req.user.id,
           name: user.username
         }
       }
-      var options = { new: true }
+      const options = { new: true }
       req.app.db.models.Admin.findByIdAndUpdate(user.roles.admin, fieldsToSet, options, function (err, admin) {
         if (err) {
           return workflow.emit('exception', err)
@@ -199,13 +199,13 @@ exports.identity = function (req, res, next) {
 
   workflow.on('patchAccount', function (user) {
     if (user.roles.account) {
-      var fieldsToSet = {
+      const fieldsToSet = {
         user: {
           id: req.user.id,
           name: user.username
         }
       }
-      var options = { new: true }
+      const options = { new: true }
       req.app.db.models.Account.findByIdAndUpdate(user.roles.account, fieldsToSet, options, function (err, account) {
         if (err) {
           return workflow.emit('exception', err)
@@ -233,7 +233,7 @@ exports.identity = function (req, res, next) {
 }
 
 exports.password = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.newPassword) {
@@ -261,8 +261,8 @@ exports.password = function (req, res, next) {
         return workflow.emit('exception', err)
       }
 
-      var fieldsToSet = { password: hash }
-      var options = { new: true }
+      const fieldsToSet = { password: hash }
+      const options = { new: true }
       req.app.db.models.User.findByIdAndUpdate(req.user.id, fieldsToSet, options, function (err, user) {
         if (err) {
           return workflow.emit('exception', err)

@@ -1,7 +1,7 @@
 'use strict'
 
 exports.signup = function (req, res) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.username) {
@@ -63,7 +63,7 @@ exports.signup = function (req, res) {
         return workflow.emit('exception', err)
       }
 
-      var fieldsToSet = {
+      const fieldsToSet = {
         isActive: true,
         username: req.body.username,
         email: req.body.email.toLowerCase(),
@@ -85,7 +85,7 @@ exports.signup = function (req, res) {
   })
 
   workflow.on('createAccount', function () {
-    var fieldsToSet = {
+    const fieldsToSet = {
       isVerified: req.app.config.requireAccountVerification ? 'no' : 'yes',
       'name.full': workflow.user.username,
       user: {

@@ -30,7 +30,7 @@ const ForgotPage = ({ authenticated }) => {
 
     setLoading(true)
 
-    post('/login/forgot/', {
+    post('/1/login/forgot/', {
       email: emailRef.current.value()
     }).then((r) => {
       if (r.success === true) {

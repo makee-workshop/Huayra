@@ -2,7 +2,7 @@
 
 exports.create = function (req, res, next) {
   var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var checkFields = {
+  const checkFields = {
     name: 'required',
     content: ''
   }
@@ -22,7 +22,7 @@ exports.create = function (req, res, next) {
 
 exports.update = function (req, res, next) {
   var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var checkFields = {
+  const checkFields = {
     name: '',
     content: '',
     date: 'date'

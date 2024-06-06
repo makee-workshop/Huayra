@@ -1,7 +1,7 @@
 'use strict'
 
 exports.set = function (req, res) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.password) {
@@ -24,7 +24,7 @@ exports.set = function (req, res) {
   })
 
   workflow.on('findUser', function () {
-    var conditions = {
+    const conditions = {
       email: req.params.email,
       resetPasswordExpires: { $gt: Date.now() }
     }
@@ -59,8 +59,8 @@ exports.set = function (req, res) {
         return workflow.emit('exception', err)
       }
 
-      var fieldsToSet = { password: hash, resetPasswordToken: '' }
-      var options = { new: true }
+      const fieldsToSet = { password: hash, resetPasswordToken: '' }
+      const options = { new: true }
       req.app.db.models.User.findByIdAndUpdate(user._id, fieldsToSet, options, function (err, user) {
         if (err) {
           return workflow.emit('exception', err)

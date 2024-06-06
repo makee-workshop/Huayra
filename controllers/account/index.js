@@ -16,7 +16,7 @@ exports.getAccountInfo = function (req, res, next) {
 
 exports.adminGetAccountInfo = function (req, res, next) {
   var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var aid = req.params.id
+  const aid = req.params.id
   workflow.outcome.data = {}
 
   req.app.db.models.Account.findById(aid).exec(function (err, account) {
@@ -45,7 +45,7 @@ exports.getUserInfo = function (req, res, next) {
 
 exports.admingetUserInfo = function (req, res, next) {
   var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var uid = req.params.id
+  const uid = req.params.id
   workflow.outcome.data = {}
 
   req.app.db.models.User.findById(uid, 'username email isActive roles').exec(function (err, user) {
@@ -75,7 +75,7 @@ exports.adminGetUsers = function (req, res, next) {
     }, function (err, results) {
       if (err) return workflow.emit('exception', err)
 
-      for (var key in results) {
+      for (const key in results) {
         workflow.outcome[key] = results[key]
       }
 

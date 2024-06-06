@@ -1,7 +1,7 @@
 'use strict'
 
 exports.update = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.first) {
@@ -20,15 +20,15 @@ exports.update = function (req, res, next) {
   })
 
   workflow.on('patchAccount', function () {
-    var reg = /^[\u4E00-\u9FA5]+$/
-    var fullName = ''
+    const reg = /^[\u4E00-\u9FA5]+$/
+    let fullName = ''
     if (reg.test(req.body.first + req.body.last)) {
       fullName = req.body.last + req.body.first
     } else {
       fullName = req.body.first + ' ' + req.body.last
     }
 
-    var fieldsToSet = {
+    const fieldsToSet = {
       name: {
         first: req.body.first,
         middle: req.body.middle,
@@ -47,7 +47,7 @@ exports.update = function (req, res, next) {
         req.body.zip
       ]
     }
-    var options = { new: true }
+    const options = { new: true }
     req.app.db.models.Account.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, account) {
       if (err) {
         return workflow.emit('exception', err)

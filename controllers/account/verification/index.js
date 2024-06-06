@@ -1,6 +1,6 @@
 'use strict'
 
-var sendVerificationEmail = function (req, res, options) {
+const sendVerificationEmail = function (req, res, options) {
   req.app.utility.sendmail(req, res, {
     from: req.app.config.smtp.from.name + ' <' + req.app.config.smtp.from.address + '>',
     to: options.email,
@@ -8,7 +8,7 @@ var sendVerificationEmail = function (req, res, options) {
     textPath: 'account/verification/email-text',
     htmlPath: 'account/verification/email-html',
     locals: {
-      verifyURL: req.protocol + '://' + req.headers.host + '/account/verification/' + options.verificationToken + '/',
+      verifyURL: req.protocol + '://' + req.headers.host + '/1/account/verification/' + options.verificationToken + '/',
       projectName: req.app.config.projectName
     },
     success: function () {
@@ -25,7 +25,7 @@ exports.init = function (req, res, next) {
     return res.redirect(req.user.defaultReturnUrl())
   }
 
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('renderPage', function () {
     req.app.db.models.User.findById(req.user.id, 'email').exec(function (err, user) {
@@ -44,13 +44,13 @@ exports.init = function (req, res, next) {
   })
 
   workflow.on('generateToken', function () {
-    var crypto = require('crypto')
+    const crypto = require('crypto')
     crypto.randomBytes(21, function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      var token = buf.toString('hex')
+      const token = buf.toString('hex')
       req.app.db.models.User.encryptPassword(token, function (err, hash) {
         if (err) {
           return next(err)
@@ -62,8 +62,8 @@ exports.init = function (req, res, next) {
   })
 
   workflow.on('patchAccount', function (token, hash) {
-    var fieldsToSet = { verificationToken: hash }
-    var options = { new: true }
+    const fieldsToSet = { verificationToken: hash }
+    const options = { new: true }
     req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options, function (err, account) {
       if (err) {
         return next(err)
@@ -90,7 +90,7 @@ exports.resendVerification = function (req, res, next) {
     return res.redirect(req.user.defaultReturnUrl())
   }
 
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.email) {
@@ -122,8 +122,8 @@ exports.resendVerification = function (req, res, next) {
   })
 
   workflow.on('patchUser', function () {
-    var fieldsToSet = { email: req.body.email.toLowerCase() }
-    var options = { new: true }
+    const fieldsToSet = { email: req.body.email.toLowerCase() }
+    const options = { new: true }
     req.app.db.models.User.findByIdAndUpdate(req.user.id, fieldsToSet, options, function (err, user) {
       if (err) {
         return workflow.emit('exception', err)
@@ -135,13 +135,13 @@ exports.resendVerification = function (req, res, next) {
   })
 
   workflow.on('generateToken', function () {
-    var crypto = require('crypto')
+    const crypto = require('crypto')
     crypto.randomBytes(21, function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      var token = buf.toString('hex')
+      const token = buf.toString('hex')
       req.app.db.models.User.encryptPassword(token, function (err, hash) {
         if (err) {
           return next(err)
@@ -153,8 +153,8 @@ exports.resendVerification = function (req, res, next) {
   })
 
   workflow.on('patchAccount', function (token, hash) {
-    var fieldsToSet = { verificationToken: hash }
-    var options = { new: true }
+    const fieldsToSet = { verificationToken: hash }
+    const options = { new: true }
     req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options, function (err, account) {
       if (err) {
         return workflow.emit('exception', err)
@@ -183,8 +183,8 @@ exports.verify = function (req, res, next) {
       return res.redirect(req.user.defaultReturnUrl())
     }
 
-    var fieldsToSet = { isVerified: 'yes', verificationToken: '' }
-    var options = { new: true }
+    const fieldsToSet = { isVerified: 'yes', verificationToken: '' }
+    const options = { new: true }
     req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account._id, fieldsToSet, options, function (err, account) {
       if (err) {
         return next(err)

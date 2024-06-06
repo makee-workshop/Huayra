@@ -1,7 +1,7 @@
 'use strict'
 
 exports.login = function (req, res) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.username) {
@@ -20,8 +20,8 @@ exports.login = function (req, res) {
   })
 
   workflow.on('abuseFilter', function () {
-    var getIpCount = function (done) {
-      var conditions = { ip: req.ip }
+    const getIpCount = function (done) {
+      const conditions = { ip: req.ip }
       req.app.db.models.LoginAttempt.countDocuments(conditions, function (err, count) {
         if (err) {
           return done(err)
@@ -31,8 +31,8 @@ exports.login = function (req, res) {
       })
     }
 
-    var getIpUserCount = function (done) {
-      var conditions = { ip: req.ip, user: req.body.username }
+    const getIpUserCount = function (done) {
+      const conditions = { ip: req.ip, user: req.body.username }
       req.app.db.models.LoginAttempt.countDocuments(conditions, function (err, count) {
         if (err) {
           return done(err)
@@ -42,7 +42,7 @@ exports.login = function (req, res) {
       })
     }
 
-    var asyncFinally = function (err, results) {
+    const asyncFinally = function (err, results) {
       if (err) {
         return workflow.emit('exception', err)
       }
@@ -65,7 +65,7 @@ exports.login = function (req, res) {
       }
 
       if (!user) {
-        var fieldsToSet = { ip: req.ip, user: req.body.username }
+        const fieldsToSet = { ip: req.ip, user: req.body.username }
         req.app.db.models.LoginAttempt.create(fieldsToSet, function (err, doc) {
           if (err) {
             return workflow.emit('exception', err)

@@ -1,7 +1,7 @@
 'use strict'
 
 exports.send = function (req, res, next) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.email) {
@@ -19,13 +19,13 @@ exports.send = function (req, res, next) {
   })
 
   workflow.on('generateToken', function () {
-    var crypto = require('crypto')
+    const crypto = require('crypto')
     crypto.randomBytes(21, function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      var token = buf.toString('hex')
+      const token = buf.toString('hex')
       req.app.db.models.User.encryptPassword(token, function (err, hash) {
         if (err) {
           return next(err)
@@ -37,8 +37,8 @@ exports.send = function (req, res, next) {
   })
 
   workflow.on('patchUser', function (token, hash) {
-    var conditions = { email: req.body.email.toLowerCase() }
-    var fieldsToSet = {
+    const conditions = { email: req.body.email.toLowerCase() }
+    const fieldsToSet = {
       resetPasswordToken: hash,
       resetPasswordExpires: Date.now() + 10000000
     }

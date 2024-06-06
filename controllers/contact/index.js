@@ -1,7 +1,7 @@
 'use strict'
 
 exports.sendMessage = function (req, res) {
-  var workflow = req.app.utility.workflow(req, res)
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     if (!req.body.name) {

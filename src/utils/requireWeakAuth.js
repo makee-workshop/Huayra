@@ -12,11 +12,11 @@ export function requireWeakAuth (Component) {
     }
 
     fetchUser () {
-      get('/1/user')
+      get('/1/account/user')
         .then(r => {
           if (r.success) {
-            var token = localStorage.getItem('token')
-            var role = 'account'
+            const token = localStorage.getItem('token')
+            let role = 'account'
             if (token) {
               const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
               if (jwtPayload.roles.admin) {
@@ -27,7 +27,7 @@ export function requireWeakAuth (Component) {
               authenticated: true,
               user: r.data.username,
               email: r.data.email,
-              role: role
+              role
             })
           } else {
             this.props.loginError()

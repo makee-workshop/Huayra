@@ -2,9 +2,9 @@
 
 exports.init = function (req, res, next) {
   var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var sigma = {}
-  var collections = ['User', 'Admin']
-  var queries = []
+  const sigma = {}
+  const collections = ['User', 'Admin']
+  const queries = []
 
   collections.forEach(function (el, i, arr) {
     queries.push(function (done) {
@@ -19,7 +19,7 @@ exports.init = function (req, res, next) {
     })
   })
 
-  var asyncFinally = function (err, results) {
+  const asyncFinally = function (err, results) {
     if (err) {
       return next(err)
     }
