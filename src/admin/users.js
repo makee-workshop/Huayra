@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { Container, Row, Col } from 'reactstrap'
+import { Container, Row, Col, Form, Input, Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import DataTable from 'react-data-table-component'
 import { get, deleteItem } from '../utils/httpAgent'
@@ -11,15 +11,18 @@ const UsersPage = () => {
   const [totalRows, setTotalRows] = useState(0)
   const [perPage, setPerPage] = useState(10)
   const [cuerrntPage, setCurrentPage] = useState(1)
+  const [targetText, setTargetText] = useState('')
+  const [searchText, setSearchText] = useState('')
 
   useEffect(() => {
     fetchData(cuerrntPage)
   }, [])
 
-  const fetchData = (page, limit = perPage) => {
+  const fetchData = (page, limit = perPage, search = searchText) => {
     setLoading(true)
     setCurrentPage(page)
-    get(`/1/admin/users?page=${page}&limit=${limit}`) // &sort=${sorted}
+    setSearchText(search)
+    get(`/1/admin/users?page=${page}&limit=${limit}&search=${search}`) // &sort=${sorted}
       .then(r => {
         if (r.success === true) {
           setData(r.data)
@@ -36,6 +39,10 @@ const UsersPage = () => {
   const handlePerRowsChange = async (newPerPage, page) => {
     setPerPage(newPerPage)
     fetchData(page, newPerPage)
+  }
+
+  const handleSearch = () => {
+    fetchData(1, perPage, targetText)
   }
 
   const deleteUser = (uid, username) => {
@@ -140,10 +147,26 @@ const UsersPage = () => {
       </Helmet>
       <h1 className='page-header'>用戶管理</h1>
       <Row>
-        <Col md={12}>
-          <Link to='/admin/signup' className='btn btn-success mb-2'>
-            建立用戶
-          </Link>
+        <Col md={12} className='mb-2'>
+          <Form inline>
+            <Link to='/admin/signup' className='btn btn-success mr-5'>
+              建立用戶
+            </Link>
+
+            <Input
+              name='search'
+              className='mr-2'
+              placeholder='帳號、email'
+              onChange={e => setTargetText(e.target.value)}
+            />
+            <Button
+              color='primary'
+              onClick={handleSearch}
+            >
+              搜尋
+            </Button>
+          </Form>
+
         </Col>
         <Col md={12}>
           <DataTable

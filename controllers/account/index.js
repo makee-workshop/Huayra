@@ -64,9 +64,17 @@ exports.adminGetUsers = function (req, res, next) {
   req.query.limit = req.query.limit ? parseInt(req.query.limit) : 10
   req.query.page = req.query.page ? parseInt(req.query.page) : 1
   req.query.sort = req.query.sort ? req.query.sort : '-timeCreated'
+  req.query.search = req.query.search || ''
 
   workflow.on('listUsers', function () {
+    const filters = {}
+    if (req.query.search) {
+      const search = new RegExp('^.*?' + req.query.search + '.*$', 'i')
+      filters.$or = [{ username: search }, { email: search }]
+    }
+
     req.app.db.models.User.pagedFind({
+      filters,
       limit: req.query.limit,
       page: req.query.page,
       sort: req.query.sort,
