@@ -7,6 +7,7 @@ import SignupPage from './login/signup'
 import Store from './utils/reducer'
 import Admin from './admin/home'
 import AdminUsers from './admin/users'
+import AdminSignup from './admin/signup'
 import AdminUserSetting from './admin/user-setting'
 import Account from './account/home'
 import Setting from './account/setting'
@@ -53,6 +54,7 @@ class App extends Component {
             <AppRoute exact path='/logout' layout={AccountLayout} component={Logout} />
             <AppRoute exact path='/admin' layout={AdminLayout} component={requireAdminAuth(Admin)} />
             <AppRoute exact path='/admin/users' layout={AdminLayout} component={requireAdminAuth(AdminUsers)} />
+            <AppRoute exact path='/admin/signup' layout={AdminLayout} component={requireAdminAuth(AdminSignup)} />
             <AppRoute exact path='/admin/user/:uid/:aid/:username' layout={AdminLayout} component={requireAdminAuth(AdminUserSetting)} />
             <AppRoute exact layout={DefaultLayout} component={requireWeakAuth(NotFoundPage)} />
           </Switch>

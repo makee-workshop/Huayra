@@ -141,6 +141,11 @@ const UsersPage = () => {
       <h1 className='page-header'>用戶管理</h1>
       <Row>
         <Col md={12}>
+          <Link to='/admin/signup' className='btn btn-success mb-2'>
+            建立用戶
+          </Link>
+        </Col>
+        <Col md={12}>
           <DataTable
             title=''
             columns={columns}

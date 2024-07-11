@@ -308,3 +308,131 @@ exports.delete = function (req, res, next) {
 
   workflow.emit('validate')
 }
+
+exports.signup = function (req, res) {
+  const workflow = req.app.utility.workflow(req, res)
+
+  workflow.on('validate', function () {
+    if (workflow.hasErrors()) {
+      return workflow.emit('response')
+    }
+
+    if (!req.body.email) {
+      workflow.outcome.errfor.email = '請填寫 email'
+    } else if (!/^[a-zA-Z0-9\-_.+]+@[a-zA-Z0-9\-_.]+\.[a-zA-Z0-9\-_]+$/.test(req.body.email)) {
+      workflow.outcome.errfor.email = 'email 格式錯誤'
+    }
+
+    if (!req.body.username) {
+      workflow.outcome.errfor.username = '請填寫帳號'
+    } else if (req.body.username.length <= 5) {
+      workflow.outcome.errfor.username = '帳號長度不足'
+    } else if (!/^[a-zA-Z0-9\-_]+$/.test(req.body.username)) {
+      workflow.outcome.errfor.username = "僅允許大小寫字母、數字、'-' 和 '_'"
+    }
+
+    if (!req.body.password) {
+      workflow.outcome.errfor.password = '請填寫密碼'
+    }
+
+    if (workflow.hasErrors()) {
+      return workflow.emit('response')
+    }
+
+    workflow.emit('duplicateUsernameCheck')
+  })
+
+  workflow.on('duplicateUsernameCheck', function () {
+    req.app.db.models.User.findOne({ username: req.body.username }, function (err, user) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      if (user) {
+        workflow.outcome.errfor.username = '此帳號已被使用'
+        return workflow.emit('response')
+      }
+
+      workflow.emit('duplicateEmailCheck')
+    })
+  })
+
+  workflow.on('duplicateEmailCheck', function () {
+    req.app.db.models.User.findOne({ email: req.body.email.toLowerCase() }, function (err, user) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      if (user) {
+        workflow.outcome.errfor.email = '此 email 已被使用'
+        return workflow.emit('response')
+      }
+
+      workflow.emit('createUser')
+    })
+  })
+
+  workflow.on('createUser', function () {
+    req.app.db.models.User.encryptPassword(req.body.password, function (err, hash) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      const fieldsToSet = {
+        isActive: 'yes',
+        username: req.body.username,
+        email: req.body.email.toLowerCase(),
+        password: hash,
+        search: [
+          req.body.username,
+          req.body.email
+        ]
+      }
+
+      if (req.body.isActive) {
+        fieldsToSet.isActive = req.body.isActive.trim() === 'yes' ? 'yes' : 'no'
+      }
+
+      req.app.db.models.User.create(fieldsToSet, function (err, user) {
+        if (err) {
+          return workflow.emit('exception', err)
+        }
+
+        workflow.user = user
+        workflow.emit('createAccount')
+      })
+    })
+  })
+
+  workflow.on('createAccount', function () {
+    const fieldsToSet = {
+      isVerified: req.app.get('require-account-verification') ? 'no' : 'yes',
+      'name.full': workflow.user.username,
+      user: {
+        id: workflow.user._id,
+        name: workflow.user.username
+      },
+      search: [
+        workflow.user.username
+      ]
+    }
+
+    req.app.db.models.Account.create(fieldsToSet, function (err, account) {
+      if (err) {
+        return workflow.emit('exception', err)
+      }
+
+      // update user with account
+      workflow.user.roles.account = account._id
+      workflow.user.save(function (err, user) {
+        if (err) {
+          return workflow.emit('exception', err)
+        }
+
+        workflow.emit('response')
+      })
+    })
+  })
+
+  workflow.emit('validate')
+}
