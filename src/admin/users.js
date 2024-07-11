@@ -60,7 +60,7 @@ const UsersPage = () => {
   const columns = [
     {
       name: '操作',
-      width: '60px',
+      width: '70px',
       selector: row => (
         <span>
           <Link to={`/admin/user/${row._id}/${row.roles.account._id}/${row.username}`} className='btn btn-sm'>

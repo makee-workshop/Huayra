@@ -53,6 +53,12 @@
   font-weight: bold
 }
 
+.rdt_TableHeadRow,
+.rdt_TableCell,
+.rdt_Pagination {
+  font-size: 1rem !important;
+}
+
 @media (max-width:768px) {
   .section-home .jumbotron h1 {
       font-size: 49px
