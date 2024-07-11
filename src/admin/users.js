@@ -148,11 +148,11 @@ const UsersPage = () => {
             progressPending={loading}
             progressComponent={
               <div
-                class='spinner-border text-primary'
+                className='spinner-border text-primary'
                 role='status'
                 style={{ width: '5rem', height: '5rem' }}
               >
-                <span class='sr-only'>Loading...</span>
+                <span className='sr-only'>Loading...</span>
               </div>
             }
             paginationTotalRows={totalRows}
