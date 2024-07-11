@@ -6,6 +6,8 @@ exports.signup = function (req, res) {
   workflow.on('validate', function () {
     if (!req.body.username) {
       workflow.outcome.errfor.username = '請輸入使用者名稱。'
+    } else if (req.body.username.length <= 5) {
+      workflow.outcome.errfor.username = '帳號長度不足。'
     } else if (!/^[a-zA-Z0-9\-_]+$/.test(req.body.username)) {
       workflow.outcome.errfor.username = "僅允許大小寫字母、數字、'-' 和 '_'"
     }
