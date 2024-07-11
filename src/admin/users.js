@@ -10,12 +10,12 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
   const [perPage, setPerPage] = useState(10)
-  const [cuerrntPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1)
   const [targetText, setTargetText] = useState('')
   const [searchText, setSearchText] = useState('')
 
   useEffect(() => {
-    fetchData(cuerrntPage)
+    fetchData(currentPage) // eslint-disable-next-line
   }, [])
 
   const fetchData = (page, limit = perPage, search = searchText) => {
@@ -52,7 +52,7 @@ const UsersPage = () => {
 
     deleteItem(`/1/admin/users/${uid}`).then((response) => {
       if (response.success === true) {
-        fetchData(cuerrntPage)
+        fetchData(currentPage)
       }
     })
   }
