@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { loginError } from './userAction'
+import { loginSuccess, loginError } from './userAction'
 import { useHistory, useLocation } from 'react-router-dom'
 
 const requireAuthentication = (Component) => {
@@ -13,7 +13,7 @@ const requireAuthentication = (Component) => {
       if (location.pathname === '/') {
         history.replace('/')
       } else {
-        history.replace(`/login?returnUrl=${location.pathname}`)
+        history.replace(`/?returnUrl=${location.pathname}`)
       }
     }, [loginError, history, location])
 
@@ -23,6 +23,17 @@ const requireAuthentication = (Component) => {
         const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
         if (!jwtPayload._id || !jwtPayload.roles.account) {
           handleLoginError()
+        } else {
+          let role = 'account'
+          if (jwtPayload.roles.admin) {
+            role = 'admin'
+          }
+          restProps.loginSuccess({
+            authenticated: true,
+            user: jwtPayload.username,
+            email: jwtPayload.email,
+            role
+          })
         }
       } else {
         handleLoginError()
@@ -33,6 +44,7 @@ const requireAuthentication = (Component) => {
   }
 
   const mapDispatchToProps = (dispatch) => ({
+    loginSuccess: (user) => dispatch(loginSuccess(user)),
     loginError: () => dispatch(loginError())
   })
 

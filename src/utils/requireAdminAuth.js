@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { loginError } from './userAction'
+import { loginSuccess, loginError } from './userAction'
 import { useHistory, useLocation } from 'react-router-dom'
 
 const requireAdminAuth = (Component) => {
@@ -13,7 +13,7 @@ const requireAdminAuth = (Component) => {
       if (location.pathname === '/') {
         history.replace('/')
       } else {
-        history.replace(`/login?returnUrl=${location.pathname}`)
+        history.replace(`/?returnUrl=${location.pathname}`)
       }
     }, [loginError, history, location])
 
@@ -23,6 +23,13 @@ const requireAdminAuth = (Component) => {
         const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
         if (!jwtPayload._id || !jwtPayload.roles.admin) {
           handleLoginError()
+        } else {
+          restProps.loginSuccess({
+            authenticated: true,
+            user: jwtPayload.username,
+            email: jwtPayload.email,
+            role: 'admin'
+          })
         }
       } else {
         handleLoginError()
@@ -33,6 +40,7 @@ const requireAdminAuth = (Component) => {
   }
 
   const mapDispatchToProps = (dispatch) => ({
+    loginSuccess: (user) => dispatch(loginSuccess(user)),
     loginError: () => dispatch(loginError())
   })
 
