@@ -13,7 +13,7 @@
   "author": "Larry Lai",
   "license": "MIT",
   "engines": {
-    "node": ">=16.14.0"
+    "node": ">=18.17.0"
   },
   "proxy": "http://localhost:3001/",
   "standard": {
@@ -31,6 +31,8 @@
     ]
   },
   "dependencies": {
+    "@redux-devtools/extension": "^3.3.0",
+    "@reduxjs/toolkit": "^2.2.6",
     "async": "^3.2.0",
     "axios": "^0.25.0",
     "bcrypt": "^5.0.0",
@@ -66,9 +68,6 @@
     "react-scripts": "5.0.0",
     "reactstrap": "^8.9.0",
     "redux": "^4.1.0",
-    "redux-devtools": "^3.3.2",
-    "redux-devtools-dock-monitor": "^1.1.1",
-    "redux-devtools-log-monitor": "^1.2.0",
     "serve-static": "1.14.x",
     "styled-components": "^6.1.8",
     "underscore.string": "^3.3.5"
