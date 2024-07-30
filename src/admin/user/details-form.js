@@ -58,9 +58,19 @@ const DetailsForm = ({
         setError('')
         setHasError({})
       } else {
-        const error = ''
+        let error = ''
         const hasError = {}
         const help = {}
+
+        for (const key in response.errfor) {
+          hasError[key] = true
+          help[key] = response.errfor[key]
+        }
+
+        if (response.errors[0] !== undefined) {
+          error = response.errors[0]
+        }
+
         setSuccess(false)
         setHasError(hasError)
         setHelp(help)

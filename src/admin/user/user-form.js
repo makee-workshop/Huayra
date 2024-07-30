@@ -54,25 +54,23 @@ const UserForm = ({
         setError('')
         setHasError({})
       } else {
-        const state = {
-          success: false,
-          error: '',
-          hasError: {},
-          help: {}
-        }
+        let error = ''
+        const hasError = {}
+        const help = {}
 
         for (const key in response.errfor) {
-          state.hasError[key] = true
-          state.help[key] = response.errfor[key]
+          hasError[key] = true
+          help[key] = response.errfor[key]
         }
 
         if (response.errors[0] !== undefined) {
-          state.error = response.errors[0]
+          error = response.errors[0]
         }
 
-        setHasError(state.hasError)
-        setHelp(state.help)
-        setError(state.error)
+        setSuccess(false)
+        setHasError(hasError)
+        setHelp(help)
+        setError(error)
       }
     } catch (error) {
       console.error(error)
