@@ -1,43 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { get, put } from '../utils/httpAgent'
-import Alert from '../shared/alert'
-import Button from '../components/button'
-import Spinner from '../components/spinner'
-import ControlGroup from '../components/control-group'
-import TextControl from '../components/text-control'
-import SelectControl from '../components/select-control'
+import React, { useState, useEffect } from 'react'
+import { put } from '../../utils/httpAgent'
+import Alert from '../../shared/alert'
+import Button from '../../components/button'
+import Spinner from '../../components/spinner'
+import ControlGroup from '../../components/control-group'
+import TextControl from '../../components/text-control'
+import SelectControl from '../../components/select-control'
 
-const UserForm = ({ uid }) => {
+const UserForm = ({
+  uid,
+  usernameCurrent = '',
+  emailCurrent = '',
+  rolesCurrent = 'account',
+  isActiveCurrent = false
+}) => {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(undefined)
   const [hasError, setHasError] = useState({})
   const [help, setHelp] = useState({})
-  const [roles, setRoles] = useState('account')
-  const [isActive, setIsActive] = useState(false)
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-
-  const usernameInput = useRef(null)
-  const emailInput = useRef(null)
-  const rolesInput = useRef(null)
-  const isActiveInput = useRef(null)
+  const [username, setUsername] = useState(usernameCurrent)
+  const [email, setEmail] = useState(emailCurrent)
+  const [roles, setRoles] = useState(rolesCurrent)
+  const [isActive, setIsActive] = useState(isActiveCurrent)
 
   useEffect(() => {
-    fetchData()
-  }, [uid])
-
-  const fetchData = async () => {
-    try {
-      const response = await get(`/1/admin/user/${uid}`)
-      setUsername(response.data.username)
-      setEmail(response.data.email)
-      setRoles(response.data.roles.admin ? 'admin' : 'account')
-      setIsActive(response.data.isActive)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+    setUsername(usernameCurrent)
+    setEmail(emailCurrent)
+    setRoles(rolesCurrent)
+    setIsActive(isActiveCurrent)
+  }, [usernameCurrent, emailCurrent, rolesCurrent, isActiveCurrent])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -51,10 +43,10 @@ const UserForm = ({ uid }) => {
 
     try {
       const response = await put(`/1/admin/user/${uid}`, {
-        roles: rolesInput.current.value(),
-        isActive: isActiveInput.current.value(),
-        username: usernameInput.current.value(),
-        email: emailInput.current.value()
+        username,
+        email,
+        roles,
+        isActive
       })
 
       if (response.success === true) {
@@ -103,7 +95,6 @@ const UserForm = ({ uid }) => {
       <legend>帳號資料</legend>
       {alerts}
       <TextControl
-        ref={usernameInput}
         name='username'
         label='帳號'
         value={username}
@@ -113,7 +104,6 @@ const UserForm = ({ uid }) => {
         disabled={loading}
       />
       <TextControl
-        ref={emailInput}
         name='email'
         label='email'
         value={email}
@@ -123,7 +113,6 @@ const UserForm = ({ uid }) => {
         disabled={loading}
       />
       <SelectControl
-        ref={rolesInput}
         name='roles'
         label='權限'
         value={roles}
@@ -136,7 +125,6 @@ const UserForm = ({ uid }) => {
         <option value='admin'>管理者</option>
       </SelectControl>
       <SelectControl
-        ref={isActiveInput}
         name='isActive'
         label='是否啟用'
         value={isActive}

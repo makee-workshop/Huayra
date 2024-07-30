@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 import { Container, Row, Col, Form, Input, Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import DataTable from 'react-data-table-component'
-import { get, deleteItem } from '../utils/httpAgent'
+import { get, deleteItem } from '../../utils/httpAgent'
 
 const UsersPage = () => {
   const [data, setData] = useState([])
@@ -63,7 +63,7 @@ const UsersPage = () => {
       width: '70px',
       selector: row => (
         <span>
-          <Link to={`/admin/user/${row._id}/${row.roles.account._id}/${row.username}`} className='btn btn-sm'>
+          <Link to={`/admin/user/${row._id}/${row.roles.account._id}`} className='btn btn-sm'>
             <i className='lnr lnr-pencil' />
           </Link>
         </span>

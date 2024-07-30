@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
-import { put } from '../utils/httpAgent'
-import Alert from '../shared/alert'
-import Button from '../components/button'
-import Spinner from '../components/spinner'
-import ControlGroup from '../components/control-group'
-import TextControl from '../components/text-control'
+import { put } from '../../utils/httpAgent'
+import Alert from '../../shared/alert'
+import Button from '../../components/button'
+import Spinner from '../../components/spinner'
+import ControlGroup from '../../components/control-group'
+import TextControl from '../../components/text-control'
 
 const PasswordForm = ({ uid, loading }) => {
   const [success, setSuccess] = useState(false)
