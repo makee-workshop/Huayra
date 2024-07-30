@@ -35,7 +35,7 @@ exports.update = function (req, res, next) {
 
       userObj = user
 
-      if (req.body.roles === 'admin') {
+      if (req.body.roles === 'admin' && !user.roles.admin) {
         return workflow.emit('setAdmin', user)
       } else {
         return workflow.emit('duplicateUsernameCheck')
@@ -111,7 +111,7 @@ exports.update = function (req, res, next) {
       ]
     }
 
-    if (req.body.roles === 'admin') {
+    if (req.body.roles === 'admin' && !userObj.roles.admin) {
       fieldsToSet.roles = {
         admin: adminId,
         account: userObj.roles.account
