@@ -15,7 +15,7 @@ exports = module.exports = function (req, res, options) {
     error: Function
   } */
 
-  var renderText = function (callback) {
+  const renderText = function (callback) {
     res.render(options.textPath, options.locals, function (err, text) {
       if (err) {
         callback(err, null)
@@ -26,7 +26,7 @@ exports = module.exports = function (req, res, options) {
     })
   }
 
-  var renderHtml = function (callback) {
+  const renderHtml = function (callback) {
     res.render(options.htmlPath, options.locals, function (err, html) {
       if (err) {
         callback(err, null)
@@ -37,7 +37,7 @@ exports = module.exports = function (req, res, options) {
     })
   }
 
-  var renderers = []
+  const renderers = []
   if (options.textPath) {
     renderers.push(renderText)
   }
@@ -54,19 +54,19 @@ exports = module.exports = function (req, res, options) {
         return
       }
 
-      var attachments = []
+      const attachments = []
 
       if (options.html) {
         attachments.push({ data: options.html, alternative: true })
       }
 
       if (options.attachments) {
-        for (var i = 0; i < options.attachments.length; i++) {
+        for (let i = 0; i < options.attachments.length; i++) {
           attachments.push(options.attachments[i])
         }
       }
 
-      let SMTPClient = require('emailjs').SMTPClient
+      const SMTPClient = require('emailjs').SMTPClient
       const emailer = new SMTPClient(req.app.config.smtp.credentials)
       emailer.send({
         from: options.from,
