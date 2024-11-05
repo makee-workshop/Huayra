@@ -1,25 +1,33 @@
-import React, { Component } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-class Alert extends Component {
-  render () {
-    let close
-
-    if (this.props.onClose) {
-      close = <button
-        type='button'
-        className='close'
-        onClick={this.props.onClose}>
-        &times;
-      </button>
-    }
-
-    return (
-      <div className={`alert alert-${this.props.type}`}>
-        {close}
-        {this.props.message}
-      </div>
-    )
-  }
+const propTypes = {
+  type: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func
 }
+
+const Alert = ({
+  type = 'info',
+  message = '',
+  onClose = () => {}
+}) => {
+  return (
+    <div className={`alert alert-${type}`}>
+      {onClose && (
+        <button
+          type='button'
+          className='close'
+          onClick={onClose}
+        >
+          &times;
+        </button>
+      )}
+      {message}
+    </div>
+  )
+}
+
+Alert.propTypes = propTypes
 
 export default Alert
