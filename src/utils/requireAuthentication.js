@@ -1,54 +1,71 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
-import { useHistory, useLocation } from 'react-router-dom'
 
-const requireAuthentication = (Component) => {
-  const AuthenticatedComponent = ({ loginError, ...restProps }) => {
-    const history = useHistory()
-    const location = useLocation()
-
-    const handleLoginError = useCallback(() => {
-      loginError()
-      if (location.pathname === '/') {
-        history.replace('/')
-      } else {
-        history.replace(`/?returnUrl=${location.pathname}`)
-      }
-    }, [loginError, history, location])
+export function requireAuthentication (Component) {
+  const AuthenticatedComponent = (props) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
-      const token = localStorage.getItem('token')
-      if (token) {
-        const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
-        if (!jwtPayload._id || !jwtPayload.roles.account) {
-          handleLoginError()
-        } else {
-          let role = 'account'
-          if (jwtPayload.roles.admin) {
-            role = 'admin'
+      const checkAuth = () => {
+        try {
+          const token = localStorage.getItem('token')
+          if (token) {
+            const jwtPayload = JSON.parse(decodeURIComponent(escape(window.atob((token.split('.')[1]).replace(/-/g, '+').replace(/_/g, '/')))))
+            if (!jwtPayload._id || !jwtPayload.roles.account) {
+              loginErrorHandler()
+            } else {
+              let role = 'account'
+              if (jwtPayload.roles.admin) {
+                role = 'admin'
+              }
+              props.loginSuccess({
+                authenticated: true,
+                user: jwtPayload.username,
+                email: jwtPayload.email,
+                role
+              })
+              setIsAuthenticated(true)
+            }
+          } else {
+            loginErrorHandler()
           }
-          restProps.loginSuccess({
-            authenticated: true,
-            user: jwtPayload.username,
-            email: jwtPayload.email,
-            role
-          })
+        } catch (_error) {
+          loginErrorHandler()
         }
-      } else {
-        handleLoginError()
       }
-    }, [handleLoginError])
 
-    return <Component {...restProps} />
+      const loginErrorHandler = () => {
+        props.loginError()
+        if (window.location.pathname === '/') {
+          window.location.assign('/')
+        } else {
+          if (window.location.search) {
+            window.location.assign(`/?returnUrl=${window.location.pathname}&${window.location.search.substr(1)}`)
+          } else {
+            window.location.assign(`/?returnUrl=${window.location.pathname}`)
+          }
+        }
+      }
+
+      checkAuth()
+    }, [props])
+
+    if (!isAuthenticated) {
+      return null
+    }
+
+    return <Component {...props} />
   }
 
   const mapDispatchToProps = (dispatch) => ({
-    loginSuccess: (user) => dispatch(loginSuccess(user)),
-    loginError: () => dispatch(loginError())
+    loginSuccess (user) {
+      dispatch(loginSuccess(user))
+    },
+    loginError () {
+      dispatch(loginError())
+    }
   })
 
   return connect(null, mapDispatchToProps)(AuthenticatedComponent)
 }
-
-export default requireAuthentication
