@@ -7,18 +7,16 @@ import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
 const DetailsForm = () => {
-  const [formData, setFormData] = useState({
-    loading: false,
-    success: false,
-    error: undefined,
-    hasError: {},
-    help: {},
-    last: '',
-    first: '',
-    company: '',
-    phone: '',
-    zip: ''
-  })
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(undefined)
+  const [hasError, setHasError] = useState({})
+  const [help, setHelp] = useState({})
+  const [last, setLast] = useState('')
+  const [first, setFirst] = useState('')
+  const [company, setCompany] = useState('')
+  const [phone, setPhone] = useState('')
+  const [zip, setZip] = useState('')
 
   useEffect(() => {
     fetchData()
@@ -27,14 +25,11 @@ const DetailsForm = () => {
   const fetchData = () => {
     get('/1/account').then((response) => {
       if (response.data) {
-        setFormData({
-          ...formData,
-          last: response.data.name.last,
-          first: response.data.name.first,
-          company: response.data.company,
-          phone: response.data.phone,
-          zip: response.data.zip
-        })
+        setLast(response.data.name.last)
+        setFirst(response.data.name.first)
+        setCompany(response.data.company)
+        setPhone(response.data.phone)
+        setZip(response.data.zip)
       }
     })
   }
@@ -43,50 +38,45 @@ const DetailsForm = () => {
     event.preventDefault()
     event.stopPropagation()
 
-    setFormData({ ...formData, loading: true })
+    setLoading(true)
 
     put('/1/account/settings/', {
-      last: formData.last,
-      first: formData.first,
-      company: formData.company,
-      phone: formData.phone,
-      zip: formData.zip
+      last,
+      first,
+      company,
+      phone,
+      zip
     }).then((response) => {
       if (response.success === true) {
-        setFormData({
-          ...formData,
-          success: true,
-          error: '',
-          loading: false,
-          hasError: {}
-        })
+        setSuccess(true)
+        setError('')
+        setLoading(false)
+        setHasError({})
       } else {
-        const state = {
-          success: false,
-          error: '',
-          loading: false,
-          hasError: {},
-          help: {}
-        }
+        const newHasError = {}
+        const newHelp = {}
         for (const key in response.errfor) {
-          state.hasError[key] = true
-          state.help[key] = response.errfor[key]
+          newHasError[key] = true
+          newHelp[key] = response.errfor[key]
         }
 
         if (response.errors[0] !== undefined) {
-          state.error = response.errors[0]
+          setError(response.errors[0])
         }
-        setFormData(state)
+        setSuccess(false)
+        setLoading(false)
+        setHasError(newHasError)
+        setHelp(newHelp)
       }
     })
   } // end handleSubmit
 
   let alerts = []
 
-  if (formData.success) {
+  if (success) {
     alerts = <Alert type='success' message='個人資料更新成功' />
-  } else if (formData.error) {
-    alerts = <Alert type='danger' message={formData.error} />
+  } else if (error) {
+    alerts = <Alert type='danger' message={error} />
   }
 
   return (
@@ -97,52 +87,52 @@ const DetailsForm = () => {
         <TextControl
           name='last'
           label='姓氏'
-          value={formData.last}
-          onChange={(e) => setFormData({ ...formData, last: e.target.value })}
-          hasError={formData.hasError.last}
-          help={formData.help.last}
-          disabled={formData.loading}
+          value={last}
+          onChange={(e) => setLast(e.target.value)}
+          hasError={hasError.last}
+          help={help.last}
+          disabled={loading}
         />
         <TextControl
           name='first'
           label='名字'
-          value={formData.first}
-          onChange={(e) => setFormData({ ...formData, first: e.target.value })}
-          hasError={formData.hasError.first}
-          help={formData.help.first}
-          disabled={formData.loading}
+          value={first}
+          onChange={(e) => setFirst(e.target.value)}
+          hasError={hasError.first}
+          help={help.first}
+          disabled={loading}
         />
         <TextControl
           name='company'
           label='公司'
-          value={formData.company}
-          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-          hasError={formData.hasError.company}
-          help={formData.help.company}
-          disabled={formData.loading}
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          hasError={hasError.company}
+          help={help.company}
+          disabled={loading}
         />
         <TextControl
           name='phone'
           label='電話'
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          hasError={formData.hasError.phone}
-          help={formData.help.phone}
-          disabled={formData.loading}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          hasError={hasError.phone}
+          help={help.phone}
+          disabled={loading}
         />
         <TextControl
           name='zip'
           label='郵遞區號'
-          value={formData.zip}
-          onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-          hasError={formData.hasError.zip}
-          help={formData.help.zip}
-          disabled={formData.loading}
+          value={zip}
+          onChange={(e) => setZip(e.target.value)}
+          hasError={hasError.zip}
+          help={help.zip}
+          disabled={loading}
         />
         <ControlGroup hideLabel hideHelp>
-          <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={formData.loading}>
+          <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={loading}>
             更新
-            <Spinner space='left' show={formData.loading} />
+            <Spinner space='left' show={loading} />
           </Button>
         </ControlGroup>
       </fieldset>
