@@ -1,55 +1,51 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { loginSuccess, loginError } from './userAction'
-import { get } from './httpAgent'
 
 export function requireWeakAuth (Component) {
-  class AuthenticatedComponent extends React.Component {
-    componentDidMount () {
-      if (localStorage.getItem('token') && !this.props.user) {
-        this.fetchUser()
-      }
-    }
-
-    fetchUser () {
-      get('/1/account/user')
-        .then(r => {
-          if (r.success) {
-            const token = localStorage.getItem('token')
-            let role = 'account'
-            if (token) {
-              const jwtPayload = JSON.parse(window.atob(token.split('.')[1]))
+  const AuthenticatedComponent = (props) => {
+    useEffect(() => {
+      const checkAuth = () => {
+        try {
+          const token = localStorage.getItem('token')
+          if (token) {
+            const jwtPayload = JSON.parse(decodeURIComponent(escape(window.atob((token.split('.')[1]).replace(/-/g, '+').replace(/_/g, '/')))))
+            if (jwtPayload._id && jwtPayload.roles.account) {
+              let role = 'account'
               if (jwtPayload.roles.admin) {
                 role = 'admin'
               }
+              props.loginSuccess({
+                authenticated: true,
+                user: jwtPayload.username,
+                email: jwtPayload.email,
+                role
+              })
+            } else {
+              localStorage.removeItem('token')
             }
-            this.props.loginSuccess({
-              authenticated: true,
-              user: r.data.username,
-              email: r.data.email,
-              role
-            })
-          } else {
-            this.props.loginError()
           }
-        })
-    }
+        } catch (_error) {
+          localStorage.removeItem('token')
+        }
+      }
 
-    render () {
-      return (
-        <div>
-          <Component {...this.props} />
-        </div>
-      )
-    }
+      checkAuth()
+    }, [props])
+
+    return (
+      <div>
+        <Component {...props} />
+      </div>
+    )
   }
 
-  const mapStateToProps = state => ({
+  const mapStateToProps = (state) => ({
     user: state.index.user,
     authenticated: state.index.authenticated
   })
 
-  const mapDispatchToProps = dispatch => ({
+  const mapDispatchToProps = (dispatch) => ({
     loginSuccess (user) {
       dispatch(loginSuccess(user))
     },
