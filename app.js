@@ -92,14 +92,75 @@ app.utility.slugify = require('./util/slugify')
 app.utility.workflow = require('./util/workflow')
 app.utility.ODMService = require('./util/odm-service')
 
+const shutdownTimeoutMs = 10000
+let isShuttingDown = false
+
 const startServer = async function () {
   await mongoose.connect(config.mongodb.uri)
 
-  app.server.listen(app.config.port, function () {
-    // and... we're live
-    console.log('Server is running on port ' + config.port)
+  await new Promise(function (resolve, reject) {
+    app.server.once('error', reject)
+
+    app.server.listen(app.config.port, function () {
+      app.server.off('error', reject)
+
+      // and... we're live
+      console.log('Server is running on port ' + config.port)
+      resolve()
+    })
   })
 }
+
+const closeServer = function () {
+  return new Promise(function (resolve, reject) {
+    app.server.close(function (err) {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      resolve()
+    })
+  })
+}
+
+const shutdown = async function (signal) {
+  if (isShuttingDown) {
+    console.log('Shutdown already in progress, ignoring ' + signal)
+    return
+  }
+
+  isShuttingDown = true
+  console.log('Received ' + signal + ', shutting down gracefully')
+
+  const timeout = setTimeout(function () {
+    console.error('Graceful shutdown timed out after ' + shutdownTimeoutMs + 'ms')
+    process.exit(1)
+  }, shutdownTimeoutMs)
+
+  try {
+    await closeServer()
+    console.log('HTTP server closed')
+
+    await mongoose.disconnect()
+    console.log('MongoDB disconnected')
+
+    clearTimeout(timeout)
+    process.exit(0)
+  } catch (err) {
+    clearTimeout(timeout)
+    console.error('Failed to shutdown gracefully:', err)
+    process.exit(1)
+  }
+}
+
+process.on('SIGTERM', function () {
+  shutdown('SIGTERM')
+})
+
+process.on('SIGINT', function () {
+  shutdown('SIGINT')
+})
 
 startServer().catch(function (err) {
   console.error('Failed to start server:', err)
