@@ -66,7 +66,6 @@ const Signup = () => {
       <Alert
         type='danger'
         message={error}
-        replace
       />
       )
     : null
@@ -90,7 +89,6 @@ const Signup = () => {
                 hasError={hasError.username}
                 help={help.username}
                 disabled={loading}
-                replace
               />
               <TextControl
                 ref={emailRef}
@@ -99,7 +97,6 @@ const Signup = () => {
                 hasError={hasError.email}
                 help={help.email}
                 disabled={loading}
-                replace
               />
               <TextControl
                 ref={passwordRef}
@@ -109,7 +106,6 @@ const Signup = () => {
                 hasError={hasError.password}
                 help={help.password}
                 disabled={loading}
-                replace
               />
               <ControlGroup hideLabel hideHelp>
                 <Button
@@ -118,7 +114,7 @@ const Signup = () => {
                   disabled={loading}
                 >
                   建立
-                  <Spinner space='left' show={loading} replace />
+                  <Spinner space='left' show={loading} />
                 </Button>
               </ControlGroup>
             </form>

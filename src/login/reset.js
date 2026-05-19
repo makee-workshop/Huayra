@@ -120,7 +120,6 @@ const ResetPage = () => {
               hasError={hasError.password}
               help={help.password}
               disabled={loading}
-              replace
             />
             <TextControl
               ref={confirmInput}
@@ -130,7 +129,6 @@ const ResetPage = () => {
               hasError={hasError.confirm}
               help={help.confirm}
               disabled={loading}
-              replace
             />
             <TextControl
               name='_key'
@@ -139,7 +137,6 @@ const ResetPage = () => {
               value={key}
               help={help.key}
               disabled
-              replace
             />
             <TextControl
               name='_email'
@@ -148,7 +145,6 @@ const ResetPage = () => {
               value={email}
               help={help.email}
               disabled
-              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button
@@ -157,7 +153,7 @@ const ResetPage = () => {
                 disabled={loading}
               >
                 設定密碼
-                <Spinner space='left' show={loading} replace />
+                <Spinner space='left' show={loading} />
               </Button>
               <Link to='/login' className='btn btn-link'>
                 返回登入

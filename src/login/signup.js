@@ -89,9 +89,9 @@ const SignupPage = () => {
   let alert = null
 
   if (success) {
-    alert = <Alert type='success' message='成功，請稍後...' replace />
+    alert = <Alert type='success' message='成功，請稍後...' />
   } else if (error) {
-    alert = <Alert type='danger' message={error} replace />
+    alert = <Alert type='danger' message={error} />
   }
 
   return (
@@ -113,7 +113,7 @@ const SignupPage = () => {
                 hasError={hasError.username}
                 help={help.username}
                 disabled={loading}
-              replace />
+              />
               <TextControl
                 ref={emailInput}
                 name='email'
@@ -121,7 +121,7 @@ const SignupPage = () => {
                 hasError={hasError.email}
                 help={help.email}
                 disabled={loading}
-              replace />
+              />
               <TextControl
                 ref={passwordInput}
                 name='password'
@@ -130,7 +130,7 @@ const SignupPage = () => {
                 hasError={hasError.password}
                 help={help.password}
                 disabled={loading}
-              replace />
+              />
               <ControlGroup hideLabel hideHelp>
                 <Button
                   type='submit'
@@ -138,7 +138,7 @@ const SignupPage = () => {
                   disabled={loading}
                 >
                   建立帳號
-                  <Spinner space='left' show={loading} replace />
+                  <Spinner space='left' show={loading} />
                 </Button>
               </ControlGroup>
             </form>
@@ -149,7 +149,7 @@ const SignupPage = () => {
           <p className='lead'>
             不渴望能夠一躍千里，只希望每天能夠前進一步。
           </p>
-          <i className='lnr lnr-rocket bamf' replace />
+          <i className='lnr lnr-rocket bamf' />
         </Col>
       </Row>
     </Container>

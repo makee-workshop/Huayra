@@ -70,7 +70,6 @@ const ForgotPage = () => {
         <Alert
           type='success'
           message='若此帳號存在，您將會收到一封重置的 email。'
-          replace
         />
         <Link to='/login' className='btn btn-link'>
           返回登入
@@ -80,7 +79,7 @@ const ForgotPage = () => {
   } else if (authenticated) {
     return <Navigate to='/' replace />
   } else if (error) {
-    alert = <Alert type='danger' message={error} replace />
+    alert = <Alert type='danger' message={error} />
   }
 
   return (
@@ -101,7 +100,6 @@ const ForgotPage = () => {
               hasError={hasError.email}
               help={help.email}
               disabled={loading}
-              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button
@@ -110,7 +108,7 @@ const ForgotPage = () => {
                 disabled={loading}
               >
                 重置
-                <Spinner space='left' show={loading} replace />
+                <Spinner space='left' show={loading} />
               </Button>
               <Link to='/login' className='btn btn-link'>
                 返回登入

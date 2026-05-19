@@ -102,7 +102,7 @@ const Login = () => {
   let alerts = null
 
   if (error) {
-    alerts = <Alert type='danger' message={error} replace />
+    alerts = <Alert type='danger' message={error} />
   }
 
   return (
@@ -124,7 +124,6 @@ const Login = () => {
               help={help.username}
               disabled={loading}
               onKeyPress={handleKeyPress}
-              replace
             />
             <TextControl
               ref={(c) => (inputRef.current.password = c)}
@@ -135,12 +134,11 @@ const Login = () => {
               help={help.password}
               disabled={loading}
               onKeyPress={handleKeyPress}
-              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={loading}>
                 登入
-                <Spinner space='left' show={loading} replace />
+                <Spinner space='left' show={loading} />
               </Button>
               <Link to='/login/forgot' className='btn btn-link'>
                 忘記密碼?
