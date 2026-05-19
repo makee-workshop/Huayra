@@ -85,7 +85,7 @@ require('./passport')(app, passport)
 require('./routes')(app, passport)
 
 // setup react
-app.get('*', function (req, res) {
+app.get('*path', function (req, res) {
   res.sendFile(path.join(__dirname, './build/index.html'))
 })
 

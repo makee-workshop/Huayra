@@ -34,10 +34,10 @@ exports = module.exports = function (app, passport) {
   app.post('/1/login/forgot/', require('./controllers/login/forgot/index').send)
   app.put('/1/login/reset/:email/:token/', require('./controllers/login/reset/index').set)
 
-  app.all('/*/account*', ensureAuthenticated)
-  app.all('/*/account*', ensureAccount)
-  app.all('/*/admin*', ensureAuthenticated)
-  app.all('/*/admin*', ensureAdmin)
+  app.all('/:prefix/account{/*path}', ensureAuthenticated)
+  app.all('/:prefix/account{/*path}', ensureAccount)
+  app.all('/:prefix/admin{/*path}', ensureAuthenticated)
+  app.all('/:prefix/admin{/*path}', ensureAdmin)
 
   // account > verification
   app.post('/1/account/verification/', require('./controllers/account/verification/index').resendVerification)
