@@ -3,7 +3,6 @@
 // dependencies
 const config = require('./config')
 const express = require('express')
-const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const http = require('http')
 const path = require('path')
@@ -11,7 +10,6 @@ const passport = require('passport')
 const mongoose = require('mongoose')
 const helmet = require('helmet')
 const cors = require('cors')
-// var csrf = require('csurf')
 
 // create express app
 const app = express()
@@ -50,15 +48,12 @@ app.use(require('serve-static')(path.join(__dirname, 'public')))
 app.use(require('method-override')())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cookieParser(config.cryptoKey))
 app.use(passport.initialize())
 app.use(cors())
-// app.use(csrf({ cookie: { signed: false } }))
 helmet(app)
 
 // response locals
 app.use(function (req, res, next) {
-  // res.cookie('_csrfToken', req.csrfToken())
   res.locals.user = {}
   res.locals.user.defaultReturnUrl = req.user && req.user.defaultReturnUrl()
   res.locals.user.username = req.user && req.user.username
