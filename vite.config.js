@@ -23,6 +23,9 @@ export default defineConfig({
       '/1': 'http://localhost:3001'
     }
   },
+  build: {
+    outDir: 'build'
+  },
   // 保留 process.env.NODE_ENV 相容性（serviceWorker.js 有使用）
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
