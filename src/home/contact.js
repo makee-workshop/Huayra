@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
 import Alert from '../shared/alert'
 import Button from '../components/button'

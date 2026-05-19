@@ -1,10 +1,51 @@
 import ClassNames from 'classnames'
 import ControlGroup from './control-group'
-import ObjectAssign from 'object-assign'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useImperativeHandle, useRef } from 'react'
 
-const propTypes = {
+// 使用 forwardRef 讓父元件可透過 ref 呼叫 focus() 與 value()
+const TextControl = React.forwardRef(({
+  autoCapitalize = 'off',
+  disabled,
+  hasError,
+  help,
+  inputClasses,
+  label,
+  name,
+  onChange,
+  placeholder,
+  type = 'text',
+  ...rest
+}, ref) => {
+  const inputRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+    value: () => inputRef.current?.value
+  }))
+
+  const className = ClassNames({ 'form-control': true, 'is-invalid': hasError, ...inputClasses })
+
+  return (
+    <ControlGroup hasError={hasError} label={label} help={help}>
+      <input
+        ref={inputRef}
+        type={type}
+        autoCapitalize={autoCapitalize}
+        className={className}
+        name={name}
+        placeholder={placeholder}
+        disabled={disabled || undefined}
+        onChange={onChange}
+        {...rest}
+      />
+    </ControlGroup>
+  )
+})
+
+TextControl.displayName = 'TextControl'
+
+TextControl.propTypes = {
   autoCapitalize: PropTypes.string,
   disabled: PropTypes.bool,
   hasError: PropTypes.bool,
@@ -15,53 +56,7 @@ const propTypes = {
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   type: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ])
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 }
-const defaultProps = {
-  type: 'text',
-  autoCapitalize: 'off'
-}
-
-class TextControl extends React.Component {
-  focus () {
-    return this.input.focus()
-  }
-
-  value () {
-    return this.input.value
-  }
-
-  render () {
-    const inputClasses = ClassNames(ObjectAssign({
-      'form-control': true
-    }, this.props.inputClasses))
-
-    return (
-      <ControlGroup
-        hasError={this.props.hasError}
-        label={this.props.label}
-        help={this.props.help}>
-
-        <input
-          ref={(c) => (this.input = c)}
-          type={this.props.type}
-          autoCapitalize={this.props.autoCapitalize}
-          className={inputClasses}
-          name={this.props.name}
-          placeholder={this.props.placeholder}
-          value={this.props.value}
-          disabled={this.props.disabled ? 'disabled' : undefined}
-          onChange={this.props.onChange}
-        />
-      </ControlGroup>
-    )
-  }
-}
-
-TextControl.propTypes = propTypes
-TextControl.defaultProps = defaultProps
 
 export default TextControl

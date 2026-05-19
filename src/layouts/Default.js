@@ -1,99 +1,84 @@
 import React, { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Navbar, Collapse, Nav, NavItem, NavbarToggler, Container } from 'reactstrap'
 import config from '../config'
 
-const Default = (props) => {
+// v6: NavLink className 接受函式，({ isActive }) 取代舊版 activeClassName prop
+const navLinkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
+
+const Default = () => {
   const [navBarOpen, setNavBarOpen] = useState(false)
+  const authenticated = useSelector(state => state.index.authenticated)
+  const user = useSelector(state => state.index.user)
+  const role = useSelector(state => state.index.role)
 
-  const toggleMenu = () => {
-    setNavBarOpen(!navBarOpen)
-  }
+  const toggleMenu = () => setNavBarOpen(prev => !prev)
 
-  let roleElement = []
-  let signupElement = []
+  let roleElement
+  let signupElement = null
 
-  if (props.authenticated === true) {
+  if (authenticated) {
+    const accountPath = role === 'admin' ? '/admin' : '/account'
     roleElement = (
-      <NavLink to='/account'>
-        <i className='lnr lnr-user' />
-        {props.user}
-      </NavLink>
-    )
-
-    if (props.role === 'admin') {
-      roleElement = (
-        <NavLink to='/admin'>
-          <i className='lnr lnr-user' />
-          {props.user}
-        </NavLink>
-      )
-    }
-  } else {
-    signupElement = (
       <NavItem>
-        <NavLink to='/signup' activeClassName='active' className='nav-link'>
-          註冊
+        <NavLink to={accountPath} className={navLinkClass}>
+          <i className='lnr lnr-user' />
+          {user}
         </NavLink>
       </NavItem>
     )
+  } else {
+    signupElement = (
+      <NavItem>
+        <NavLink to='/signup' className={navLinkClass}>註冊</NavLink>
+      </NavItem>
+    )
     roleElement = (
-      <NavLink to='/login'>
-        登入
-      </NavLink>
+      <NavItem>
+        <NavLink to='/login' className={navLinkClass}>登入</NavLink>
+      </NavItem>
     )
   }
 
   return (
     <div>
-      <Navbar color='light' light expand='md' className='fixed-top'>
+      <Navbar color='light' light expand='md' className='fixed-top' container={false}>
         <Container>
           <Link to='/' className='navbar-brand'>
             <img className='navbar-logo' src='/media/logo-square.png' alt='' />
             <span className='navbar-brand-label'>{config.projectName}</span>
           </Link>
           <NavbarToggler onClick={toggleMenu} />
-          <Collapse isOpen={!navBarOpen} navbar>
-            <Nav className='mr-auto' navbar>
+          <Collapse isOpen={navBarOpen} navbar>
+            <Nav className='me-auto' navbar>
               <NavItem>
-                <NavLink exact to='/' activeClassName='active' className='nav-link'>
-                  首頁
-                </NavLink>
+                {/* end prop 等同 v5 的 exact */}
+                <NavLink to='/' end className={navLinkClass}>首頁</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink exact to='/about' activeClassName='active' className='nav-link'>
-                  關於我們
-                </NavLink>
+                <NavLink to='/about' end className={navLinkClass}>關於我們</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink exact to='/contact' activeClassName='active' className='nav-link'>
-                  連絡我們
-                </NavLink>
+                <NavLink to='/contact' end className={navLinkClass}>連絡我們</NavLink>
               </NavItem>
               {signupElement}
             </Nav>
+            <Nav className='ms-auto' navbar>
+              {roleElement}
+            </Nav>
           </Collapse>
-          <NavbarText>
-            {roleElement}
-          </NavbarText>
         </Container>
       </Navbar>
 
-      {props.children}
+      <Outlet />
 
       <div className='footer'>
         <Container>
-          <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
+          <span className='copyright float-end'>© {new Date().getFullYear()} {config.companyName}</span>
           <ul className='links'>
-            <li>
-              <Link to='/'> 首頁
-              </Link>
-            </li>
-            <li>
-              <Link to='/contact'> 連絡我們
-              </Link>
-            </li>
+            <li><Link to='/'>首頁</Link></li>
+            <li><Link to='/contact'>連絡我們</Link></li>
           </ul>
           <div className='clearfix' />
         </Container>
@@ -102,10 +87,4 @@ const Default = (props) => {
   )
 }
 
-const mapStateToProps = state => ({
-  user: state.index.user,
-  authenticated: state.index.authenticated,
-  role: state.index.role
-})
-
-export default connect(mapStateToProps, null)(Default)
+export default Default

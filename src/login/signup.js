@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { connect } from 'react-redux'
-import { loginSuccess } from '../utils/userAction'
-import { Helmet } from 'react-helmet'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginSuccess } from '../utils/reducer'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
-import { Redirect } from 'react-router'
+import { Navigate } from 'react-router-dom'
 import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -11,7 +11,9 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-const SignupPage = ({ authenticated, loginSuccess }) => {
+const SignupPage = () => {
+  const dispatch = useDispatch()
+  const authenticated = useSelector(state => state.index.authenticated)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(undefined)
@@ -44,7 +46,7 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
       if (response.success === true) {
         localStorage.setItem('token', response.data.token)
         delete response.data.token
-        loginSuccess(response.data)
+        dispatch(loginSuccess(response.data))
         setSuccess(true)
         setError('')
         setLoading(false)
@@ -79,17 +81,17 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
   }
 
   if (success) {
-    return <Redirect to='/account' />
+    return <Navigate to='/account' replace />
   } else if (authenticated) {
-    return <Redirect to='/' />
+    return <Navigate to='/' replace />
   }
 
   let alert = null
 
   if (success) {
-    alert = <Alert type='success' message='成功，請稍後...' />
+    alert = <Alert type='success' message='成功，請稍後...' replace />
   } else if (error) {
-    alert = <Alert type='danger' message={error} />
+    alert = <Alert type='danger' message={error} replace />
   }
 
   return (
@@ -111,7 +113,7 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
                 hasError={hasError.username}
                 help={help.username}
                 disabled={loading}
-              />
+              replace />
               <TextControl
                 ref={emailInput}
                 name='email'
@@ -119,7 +121,7 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
                 hasError={hasError.email}
                 help={help.email}
                 disabled={loading}
-              />
+              replace />
               <TextControl
                 ref={passwordInput}
                 name='password'
@@ -128,7 +130,7 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
                 hasError={hasError.password}
                 help={help.password}
                 disabled={loading}
-              />
+              replace />
               <ControlGroup hideLabel hideHelp>
                 <Button
                   type='submit'
@@ -136,7 +138,7 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
                   disabled={loading}
                 >
                   建立帳號
-                  <Spinner space='left' show={loading} />
+                  <Spinner space='left' show={loading} replace />
                 </Button>
               </ControlGroup>
             </form>
@@ -147,21 +149,11 @@ const SignupPage = ({ authenticated, loginSuccess }) => {
           <p className='lead'>
             不渴望能夠一躍千里，只希望每天能夠前進一步。
           </p>
-          <i className='lnr lnr-rocket bamf' />
+          <i className='lnr lnr-rocket bamf' replace />
         </Col>
       </Row>
     </Container>
   )
 }
 
-const mapStateToProps = (state) => ({
-  authenticated: state.index.authenticated
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  loginSuccess (user) {
-    dispatch(loginSuccess(user))
-  }
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignupPage)
+export default SignupPage

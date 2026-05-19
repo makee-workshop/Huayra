@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
-import { connect } from 'react-redux'
-import { Redirect } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { Navigate, Link } from 'react-router-dom'
 import { post } from '../utils/httpAgent'
-import { loginSuccess, loginError } from '../utils/userAction'
+import { loginSuccess, loginError } from '../utils/reducer'
 import Alert from '../shared/alert'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-const Login = (props) => {
+const Login = () => {
+  const dispatch = useDispatch()
   const inputRef = useRef({})
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -52,7 +52,7 @@ const Login = (props) => {
         if (response.success === true) {
           localStorage.setItem('token', response.data.token)
           delete response.data.token
-          props.loginSuccess(response.data)
+          dispatch(loginSuccess(response.data))
           setSuccess(true)
           setError('')
           setLoading(false)
@@ -77,7 +77,7 @@ const Login = (props) => {
           setHelp(newState.help)
           setError(newState.error)
           setLoading(newState.loading)
-          props.loginError()
+          dispatch(loginError())
         }
       })
       .catch((error) => {
@@ -92,17 +92,17 @@ const Login = (props) => {
   }
 
   if (success && returnUrl) {
-    return <Redirect to={returnUrl} />
+    return <Navigate to={returnUrl} replace />
   } else if (success && role === 'account') {
-    return <Redirect to='/account' />
+    return <Navigate to='/account' replace />
   } else if (success && role === 'admin') {
-    return <Redirect to='/admin' />
+    return <Navigate to='/admin' replace />
   }
 
   let alerts = null
 
   if (error) {
-    alerts = <Alert type='danger' message={error} />
+    alerts = <Alert type='danger' message={error} replace />
   }
 
   return (
@@ -124,6 +124,7 @@ const Login = (props) => {
               help={help.username}
               disabled={loading}
               onKeyPress={handleKeyPress}
+              replace
             />
             <TextControl
               ref={(c) => (inputRef.current.password = c)}
@@ -134,11 +135,12 @@ const Login = (props) => {
               help={help.password}
               disabled={loading}
               onKeyPress={handleKeyPress}
+              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button type='submit' inputClasses={{ 'btn-primary': true }} disabled={loading}>
                 登入
-                <Spinner space='left' show={loading} />
+                <Spinner space='left' show={loading} replace />
               </Button>
               <Link to='/login/forgot' className='btn btn-link'>
                 忘記密碼?
@@ -151,17 +153,4 @@ const Login = (props) => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  authenticated: state.index.authenticated
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  loginSuccess: (user) => {
-    dispatch(loginSuccess(user))
-  },
-  loginError: () => {
-    dispatch(loginError())
-  }
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default Login

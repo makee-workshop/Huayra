@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card } from 'reactstrap'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { get } from '../utils/httpAgent'
 import styles from './css/admin.module.css'
 
@@ -27,7 +27,7 @@ const AdminHome = () => {
       <Row>
         <Col md={6}>
           <h1 className='page-header'>系統資訊</h1>
-          <Row>
+          <Row className='g-3'>
             <Col md={6}>
               <Card body inverse className={`dark-card text-center ${styles['stat-card']}`}>
                 <div className={styles['stat-value']}>{userData.User}</div>

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { connect } from 'react-redux'
-import { Link, Redirect } from 'react-router-dom'
-import { Helmet } from 'react-helmet'
+import { useSelector } from 'react-redux'
+import { Link, Navigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
 import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
@@ -10,7 +10,8 @@ import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-const ForgotPage = ({ authenticated }) => {
+const ForgotPage = () => {
+  const authenticated = useSelector(state => state.index.authenticated)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(undefined)
@@ -69,6 +70,7 @@ const ForgotPage = ({ authenticated }) => {
         <Alert
           type='success'
           message='若此帳號存在，您將會收到一封重置的 email。'
+          replace
         />
         <Link to='/login' className='btn btn-link'>
           返回登入
@@ -76,9 +78,9 @@ const ForgotPage = ({ authenticated }) => {
       </div>
     )
   } else if (authenticated) {
-    return <Redirect to='/' />
+    return <Navigate to='/' replace />
   } else if (error) {
-    alert = <Alert type='danger' message={error} />
+    alert = <Alert type='danger' message={error} replace />
   }
 
   return (
@@ -99,6 +101,7 @@ const ForgotPage = ({ authenticated }) => {
               hasError={hasError.email}
               help={help.email}
               disabled={loading}
+              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button
@@ -107,7 +110,7 @@ const ForgotPage = ({ authenticated }) => {
                 disabled={loading}
               >
                 重置
-                <Spinner space='left' show={loading} />
+                <Spinner space='left' show={loading} replace />
               </Button>
               <Link to='/login' className='btn btn-link'>
                 返回登入
@@ -120,8 +123,4 @@ const ForgotPage = ({ authenticated }) => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  authenticated: state.index.authenticated
-})
-
-export default connect(mapStateToProps, null)(ForgotPage)
+export default ForgotPage

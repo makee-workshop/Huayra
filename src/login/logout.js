@@ -1,32 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Redirect } from 'react-router'
-import { connect } from 'react-redux'
+import { Navigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { get } from '../utils/httpAgent'
-import { loginError } from '../utils/userAction'
+import { loginError } from '../utils/reducer'
 
-const Logout = (props) => {
+const Logout = () => {
+  const dispatch = useDispatch()
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
-    fetchLogout()
-    props.loginError()
-  }, [])
+    get('/1/account/logout').then(() => {
+      localStorage.removeItem('token')
+      setSuccess(true)
+    })
+    dispatch(loginError())
+  }, [dispatch])
 
-  const fetchLogout = () => {
-    get('/1/account/logout')
-      .then((response) => {
-        localStorage.removeItem('token')
-        setSuccess(true)
-      })
-  }
-
-  return success ? <Redirect to='/' /> : null
+  return success ? <Navigate to='/' replace /> : null
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  loginError: () => {
-    dispatch(loginError())
-  }
-})
-
-export default connect(null, mapDispatchToProps)(Logout)
+export default Logout

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Moment from 'moment'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col, Card } from 'reactstrap'
 import styles from './css/account.module.css'
 
@@ -16,15 +15,16 @@ const AccountHome = () => {
   }, [])
 
   function getThisMoment () {
-    const thisMoment = Moment()
+    const pad = (n) => String(n).padStart(2, '0')
+    const d = new Date()
 
     return {
-      second: thisMoment.format('ss'),
-      minute: thisMoment.format('mm'),
-      hour: thisMoment.format('HH'),
-      day: thisMoment.format('DD'),
-      month: thisMoment.format('MM'),
-      year: thisMoment.format('YYYY')
+      second: pad(d.getSeconds()),
+      minute: pad(d.getMinutes()),
+      hour: pad(d.getHours()),
+      day: pad(d.getDate()),
+      month: pad(d.getMonth() + 1),
+      year: String(d.getFullYear())
     }
   }
 
@@ -36,7 +36,7 @@ const AccountHome = () => {
       <Row>
         <Col sm={7}>
           <h1 className='page-header'>我的帳號</h1>
-          <div className='row'>
+          <div className='row g-3'>
             <Col sm={4}>
               <Card body className={`well text-center ${styles['stat-card']}`}>
                 <div className={styles['stat-value']}>{time.hour}</div>

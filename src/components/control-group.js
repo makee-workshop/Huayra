@@ -1,9 +1,38 @@
 import ClassNames from 'classnames'
-import ObjectAssign from 'object-assign'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const propTypes = {
+const ControlGroup = ({
+  children,
+  groupClasses,
+  hasError,
+  help,
+  helpClasses,
+  hideHelp,
+  hideLabel,
+  label,
+  labelClasses
+}) => {
+  const groupClassName = ClassNames({ 'form-group': true, 'mb-3': true, 'has-error': hasError, ...groupClasses })
+  const labelClassName = ClassNames({ 'control-label': true, 'form-label': true, ...labelClasses })
+  const helpClassName = ClassNames({
+    'help-block': true,
+    'form-text': !hasError,
+    'invalid-feedback': hasError,
+    'd-block': hasError,
+    ...helpClasses
+  })
+
+  return (
+    <div className={groupClassName}>
+      {!hideLabel && <label className={labelClassName}>{label}</label>}
+      {children}
+      {!hideHelp && <span className={helpClassName}>{help}</span>}
+    </div>
+  )
+}
+
+ControlGroup.propTypes = {
   children: PropTypes.node,
   groupClasses: PropTypes.object,
   hasError: PropTypes.bool,
@@ -14,48 +43,5 @@ const propTypes = {
   label: PropTypes.string,
   labelClasses: PropTypes.object
 }
-
-class ControlGroup extends React.Component {
-  render () {
-    const groupClasses = ClassNames(ObjectAssign({
-      'form-group': true,
-      'has-error': this.props.hasError
-    }, this.props.groupClasses))
-
-    const labelClasses = ClassNames(ObjectAssign({
-      'control-label': true
-    }, this.props.labelClasses))
-
-    const helpClasses = ClassNames(ObjectAssign({
-      'help-block': true
-    }, this.props.helpClasses))
-
-    let label
-
-    if (!this.props.hideLabel) {
-      label = <label className={labelClasses}>
-        {this.props.label}
-      </label>
-    }
-
-    let help
-
-    if (!this.props.hideHelp) {
-      help = <span className={helpClasses}>
-        {this.props.help}
-      </span>
-    }
-
-    return (
-      <div className={groupClasses}>
-        {label}
-        {this.props.children}
-        {help}
-      </div>
-    )
-  }
-}
-
-ControlGroup.propTypes = propTypes
 
 export default ControlGroup

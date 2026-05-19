@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet'
-import { Container, Row, Col, Jumbotron, Card, CardHeader, CardBody, CardText } from 'reactstrap'
+import { Helmet } from 'react-helmet-async'
+import { Container, Row, Col, Card, CardHeader, CardBody, CardText } from 'reactstrap'
 
 const Home = () => {
   return (
@@ -9,13 +9,13 @@ const Home = () => {
       <Helmet>
         <title>Huayra</title>
       </Helmet>
-      <Jumbotron>
+      <div className='jumbotron mb-4'>
         <Container fluid>
           <h1 className='display-3'>Success</h1>
           <p className='lead'>您的網站及會員系統已建置成功！</p>
         </Container>
-      </Jumbotron>
-      <Row>
+      </div>
+      <Row className='g-3'>
         <Col sm='4'>
           <Card>
             <CardHeader>
@@ -29,7 +29,7 @@ const Home = () => {
                 Pickled adaptogen sartorial brooklyn tilde
                 bay area.
               </CardText>
-              <Link to='/about' className='btn btn-info btn-block'>
+              <Link to='/about' className='btn btn-info d-block w-100'>
                 瞭解更多
               </Link>
             </CardBody>
@@ -48,7 +48,7 @@ const Home = () => {
                 post-ironic. Copper mug selfies tattooed
                 chicharrones short ribs yolo cardigan.
               </CardText>
-              <Link to='/signup' className='btn btn-success btn-block'>
+              <Link to='/signup' className='btn btn-success d-block w-100'>
                 瞭解更多
               </Link>
             </CardBody>
@@ -67,7 +67,7 @@ const Home = () => {
                 Cred pour-over yuccie williamsburg shabby
                 chic ramps chartreuse messenger bag.
               </CardText>
-              <Link to='/contact' className='btn btn-warning btn-block'>
+              <Link to='/contact' className='btn btn-warning d-block w-100'>
                 瞭解更多
               </Link>
             </CardBody>

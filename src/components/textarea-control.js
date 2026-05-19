@@ -1,10 +1,49 @@
 import ClassNames from 'classnames'
 import ControlGroup from './control-group'
-import ObjectAssign from 'object-assign'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useImperativeHandle, useRef } from 'react'
 
-const propTypes = {
+// 使用 forwardRef 讓父元件可透過 ref 呼叫 focus() 與 value()
+const TextareaControl = React.forwardRef(({
+  disabled,
+  hasError,
+  help,
+  inputClasses,
+  label,
+  name,
+  onChange,
+  placeholder,
+  rows,
+  value
+}, ref) => {
+  const textareaRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({
+    focus: () => textareaRef.current?.focus(),
+    value: () => textareaRef.current?.value
+  }))
+
+  const className = ClassNames({ 'form-control': true, 'is-invalid': hasError, ...inputClasses })
+
+  return (
+    <ControlGroup hasError={hasError} label={label} help={help}>
+      <textarea
+        ref={textareaRef}
+        className={className}
+        name={name}
+        rows={rows}
+        placeholder={placeholder}
+        value={value}
+        disabled={disabled || undefined}
+        onChange={onChange}
+      />
+    </ControlGroup>
+  )
+})
+
+TextareaControl.displayName = 'TextareaControl'
+
+TextareaControl.propTypes = {
   disabled: PropTypes.bool,
   hasError: PropTypes.bool,
   help: PropTypes.string,
@@ -14,47 +53,7 @@ const propTypes = {
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   rows: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ])
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 }
-
-class TextareaControl extends React.Component {
-  focus () {
-    return this.input.focus()
-  }
-
-  value () {
-    return this.input.value
-  }
-
-  render () {
-    const inputClasses = ClassNames(ObjectAssign({
-      'form-control': true
-    }, this.props.inputClasses))
-
-    return (
-      <ControlGroup
-        hasError={this.props.hasError}
-        label={this.props.label}
-        help={this.props.help}>
-
-        <textarea
-          ref={(c) => (this.input = c)}
-          className={inputClasses}
-          name={this.props.name}
-          rows={this.props.rows}
-          placeholder={this.props.placeholder}
-          value={this.props.value}
-          disabled={this.props.disabled ? 'disabled' : undefined}
-          onChange={this.props.onChange}
-        />
-      </ControlGroup>
-    )
-  }
-}
-
-TextareaControl.propTypes = propTypes
 
 export default TextareaControl

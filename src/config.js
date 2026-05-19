@@ -1,2 +1,6 @@
-exports.companyName = 'Makee'
-exports.projectName = 'Huayra'
+const config = {
+  companyName: 'Makee',
+  projectName: 'Huayra'
+}
+
+export default config

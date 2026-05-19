@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
-import { Redirect } from 'react-router'
+import { Helmet } from 'react-helmet-async'
+import { Navigate } from 'react-router-dom'
 import { post } from '../utils/httpAgent'
 import Alert from '../shared/alert'
 import Button from '../components/button'
@@ -58,7 +58,7 @@ const Signup = () => {
   }
 
   if (success) {
-    return <Redirect to='/admin/users' />
+    return <Navigate to='/admin/users' replace />
   }
 
   const alert = error
@@ -66,6 +66,7 @@ const Signup = () => {
       <Alert
         type='danger'
         message={error}
+        replace
       />
       )
     : null
@@ -89,6 +90,7 @@ const Signup = () => {
                 hasError={hasError.username}
                 help={help.username}
                 disabled={loading}
+                replace
               />
               <TextControl
                 ref={emailRef}
@@ -97,6 +99,7 @@ const Signup = () => {
                 hasError={hasError.email}
                 help={help.email}
                 disabled={loading}
+                replace
               />
               <TextControl
                 ref={passwordRef}
@@ -106,6 +109,7 @@ const Signup = () => {
                 hasError={hasError.password}
                 help={help.password}
                 disabled={loading}
+                replace
               />
               <ControlGroup hideLabel hideHelp>
                 <Button
@@ -114,7 +118,7 @@ const Signup = () => {
                   disabled={loading}
                 >
                   建立
-                  <Spinner space='left' show={loading} />
+                  <Spinner space='left' show={loading} replace />
                 </Button>
               </ControlGroup>
             </form>

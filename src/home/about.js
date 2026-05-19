@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 
 const About = () => {
   return (
@@ -11,14 +11,14 @@ const About = () => {
       <Row>
         <Col sm={6}>
           <h1 className='page-header'>關於我們</h1>
-          <div className='media'>
-            <div className='pull-left'>
-              <div className='media-object'>
-                <i className='lnr lnr-flag fa-4x mr-2' />
+          <div className='d-flex gap-3 align-items-start'>
+            <div className='flex-shrink-0'>
+              <div>
+                <i className='lnr lnr-flag fa-4x me-2' />
               </div>
             </div>
-            <div className='media-body'>
-              <h4 className='media-heading'>簡介</h4>
+            <div className='flex-grow-1'>
+              <h4>簡介</h4>
               <p>
                 Makee.io 主要提供實作工作坊分享平台，以及 Zero-to-One
                 的學習指南，協助對 Maker、物聯網領域、科普教育有興趣的大
@@ -27,14 +27,14 @@ const About = () => {
             </div>
           </div>
           <hr />
-          <div className='media'>
-            <div className='pull-left'>
-              <div className='media-object'>
-                <i className='lnr lnr-flag fa-4x mr-2' />
+          <div className='d-flex gap-3 align-items-start'>
+            <div className='flex-shrink-0'>
+              <div>
+                <i className='lnr lnr-flag fa-4x me-2' />
               </div>
             </div>
-            <div className='media-body'>
-              <h4 className='media-heading'>Our Story</h4>
+            <div className='flex-grow-1'>
+              <h4>Our Story</h4>
               <p>
                 Community - Not only will shoppers visit to see what is
                 on display and meet the creative people who make things,

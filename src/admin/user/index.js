@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col, Form, Input, Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import DataTable from 'react-data-table-component'
@@ -148,14 +148,14 @@ const UsersPage = () => {
       <h1 className='page-header'>用戶管理</h1>
       <Row>
         <Col md={12} className='mb-2'>
-          <Form inline>
-            <Link to='/admin/signup' className='btn btn-success mr-5'>
+          <Form className='admin-user-toolbar'>
+            <Link to='/admin/signup' className='btn btn-success'>
               建立用戶
             </Link>
 
             <Input
               name='search'
-              className='mr-2'
+              className='admin-user-search'
               placeholder='帳號、email'
               onChange={e => setTargetText(e.target.value)}
             />
@@ -180,7 +180,7 @@ const UsersPage = () => {
                 role='status'
                 style={{ width: '5rem', height: '5rem' }}
               >
-                <span className='sr-only'>Loading...</span>
+                <span className='visually-hidden'>Loading...</span>
               </div>
             }
             paginationTotalRows={totalRows}

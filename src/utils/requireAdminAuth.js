@@ -1,63 +1,47 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
-import { loginSuccess, loginError } from './userAction'
+import { useDispatch } from 'react-redux'
+import { loginSuccess, loginError } from './reducer'
 
 export function requireAdminAuth (Component) {
   const AuthenticatedComponent = (props) => {
+    const dispatch = useDispatch()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
-      const checkAuth = () => {
-        try {
-          const token = localStorage.getItem('token')
-          if (token) {
-            const jwtPayload = JSON.parse(decodeURIComponent(escape(window.atob((token.split('.')[1]).replace(/-/g, '+').replace(/_/g, '/')))))
-            if (!jwtPayload._id || !jwtPayload.roles.admin) {
-              loginErrorHandler()
-            } else {
-              props.loginSuccess({
-                authenticated: true,
-                user: jwtPayload.username,
-                email: jwtPayload.email,
-                role: 'admin'
-              })
-              setIsAuthenticated(true)
-            }
-          } else {
+      const loginErrorHandler = () => {
+        dispatch(loginError())
+        const path = window.location.pathname
+        window.location.assign(path === '/' ? '/login' : `/login?returnUrl=${path}`)
+      }
+
+      try {
+        const token = localStorage.getItem('token')
+        if (token) {
+          // Base64url → Base64 → Uint8Array → UTF-8 字串，取代已廢棄的 escape()
+          const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+          const jwtPayload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(base64), c => c.charCodeAt(0))))
+          if (!jwtPayload._id || !jwtPayload.roles.admin) {
             loginErrorHandler()
+          } else {
+            dispatch(loginSuccess({
+              authenticated: true,
+              user: jwtPayload.username,
+              email: jwtPayload.email,
+              role: 'admin'
+            }))
+            setIsAuthenticated(true)
           }
-        } catch (_error) {
+        } else {
           loginErrorHandler()
         }
+      } catch (_error) {
+        loginErrorHandler()
       }
+    }, [dispatch])
 
-      const loginErrorHandler = () => {
-        props.loginError()
-        if (window.location.pathname === '/') {
-          window.location.assign('/')
-        } else {
-          window.location.assign(`/?returnUrl=${window.location.pathname}`)
-        }
-      }
-
-      checkAuth()
-    }, [props])
-
-    if (!isAuthenticated) {
-      return null
-    }
-
+    if (!isAuthenticated) return null
     return <Component {...props} />
   }
 
-  const mapDispatchToProps = (dispatch) => ({
-    loginSuccess (user) {
-      dispatch(loginSuccess(user))
-    },
-    loginError () {
-      dispatch(loginError())
-    }
-  })
-
-  return connect(null, mapDispatchToProps)(AuthenticatedComponent)
+  return AuthenticatedComponent
 }

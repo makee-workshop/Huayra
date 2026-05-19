@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { connect } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
-import { Helmet } from 'react-helmet'
+import { useSelector } from 'react-redux'
+import { Link, useParams , Navigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
-import { Redirect } from 'react-router'
 import { put } from '../utils/httpAgent'
 import Button from '../components/button'
 import Spinner from '../components/spinner'
 import ControlGroup from '../components/control-group'
 import TextControl from '../components/text-control'
 
-const ResetPage = ({ authenticated }) => {
+const ResetPage = () => {
+  const authenticated = useSelector(state => state.index.authenticated)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(undefined)
@@ -77,7 +77,7 @@ const ResetPage = ({ authenticated }) => {
   }
 
   if (authenticated) {
-    return <Redirect to='/' />
+    return <Navigate to='/' replace />
   }
 
   const alerts = []
@@ -120,6 +120,7 @@ const ResetPage = ({ authenticated }) => {
               hasError={hasError.password}
               help={help.password}
               disabled={loading}
+              replace
             />
             <TextControl
               ref={confirmInput}
@@ -129,6 +130,7 @@ const ResetPage = ({ authenticated }) => {
               hasError={hasError.confirm}
               help={help.confirm}
               disabled={loading}
+              replace
             />
             <TextControl
               name='_key'
@@ -137,6 +139,7 @@ const ResetPage = ({ authenticated }) => {
               value={key}
               help={help.key}
               disabled
+              replace
             />
             <TextControl
               name='_email'
@@ -145,6 +148,7 @@ const ResetPage = ({ authenticated }) => {
               value={email}
               help={help.email}
               disabled
+              replace
             />
             <ControlGroup hideLabel hideHelp>
               <Button
@@ -153,7 +157,7 @@ const ResetPage = ({ authenticated }) => {
                 disabled={loading}
               >
                 設定密碼
-                <Spinner space='left' show={loading} />
+                <Spinner space='left' show={loading} replace />
               </Button>
               <Link to='/login' className='btn btn-link'>
                 返回登入
@@ -166,8 +170,4 @@ const ResetPage = ({ authenticated }) => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  authenticated: state.index.authenticated
-})
-
-export default connect(mapStateToProps, null)(ResetPage)
+export default ResetPage

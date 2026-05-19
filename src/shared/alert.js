@@ -10,18 +10,19 @@ const propTypes = {
 const Alert = ({
   type = 'info',
   message = '',
-  onClose = () => {}
+  onClose
 }) => {
+  const dismissibleClass = onClose ? ' alert-dismissible' : ''
+
   return (
-    <div className={`alert alert-${type}`}>
+    <div className={`alert alert-${type}${dismissibleClass}`} role='alert'>
       {onClose && (
         <button
           type='button'
-          className='close'
+          className='btn-close'
+          aria-label='Close'
           onClick={onClose}
-        >
-          &times;
-        </button>
+        />
       )}
       {message}
     </div>

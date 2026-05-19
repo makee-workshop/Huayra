@@ -1,45 +1,38 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, createSlice } from '@reduxjs/toolkit'
 
-const initialState = {
-  index: {
+// 使用 createSlice 整合 reducer 與 action creators，取代分散的 userAction.js
+const authSlice = createSlice({
+  name: 'index',
+  initialState: {
     authenticated: false,
     user: '',
     email: '',
     role: ''
+  },
+  reducers: {
+    // 登入成功：寫入使用者資訊
+    loginSuccess (state, action) {
+      state.authenticated = true
+      state.user = action.payload.user
+      state.email = action.payload.email
+      state.role = action.payload.role
+    },
+    // 登入失敗或登出：清除使用者資訊
+    loginError (state) {
+      state.authenticated = false
+      state.user = ''
+      state.email = ''
+      state.role = ''
+    }
   }
-}
+})
 
-// Reducer
-function rootReducer (state = initialState, action) {
-  switch (action.type) {
-    case 'LOGIN_SUCCESS_USER':
-      return {
-        ...state,
-        index: { // 首頁
-          authenticated: true, // 是否驗證
-          user: action.user.user, // 使用者名稱
-          email: action.user.email,
-          role: action.user.role // 使用者權限
-        }
-      }
-    case 'LOGIN_ERROR_USER':
-      return {
-        ...state,
-        index: { // 首頁
-          authenticated: false, // 是否驗證
-          user: '', // 使用者名稱
-          email: '',
-          role: '' // 使用者權限
-        }
-      }
-    default:
-      return state
-  }
-}
+export const { loginSuccess, loginError } = authSlice.actions
 
 const store = configureStore({
-  reducer: rootReducer,
-  preloadedState: initialState
+  reducer: {
+    index: authSlice.reducer
+  }
 })
 
 export default store

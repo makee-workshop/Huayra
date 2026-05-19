@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
 import { useParams } from 'react-router-dom'
 import { get } from '../../utils/httpAgent'

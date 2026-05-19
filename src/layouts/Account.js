@@ -1,59 +1,50 @@
 import React, { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { Navbar, Collapse, Nav, NavItem, NavbarText, NavbarToggler, Container } from 'reactstrap'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Navbar, Collapse, Nav, NavItem, NavbarToggler, Container } from 'reactstrap'
 import config from '../config'
 
-const Account = (props) => {
+const navLinkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`
+
+const Account = () => {
   const [navBarOpen, setNavBarOpen] = useState(false)
 
-  const toggleMenu = () => {
-    setNavBarOpen(!navBarOpen)
-  }
+  const toggleMenu = () => setNavBarOpen(prev => !prev)
 
   return (
     <div>
-      <Navbar color='light' light expand='md' className='fixed-top'>
+      <Navbar color='light' light expand='md' className='fixed-top' container={false}>
         <Container>
           <Link to='/account' className='navbar-brand'>
             <img className='navbar-logo' src='/media/logo-square.png' alt='' />
             <span className='navbar-brand-label'>{config.projectName}</span>
           </Link>
           <NavbarToggler onClick={toggleMenu} />
-          <Collapse isOpen={!navBarOpen} navbar>
-            <Nav className='mr-auto' navbar>
+          <Collapse isOpen={navBarOpen} navbar>
+            <Nav className='me-auto' navbar>
               <NavItem>
-                <NavLink exact to='/account' activeClassName='active' className='nav-link'> 首頁
-                </NavLink>
+                <NavLink to='/account' end className={navLinkClass}>首頁</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to='/account/setting' activeClassName='active' className='nav-link'> 設定
-                </NavLink>
+                <NavLink to='/account/setting' className={navLinkClass}>設定</NavLink>
               </NavItem>
             </Nav>
-            <NavbarText>
-              <NavLink to='/logout'>
-                登出
-              </NavLink>
-            </NavbarText>
+            <Nav className='ms-auto' navbar>
+              <NavItem>
+                <NavLink to='/logout' className='nav-link'>登出</NavLink>
+              </NavItem>
+            </Nav>
           </Collapse>
         </Container>
       </Navbar>
 
-      {props.children}
+      <Outlet />
 
       <div className='footer'>
         <Container>
-          <span className='copyright float-right'>© {new Date().getFullYear()} {config.companyName}</span>
+          <span className='copyright float-end'>© {new Date().getFullYear()} {config.companyName}</span>
           <ul className='links'>
-            <li>
-              <Link to='/'> 首頁
-              </Link>
-            </li>
-            <li>
-              <Link to='/logout'> 登出
-              </Link>
-            </li>
+            <li><Link to='/'>首頁</Link></li>
+            <li><Link to='/logout'>登出</Link></li>
           </ul>
           <div className='clearfix' />
         </Container>
@@ -62,9 +53,4 @@ const Account = (props) => {
   )
 }
 
-const mapStateToProps = state => ({
-  user: state.index.user,
-  authenticated: state.index.authenticated
-})
-
-export default connect(mapStateToProps, null)(Account)
+export default Account
