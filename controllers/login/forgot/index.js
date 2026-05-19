@@ -20,39 +20,38 @@ exports.send = function (req, res, next) {
 
   workflow.on('generateToken', function () {
     const crypto = require('crypto')
-    crypto.randomBytes(21, function (err, buf) {
+    crypto.randomBytes(21, async function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      const token = buf.toString('hex')
-      req.app.db.models.User.encryptPassword(token, function (err, hash) {
-        if (err) {
-          return next(err)
-        }
-
+      try {
+        const token = buf.toString('hex')
+        const hash = await req.app.db.models.User.encryptPassword(token)
         workflow.emit('patchUser', token, hash)
-      })
+      } catch (err) {
+        return next(err)
+      }
     })
   })
 
-  workflow.on('patchUser', function (token, hash) {
-    const conditions = { email: req.body.email.toLowerCase() }
-    const fieldsToSet = {
-      resetPasswordToken: hash,
-      resetPasswordExpires: Date.now() + 10000000
-    }
-    req.app.db.models.User.findOneAndUpdate(conditions, fieldsToSet, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
+  workflow.on('patchUser', async function (token, hash) {
+    try {
+      const conditions = { email: req.body.email.toLowerCase() }
+      const fieldsToSet = {
+        resetPasswordToken: hash,
+        resetPasswordExpires: Date.now() + 10000000
       }
+      const user = await req.app.db.models.User.findOneAndUpdate(conditions, fieldsToSet)
 
       if (!user) {
         return workflow.emit('response')
       }
 
       workflow.emit('sendEmail', token, user)
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.on('sendEmail', function (token, user) {

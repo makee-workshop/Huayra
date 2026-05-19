@@ -23,21 +23,14 @@ app.config = config
 app.server = http.createServer(app)
 
 // setup mongoose
-const mongoConnectSetting = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}
-mongoose.connect(config.mongodb.uri, mongoConnectSetting)
 app.db = mongoose.connection
 
 app.db.on('error', function (error) {
   console.error('Error in MongoDb connection: ' + error)
-  mongoose.disconnect()
 })
 
 app.db.on('disconnected', function () {
   console.log('MongoDB disconnected!')
-  mongoose.connect(config.mongodb.uri, mongoConnectSetting)
 })
 
 // config data models
@@ -99,8 +92,16 @@ app.utility.slugify = require('./util/slugify')
 app.utility.workflow = require('./util/workflow')
 app.utility.ODMService = require('./util/odm-service')
 
-// listen up
-app.server.listen(app.config.port, function () {
-  // and... we're live
-  console.log('Server is running on port ' + config.port)
+const startServer = async function () {
+  await mongoose.connect(config.mongodb.uri)
+
+  app.server.listen(app.config.port, function () {
+    // and... we're live
+    console.log('Server is running on port ' + config.port)
+  })
+}
+
+startServer().catch(function (err) {
+  console.error('Failed to start server:', err)
+  process.exit(1)
 })

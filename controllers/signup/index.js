@@ -29,11 +29,9 @@ exports.signup = function (req, res) {
     workflow.emit('duplicateUsernameCheck')
   })
 
-  workflow.on('duplicateUsernameCheck', function () {
-    req.app.db.models.User.findOne({ username: req.body.username }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateUsernameCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ username: req.body.username })
 
       if (user) {
         workflow.outcome.errfor.username = '該使用者名已被註冊。'
@@ -41,14 +39,14 @@ exports.signup = function (req, res) {
       }
 
       workflow.emit('duplicateEmailCheck')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('duplicateEmailCheck', function () {
-    req.app.db.models.User.findOne({ email: req.body.email.toLowerCase() }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateEmailCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ email: req.body.email.toLowerCase() })
 
       if (user) {
         workflow.outcome.errfor.email = '該 email 已被註冊。'
@@ -56,15 +54,14 @@ exports.signup = function (req, res) {
       }
 
       workflow.emit('createUser')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('createUser', function () {
-    req.app.db.models.User.encryptPassword(req.body.password, function (err, hash) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('createUser', async function () {
+    try {
+      const hash = await req.app.db.models.User.encryptPassword(req.body.password)
       const fieldsToSet = {
         isActive: true,
         username: req.body.username,
@@ -75,18 +72,14 @@ exports.signup = function (req, res) {
           req.body.email
         ]
       }
-      req.app.db.models.User.create(fieldsToSet, function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
-        workflow.user = user
-        workflow.emit('createAccount')
-      })
-    })
+      workflow.user = await req.app.db.models.User.create(fieldsToSet)
+      workflow.emit('createAccount')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('createAccount', function () {
+  workflow.on('createAccount', async function () {
     const fieldsToSet = {
       isVerified: req.app.config.requireAccountVerification ? 'no' : 'yes',
       'name.full': workflow.user.username,
@@ -99,21 +92,15 @@ exports.signup = function (req, res) {
       ]
     }
 
-    req.app.db.models.Account.create(fieldsToSet, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+    try {
+      const account = await req.app.db.models.Account.create(fieldsToSet)
       // update user with account
       workflow.user.roles.account = account._id
-      workflow.user.save(function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
-        workflow.emit('sendWelcomeEmail')
-      })
-    })
+      await workflow.user.save()
+      workflow.emit('sendWelcomeEmail')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.on('sendWelcomeEmail', function () {
@@ -140,7 +127,7 @@ exports.signup = function (req, res) {
   })
 
   workflow.on('logUserIn', function () {
-    req._passport.instance.authenticate('local', { session: false }, function (err, user, info) {
+    req._passport.instance.authenticate('local', { session: false }, async function (err, user, info) {
       if (err) {
         return workflow.emit('exception', err)
       }
@@ -149,15 +136,20 @@ exports.signup = function (req, res) {
         workflow.outcome.errors.push('Login failed. That is strange.')
         return workflow.emit('response')
       } else {
-        workflow.outcome.data = {
-          token: user.generateAuthToken(),
-          authenticated: true,
-          user: user.username,
-          email: user.email,
-          role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
-        }
+        try {
+          const token = await user.generateAuthToken()
+          workflow.outcome.data = {
+            token,
+            authenticated: true,
+            user: user.username,
+            email: user.email,
+            role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
+          }
 
-        workflow.emit('response')
+          workflow.emit('response')
+        } catch (err) {
+          return workflow.emit('exception', err)
+        }
       }
     })(req, res)
   })

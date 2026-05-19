@@ -27,12 +27,12 @@ exports.init = function (req, res, next) {
 
   const workflow = req.app.utility.workflow(req, res)
 
-  workflow.on('renderPage', function () {
-    req.app.db.models.User.findById(req.user.id, 'email').exec(function (err, user) {
-      if (err) {
-        return next(err)
-      }
-    })
+  workflow.on('renderPage', async function () {
+    try {
+      await req.app.db.models.User.findById(req.user.id, 'email')
+    } catch (err) {
+      return next(err)
+    }
   })
 
   workflow.on('generateTokenOrRender', function () {
@@ -45,29 +45,26 @@ exports.init = function (req, res, next) {
 
   workflow.on('generateToken', function () {
     const crypto = require('crypto')
-    crypto.randomBytes(21, function (err, buf) {
+    crypto.randomBytes(21, async function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      const token = buf.toString('hex')
-      req.app.db.models.User.encryptPassword(token, function (err, hash) {
-        if (err) {
-          return next(err)
-        }
-
+      try {
+        const token = buf.toString('hex')
+        const hash = await req.app.db.models.User.encryptPassword(token)
         workflow.emit('patchAccount', token, hash)
-      })
+      } catch (err) {
+        return next(err)
+      }
     })
   })
 
-  workflow.on('patchAccount', function (token, hash) {
-    const fieldsToSet = { verificationToken: hash }
-    const options = { new: true }
-    req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options, function (err, account) {
-      if (err) {
-        return next(err)
-      }
+  workflow.on('patchAccount', async function (token, hash) {
+    try {
+      const fieldsToSet = { verificationToken: hash }
+      const options = { new: true }
+      await req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options)
 
       sendVerificationEmail(req, res, {
         email: req.user.email,
@@ -79,7 +76,9 @@ exports.init = function (req, res, next) {
           return next(err)
         }
       })
-    })
+    } catch (err) {
+      return next(err)
+    }
   })
 
   workflow.emit('generateTokenOrRender')
@@ -106,11 +105,9 @@ exports.resendVerification = function (req, res, next) {
     workflow.emit('duplicateEmailCheck')
   })
 
-  workflow.on('duplicateEmailCheck', function () {
-    req.app.db.models.User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.user.id } }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateEmailCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.user.id } })
 
       if (user) {
         workflow.outcome.errfor.email = 'email already taken'
@@ -118,47 +115,46 @@ exports.resendVerification = function (req, res, next) {
       }
 
       workflow.emit('patchUser')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('patchUser', function () {
-    const fieldsToSet = { email: req.body.email.toLowerCase() }
-    const options = { new: true }
-    req.app.db.models.User.findByIdAndUpdate(req.user.id, fieldsToSet, options, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('patchUser', async function () {
+    try {
+      const fieldsToSet = { email: req.body.email.toLowerCase() }
+      const options = { new: true }
+      const user = await req.app.db.models.User.findByIdAndUpdate(req.user.id, fieldsToSet, options)
 
       workflow.user = user
       workflow.emit('generateToken')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.on('generateToken', function () {
     const crypto = require('crypto')
-    crypto.randomBytes(21, function (err, buf) {
+    crypto.randomBytes(21, async function (err, buf) {
       if (err) {
         return next(err)
       }
 
-      const token = buf.toString('hex')
-      req.app.db.models.User.encryptPassword(token, function (err, hash) {
-        if (err) {
-          return next(err)
-        }
-
+      try {
+        const token = buf.toString('hex')
+        const hash = await req.app.db.models.User.encryptPassword(token)
         workflow.emit('patchAccount', token, hash)
-      })
+      } catch (err) {
+        return next(err)
+      }
     })
   })
 
-  workflow.on('patchAccount', function (token, hash) {
-    const fieldsToSet = { verificationToken: hash }
-    const options = { new: true }
-    req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('patchAccount', async function (token, hash) {
+    try {
+      const fieldsToSet = { verificationToken: hash }
+      const options = { new: true }
+      await req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account.id, fieldsToSet, options)
 
       sendVerificationEmail(req, res, {
         email: workflow.user.email,
@@ -171,26 +167,26 @@ exports.resendVerification = function (req, res, next) {
           workflow.emit('response')
         }
       })
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')
 }
 
-exports.verify = function (req, res, next) {
-  req.app.db.models.User.validatePassword(req.params.token, req.user.roles.account.verificationToken, function (err, isValid) {
-    if (err || !isValid) {
+exports.verify = async function (req, res, next) {
+  try {
+    const isValid = await req.app.db.models.User.validatePassword(req.params.token, req.user.roles.account.verificationToken)
+    if (!isValid) {
       return res.redirect(req.user.defaultReturnUrl())
     }
 
     const fieldsToSet = { isVerified: 'yes', verificationToken: '' }
     const options = { new: true }
-    req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account._id, fieldsToSet, options, function (err, account) {
-      if (err) {
-        return next(err)
-      }
-
-      return res.redirect(req.user.defaultReturnUrl())
-    })
-  })
+    await req.app.db.models.Account.findByIdAndUpdate(req.user.roles.account._id, fieldsToSet, options)
+    return res.redirect(req.user.defaultReturnUrl())
+  } catch (err) {
+    return next(err)
+  }
 }

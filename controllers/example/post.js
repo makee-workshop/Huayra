@@ -12,7 +12,7 @@
    * @param {String} content. 內容.
    */
 exports.create = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     // Backbone way use req.body, not req.query
@@ -33,16 +33,18 @@ exports.create = function (req, res, next) {
     return workflow.emit('saveNewPost')
   })
 
-  workflow.on('saveNewPost', function () {
-    var fieldsToSet = {
+  workflow.on('saveNewPost', async function () {
+    const fieldsToSet = {
       name: req.body.name.trim(),
       content: req.body.content.trim()
     }
 
-    new req.app.db.models.Post(fieldsToSet).save(function (err) {
-      if (err) return workflow.emit('exception', err)
+    try {
+      await req.app.db.models.Post.create(fieldsToSet)
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   return workflow.emit('validate')
@@ -57,7 +59,7 @@ exports.create = function (req, res, next) {
    * @param {String} content. 內容.
    */
 exports.createByQuery = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
+  const workflow = req.app.utility.workflow(req, res)
 
   workflow.on('validate', function () {
     // use req.query
@@ -73,16 +75,18 @@ exports.createByQuery = function (req, res, next) {
     return workflow.emit('saveNewPost')
   })
 
-  workflow.on('saveNewPost', function () {
-    var fieldsToSet = {
+  workflow.on('saveNewPost', async function () {
+    const fieldsToSet = {
       name: req.query.name.trim(),
       content: req.query.content.trim()
     }
 
-    new req.app.db.models.Post(fieldsToSet).save(function (err) {
-      if (err) return workflow.emit('exception', err)
+    try {
+      await req.app.db.models.Post.create(fieldsToSet)
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   return workflow.emit('validate')
@@ -95,28 +99,30 @@ exports.createByQuery = function (req, res, next) {
    * @summary read all posts
    */
 exports.readAll = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
+  const workflow = req.app.utility.workflow(req, res)
 
   // defaults: no limits
   req.query.limit = req.query.limit ? parseInt(req.query.limit) : 999
   // req.query.page = req.query.page ? parseInt(req.query.page) : 1
   req.query.sort = req.query.sort ? req.query.sort : '-date'
 
-  workflow.on('listPost', function () {
-    req.app.db.models.Post.pagedFind({
-      keys: 'name content date',
-      limit: req.query.limit,
-      // page: req.query.page,
-      sort: req.query.sort
-    }, function (err, posts) {
-      if (err) return workflow.emit('exception', err)
+  workflow.on('listPost', async function () {
+    try {
+      const posts = await req.app.db.models.Post.pagedFind({
+        keys: 'name content date',
+        limit: req.query.limit,
+        // page: req.query.page,
+        sort: req.query.sort
+      })
 
-      for (var key in posts) {
+      for (const key in posts) {
         workflow.outcome[key] = posts[key]
       }
 
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   return workflow.emit('listPost')
@@ -130,22 +136,23 @@ exports.readAll = function (req, res, next) {
    * @param {String} name. 名稱.
    */
 exports.activate = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var name = req.params.name.trim()
-  var decode = decodeURIComponent(name)
+  const workflow = req.app.utility.workflow(req, res)
+  const name = req.params.name.trim()
+  const decode = decodeURIComponent(name)
 
-  workflow.on('updatePost', function () {
-    var fieldsToSet = {
+  workflow.on('updatePost', async function () {
+    const fieldsToSet = {
       isActive: true
     }
 
-    req.app.db.models.Post.update({ name: decode }, fieldsToSet, { multi: true }, function (err, numAffected) {
-      if (err) return workflow.emit('exception', err)
-
+    try {
+      const numAffected = await req.app.db.models.Post.updateMany({ name: decode }, fieldsToSet)
       workflow.outcome.numAffected = numAffected
 
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('updatePost')
@@ -159,22 +166,23 @@ exports.activate = function (req, res, next) {
    * @param {String} name. 名稱.
    */
 exports.inactivate = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var name = req.params.name.trim()
-  var decode = decodeURIComponent(name)
+  const workflow = req.app.utility.workflow(req, res)
+  const name = req.params.name.trim()
+  const decode = decodeURIComponent(name)
 
-  workflow.on('updatePost', function () {
-    var fieldsToSet = {
+  workflow.on('updatePost', async function () {
+    const fieldsToSet = {
       isActive: false
     }
 
-    req.app.db.models.Post.update({ name: decode }, fieldsToSet, { multi: true }, function (err, numAffected) {
-      if (err) return workflow.emit('exception', err)
-
+    try {
+      const numAffected = await req.app.db.models.Post.updateMany({ name: decode }, fieldsToSet)
       workflow.outcome.numAffected = numAffected
 
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('updatePost')
@@ -188,17 +196,18 @@ exports.inactivate = function (req, res, next) {
    * @param {String} id.
    */
 exports.delete = function (req, res, next) {
-  var workflow = new req.app.utility.workflow(req, res) // eslint-disable-line
-  var _id = req.params.id
+  const workflow = req.app.utility.workflow(req, res)
+  const _id = req.params.id
 
-  workflow.on('deletePost', function () {
-    req.app.db.models.Post.findByIdAndRemove(_id, function (err, post) {
-      if (err) return workflow.emit('exception', err)
-
+  workflow.on('deletePost', async function () {
+    try {
+      const post = await req.app.db.models.Post.findByIdAndDelete(_id)
       workflow.outcome.post = post
 
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('deletePost')

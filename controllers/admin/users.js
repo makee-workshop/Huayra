@@ -27,11 +27,9 @@ exports.update = function (req, res, next) {
     workflow.emit('getUser')
   })
 
-  workflow.on('getUser', function () {
-    req.app.db.models.User.findOne({ _id: req.params.id }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('getUser', async function () {
+    try {
+      const user = await req.app.db.models.User.findById(req.params.id)
 
       userObj = user
 
@@ -40,10 +38,12 @@ exports.update = function (req, res, next) {
       } else {
         return workflow.emit('duplicateUsernameCheck')
       }
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('setAdmin', function (userObj) {
+  workflow.on('setAdmin', async function (userObj) {
     const fieldsToSet = {
       user: {
         id: userObj._id,
@@ -55,26 +55,26 @@ exports.update = function (req, res, next) {
       groups: ['root']
     }
 
-    req.app.db.models.Admin.findOneAndUpdate(
-      { user: { id: userObj._id } },
-      fieldsToSet,
-      { safe: true, upsert: true, new: true },
-      function (err, admin) {
-        if (err) return workflow.emit('exception', err)
+    try {
+      const admin = await req.app.db.models.Admin.findOneAndUpdate(
+        { user: { id: userObj._id } },
+        fieldsToSet,
+        { upsert: true, new: true }
+      )
 
-        if (admin) {
-          adminId = admin._id
-        }
+      if (admin) {
+        adminId = admin._id
+      }
 
-        return workflow.emit('duplicateUsernameCheck')
-      })
+      return workflow.emit('duplicateUsernameCheck')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('duplicateUsernameCheck', function () {
-    req.app.db.models.User.findOne({ username: req.body.username, _id: { $ne: req.params.id } }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateUsernameCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ username: req.body.username, _id: { $ne: req.params.id } })
 
       if (user) {
         workflow.outcome.errfor.username = 'username already taken'
@@ -82,14 +82,14 @@ exports.update = function (req, res, next) {
       } else {
         return workflow.emit('duplicateEmailCheck')
       }
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('duplicateEmailCheck', function () {
-    req.app.db.models.User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.params.id } }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateEmailCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.params.id } })
 
       if (user) {
         workflow.outcome.errfor.email = 'email already taken'
@@ -97,10 +97,12 @@ exports.update = function (req, res, next) {
       }
 
       workflow.emit('patchUser')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('patchUser', function () {
+  workflow.on('patchUser', async function () {
     const fieldsToSet = {
       isActive: req.body.isActive,
       username: req.body.username,
@@ -123,16 +125,15 @@ exports.update = function (req, res, next) {
     }
 
     const options = { new: true }
-    req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+    try {
+      const user = await req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options)
       workflow.emit('patchAdmin', user)
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('patchAdmin', function (user) {
+  workflow.on('patchAdmin', async function (user) {
     if (user.roles.admin) {
       const fieldsToSet = {
         user: {
@@ -141,19 +142,18 @@ exports.update = function (req, res, next) {
         }
       }
       const options = { new: true }
-      req.app.db.models.Admin.findByIdAndUpdate(user.roles.admin, fieldsToSet, options, function (err, admin) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
+      try {
+        await req.app.db.models.Admin.findByIdAndUpdate(user.roles.admin, fieldsToSet, options)
         workflow.emit('patchAccount', user)
-      })
+      } catch (err) {
+        return workflow.emit('exception', err)
+      }
     } else {
       workflow.emit('patchAccount', user)
     }
   })
 
-  workflow.on('patchAccount', function (user) {
+  workflow.on('patchAccount', async function (user) {
     if (user.roles.account) {
       const fieldsToSet = {
         user: {
@@ -162,41 +162,38 @@ exports.update = function (req, res, next) {
         }
       }
       const options = { new: true }
-      req.app.db.models.Account.findByIdAndUpdate(user.roles.account, fieldsToSet, options, function (err, account) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
+      try {
+        await req.app.db.models.Account.findByIdAndUpdate(user.roles.account, fieldsToSet, options)
         workflow.emit('populateRoles', user)
-      })
+      } catch (err) {
+        return workflow.emit('exception', err)
+      }
     } else {
       workflow.emit('populateRoles', user)
     }
   })
 
-  workflow.on('populateRoles', function (user) {
-    user.populate('roles.admin roles.account', 'name.full', function (err, populatedUser) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('populateRoles', async function (user) {
+    try {
+      const populatedUser = await user.populate('roles.admin roles.account', 'name.full')
       workflow.outcome.user = populatedUser
       if (req.body.roles === 'account') {
         workflow.emit('deleteAdmin')
       } else {
         workflow.emit('response')
       }
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('deleteAdmin', function () {
-    req.app.db.models.Admin.findOneAndRemove({ 'user.id': req.params.id }, function (err, admin) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('deleteAdmin', async function () {
+    try {
+      await req.app.db.models.Admin.findOneAndDelete({ 'user.id': req.params.id })
       workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')
@@ -225,31 +222,21 @@ exports.password = function (req, res, next) {
     workflow.emit('patchUser')
   })
 
-  workflow.on('patchUser', function () {
-    req.app.db.models.User.encryptPassword(req.body.newPassword, function (err, hash) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('patchUser', async function () {
+    try {
+      const hash = await req.app.db.models.User.encryptPassword(req.body.newPassword)
       const fieldsToSet = { password: hash }
       const options = { new: true }
-      req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
+      const user = await req.app.db.models.User.findByIdAndUpdate(req.params.id, fieldsToSet, options)
+      await user.populate('roles.admin roles.account', 'name.full')
 
-        user.populate('roles.admin roles.account', 'name.full', function (err, user) {
-          if (err) {
-            return workflow.emit('exception', err)
-          }
-
-          workflow.outcome.user = user
-          workflow.outcome.newPassword = ''
-          workflow.outcome.confirm = ''
-          workflow.emit('response')
-        })
-      })
-    })
+      workflow.outcome.user = user
+      workflow.outcome.newPassword = ''
+      workflow.outcome.confirm = ''
+      workflow.emit('response')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')
@@ -272,38 +259,36 @@ exports.delete = function (req, res, next) {
     workflow.emit('deleteUser')
   })
 
-  workflow.on('deleteUser', function () {
-    req.app.db.models.User.findByIdAndRemove(req.params.id, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('deleteUser', async function () {
+    try {
+      const user = await req.app.db.models.User.findByIdAndDelete(req.params.id)
 
       if (user.roles.account) {
         workflow.emit('deleteAccount', user.roles.account)
       } else {
         workflow.emit('deleteAdmin')
       }
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('deleteAccount', function (accountId) {
-    req.app.db.models.Account.findByIdAndRemove(accountId, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('deleteAccount', async function (accountId) {
+    try {
+      await req.app.db.models.Account.findByIdAndDelete(accountId)
       workflow.emit('deleteAdmin')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('deleteAdmin', function () {
-    req.app.db.models.Admin.findOneAndRemove({ 'user.id': req.params.id }, function (err, admin) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('deleteAdmin', async function () {
+    try {
+      await req.app.db.models.Admin.findOneAndDelete({ 'user.id': req.params.id })
       workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')
@@ -342,11 +327,9 @@ exports.signup = function (req, res) {
     workflow.emit('duplicateUsernameCheck')
   })
 
-  workflow.on('duplicateUsernameCheck', function () {
-    req.app.db.models.User.findOne({ username: req.body.username }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateUsernameCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ username: req.body.username })
 
       if (user) {
         workflow.outcome.errfor.username = '此帳號已被使用'
@@ -354,14 +337,14 @@ exports.signup = function (req, res) {
       }
 
       workflow.emit('duplicateEmailCheck')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('duplicateEmailCheck', function () {
-    req.app.db.models.User.findOne({ email: req.body.email.toLowerCase() }, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
+  workflow.on('duplicateEmailCheck', async function () {
+    try {
+      const user = await req.app.db.models.User.findOne({ email: req.body.email.toLowerCase() })
 
       if (user) {
         workflow.outcome.errfor.email = '此 email 已被使用'
@@ -369,15 +352,14 @@ exports.signup = function (req, res) {
       }
 
       workflow.emit('createUser')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('createUser', function () {
-    req.app.db.models.User.encryptPassword(req.body.password, function (err, hash) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+  workflow.on('createUser', async function () {
+    try {
+      const hash = await req.app.db.models.User.encryptPassword(req.body.password)
       const fieldsToSet = {
         isActive: 'yes',
         username: req.body.username,
@@ -393,18 +375,14 @@ exports.signup = function (req, res) {
         fieldsToSet.isActive = req.body.isActive.trim() === 'yes' ? 'yes' : 'no'
       }
 
-      req.app.db.models.User.create(fieldsToSet, function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
-        workflow.user = user
-        workflow.emit('createAccount')
-      })
-    })
+      workflow.user = await req.app.db.models.User.create(fieldsToSet)
+      workflow.emit('createAccount')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
-  workflow.on('createAccount', function () {
+  workflow.on('createAccount', async function () {
     const fieldsToSet = {
       isVerified: req.app.get('require-account-verification') ? 'no' : 'yes',
       'name.full': workflow.user.username,
@@ -417,21 +395,15 @@ exports.signup = function (req, res) {
       ]
     }
 
-    req.app.db.models.Account.create(fieldsToSet, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+    try {
+      const account = await req.app.db.models.Account.create(fieldsToSet)
       // update user with account
       workflow.user.roles.account = account._id
-      workflow.user.save(function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
-        workflow.emit('response')
-      })
-    })
+      await workflow.user.save()
+      workflow.emit('response')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')

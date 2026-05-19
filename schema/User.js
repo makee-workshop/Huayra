@@ -45,25 +45,16 @@ exports = module.exports = function (app, mongoose) {
 
     return returnUrl
   }
-  schema.statics.encryptPassword = function (password, done) {
+  schema.statics.encryptPassword = async function (password) {
     const bcrypt = require('bcrypt')
-    bcrypt.genSalt(10, function (err, salt) {
-      if (err) {
-        return done(err)
-      }
-
-      bcrypt.hash(password, salt, function (err, hash) {
-        done(err, hash)
-      })
-    })
+    const salt = await bcrypt.genSalt(10)
+    return bcrypt.hash(password, salt)
   }
-  schema.statics.validatePassword = function (password, hash, done) {
+  schema.statics.validatePassword = function (password, hash) {
     const bcrypt = require('bcrypt')
-    bcrypt.compare(password, hash, function (err, res) {
-      done(err, res)
-    })
+    return bcrypt.compare(password, hash)
   }
-  schema.methods.generateAuthToken = function () {
+  schema.methods.generateAuthToken = async function () {
     let opt = {}
     let expiredAt = 0
     if (app.config.expiresIn) {
@@ -87,12 +78,10 @@ exports = module.exports = function (app, mongoose) {
       token,
       expiredAt
     })
-    this.save()
+    await this.save()
     return token
   }
   schema.plugin(require('./plugins/pagedFind'))
-  schema.index({ username: 1 }, { unique: true })
-  schema.index({ email: 1 }, { unique: true })
   schema.index({ timeCreated: 1 })
   schema.index({ search: 1 })
   schema.set('autoIndex', (app.get('env') === 'development'))

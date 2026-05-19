@@ -19,7 +19,7 @@ exports.update = function (req, res, next) {
     workflow.emit('patchAccount')
   })
 
-  workflow.on('patchAccount', function () {
+  workflow.on('patchAccount', async function () {
     const reg = /^[\u4E00-\u9FA5]+$/
     let fullName = ''
     if (reg.test(req.body.first + req.body.last)) {
@@ -48,14 +48,13 @@ exports.update = function (req, res, next) {
       ]
     }
     const options = { new: true }
-    req.app.db.models.Account.findByIdAndUpdate(req.params.id, fieldsToSet, options, function (err, account) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
+    try {
+      const account = await req.app.db.models.Account.findByIdAndUpdate(req.params.id, fieldsToSet, options)
       workflow.outcome.account = account
       return workflow.emit('response')
-    })
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')

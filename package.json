@@ -49,7 +49,7 @@
     "helmet": "2.x.x",
     "jsonwebtoken": "^8.5.1",
     "method-override": "2.3.10",
-    "mongoose": "^6.2.1",
+    "mongoose": "8.9.3",
     "morgan": ">=1.10.0",
     "ms": "^2.1.2",
     "passport": "^0.5.2",

@@ -6,7 +6,7 @@ exports = module.exports = function (app, passport) {
   const ExtractJwt = require('passport-jwt').ExtractJwt
 
   passport.use(new LocalStrategy(
-    function (username, password, done) {
+    async function (username, password, done) {
       const conditions = { isActive: true }
       if (username.indexOf('@') === -1) {
         conditions.username = username
@@ -14,37 +14,31 @@ exports = module.exports = function (app, passport) {
         conditions.email = username.toLowerCase()
       }
 
-      app.db.models.User.findOne(conditions, function (err, user) {
-        if (err) {
-          return done(err)
-        }
+      try {
+        const user = await app.db.models.User.findOne(conditions)
 
         if (!user) {
           return done(null, false, { message: '未知的使用者' })
         }
 
-        app.db.models.User.validatePassword(password, user.password, function (err, isValid) {
-          if (err) {
-            return done(err)
-          }
+        const isValid = await app.db.models.User.validatePassword(password, user.password)
 
-          if (!isValid) {
-            return done(null, false, { message: '無效的密碼' })
-          }
+        if (!isValid) {
+          return done(null, false, { message: '無效的密碼' })
+        }
 
-          return done(null, user)
-        })
-      })
+        return done(null, user)
+      } catch (err) {
+        return done(err)
+      }
     }
   ))
 
   passport.use(new JwtStrategy(
     { jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: app.config.secretkey, passReqToCallback: true },
-    (request, jwtPayload, done) => {
-      app.db.models.User.findById(jwtPayload._id).populate('roles.admin').populate('roles.account').exec(function (err, user) {
-        if (err) {
-          return done(err)
-        }
+    async (request, jwtPayload, done) => {
+      try {
+        const user = await app.db.models.User.findById(jwtPayload._id).populate('roles.admin').populate('roles.account')
 
         if (!user) {
           return done(null, false, { message: 'Unknown user' })
@@ -56,22 +50,23 @@ exports = module.exports = function (app, passport) {
           const tokens = user.jwt.filter(j => j.expiredAt > now)
           if (user.jwt.length !== tokens.length) {
             user.jwt = tokens
-            user.save()
+            await user.save()
           }
         }
 
         if (user.jwt.filter(j => j.token === token).length === 0) {
-          done(null, false)
-        } else {
-          if (user && user.roles && user.roles.admin) {
-            user.roles.admin.populate('groups', function (err, admin) {
-              done(err, user)
-            })
-          } else {
-            done(err, user)
-          }
+          return done(null, false)
         }
-      })
+
+        if (user && user.roles && user.roles.admin) {
+          await user.roles.admin.populate('groups')
+          return done(null, user)
+        } else {
+          return done(null, user)
+        }
+      } catch (err) {
+        return done(err)
+      }
     }
   ))
 }

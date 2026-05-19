@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { Link, useParams , Navigate } from 'react-router-dom'
+import { Link, useParams, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Container, Row, Col } from 'reactstrap'
 import { put } from '../utils/httpAgent'

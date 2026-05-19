@@ -5,12 +5,8 @@ const bcrypt = require('bcrypt')
 const config = require('../config')
 
 async function main () {
-  mongoose.connect(config.mongodb.uri)
+  await mongoose.connect(config.mongodb.uri)
   const db = mongoose.connection
-  await new Promise((resolve, reject) => {
-    db.once('open', resolve)
-    db.once('error', reject)
-  })
   console.log('Connected to MongoDB:', config.mongodb.uri)
 
   const app = {

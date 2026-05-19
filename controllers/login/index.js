@@ -19,71 +19,57 @@ exports.login = function (req, res) {
     workflow.emit('abuseFilter')
   })
 
-  workflow.on('abuseFilter', function () {
-    const getIpCount = function (done) {
+  workflow.on('abuseFilter', async function () {
+    try {
       const conditions = { ip: req.ip }
-      req.app.db.models.LoginAttempt.countDocuments(conditions, function (err, count) {
-        if (err) {
-          return done(err)
-        }
+      const userConditions = { ip: req.ip, user: req.body.username }
+      const [ipCount, ipUserCount] = await Promise.all([
+        req.app.db.models.LoginAttempt.countDocuments(conditions),
+        req.app.db.models.LoginAttempt.countDocuments(userConditions)
+      ])
 
-        done(null, count)
-      })
-    }
-
-    const getIpUserCount = function (done) {
-      const conditions = { ip: req.ip, user: req.body.username }
-      req.app.db.models.LoginAttempt.countDocuments(conditions, function (err, count) {
-        if (err) {
-          return done(err)
-        }
-
-        done(null, count)
-      })
-    }
-
-    const asyncFinally = function (err, results) {
-      if (err) {
-        return workflow.emit('exception', err)
-      }
-
-      if (results.ip >= req.app.config.loginAttempts.forIp || results.ipUser >= req.app.config.loginAttempts.forIpAndUser) {
+      if (ipCount >= req.app.config.loginAttempts.forIp || ipUserCount >= req.app.config.loginAttempts.forIpAndUser) {
         workflow.outcome.errors.push('登入錯誤次數以超標，請稍後再嘗試。')
         return workflow.emit('response')
       } else {
         workflow.emit('attemptLogin')
       }
+    } catch (err) {
+      return workflow.emit('exception', err)
     }
-
-    require('async').parallel({ ip: getIpCount, ipUser: getIpUserCount }, asyncFinally)
   })
 
   workflow.on('attemptLogin', function () {
-    req._passport.instance.authenticate('local', { session: false }, function (err, user, info) {
+    req._passport.instance.authenticate('local', { session: false }, async function (err, user, info) {
       if (err) {
         return workflow.emit('exception', err)
       }
 
       if (!user) {
-        const fieldsToSet = { ip: req.ip, user: req.body.username }
-        req.app.db.models.LoginAttempt.create(fieldsToSet, function (err, doc) {
-          if (err) {
-            return workflow.emit('exception', err)
-          }
+        try {
+          const fieldsToSet = { ip: req.ip, user: req.body.username }
+          await req.app.db.models.LoginAttempt.create(fieldsToSet)
 
           workflow.outcome.errors.push('此帳號不存在或密碼錯誤。')
           return workflow.emit('response')
-        })
-      } else {
-        workflow.outcome.data = {
-          token: user.generateAuthToken(),
-          authenticated: true,
-          user: user.username,
-          email: user.email,
-          role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
+        } catch (err) {
+          return workflow.emit('exception', err)
         }
+      } else {
+        try {
+          const token = await user.generateAuthToken()
+          workflow.outcome.data = {
+            token,
+            authenticated: true,
+            user: user.username,
+            email: user.email,
+            role: (user.roles.admin === '' || user.roles.admin === undefined || user.roles.admin === null) ? 'account' : 'admin'
+          }
 
-        workflow.emit('response')
+          workflow.emit('response')
+        } catch (err) {
+          return workflow.emit('exception', err)
+        }
       }
     })(req, res)
   })

@@ -23,52 +23,42 @@ exports.set = function (req, res) {
     workflow.emit('findUser')
   })
 
-  workflow.on('findUser', function () {
-    const conditions = {
-      email: req.params.email,
-      resetPasswordExpires: { $gt: Date.now() }
-    }
-    req.app.db.models.User.findOne(conditions, function (err, user) {
-      if (err) {
-        return workflow.emit('exception', err)
+  workflow.on('findUser', async function () {
+    try {
+      const conditions = {
+        email: req.params.email,
+        resetPasswordExpires: { $gt: Date.now() }
       }
+      const user = await req.app.db.models.User.findOne(conditions)
 
       if (!user) {
         workflow.outcome.errors.push('無效的請求。')
         return workflow.emit('response')
       }
 
-      req.app.db.models.User.validatePassword(req.params.token, user.resetPasswordToken, function (err, isValid) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
+      const isValid = await req.app.db.models.User.validatePassword(req.params.token, user.resetPasswordToken)
 
-        if (!isValid) {
-          workflow.outcome.errors.push('無效的請求。')
-          return workflow.emit('response')
-        }
-
-        workflow.emit('patchUser', user)
-      })
-    })
-  })
-
-  workflow.on('patchUser', function (user) {
-    req.app.db.models.User.encryptPassword(req.body.password, function (err, hash) {
-      if (err) {
-        return workflow.emit('exception', err)
+      if (!isValid) {
+        workflow.outcome.errors.push('無效的請求。')
+        return workflow.emit('response')
       }
 
+      workflow.emit('patchUser', user)
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
+  })
+
+  workflow.on('patchUser', async function (user) {
+    try {
+      const hash = await req.app.db.models.User.encryptPassword(req.body.password)
       const fieldsToSet = { password: hash, resetPasswordToken: '' }
       const options = { new: true }
-      req.app.db.models.User.findByIdAndUpdate(user._id, fieldsToSet, options, function (err, user) {
-        if (err) {
-          return workflow.emit('exception', err)
-        }
-
-        workflow.emit('response')
-      })
-    })
+      await req.app.db.models.User.findByIdAndUpdate(user._id, fieldsToSet, options)
+      workflow.emit('response')
+    } catch (err) {
+      return workflow.emit('exception', err)
+    }
   })
 
   workflow.emit('validate')

@@ -1,221 +1,109 @@
 'use strict'
 
-exports.create = function (req = null, schema = null, checkFields = null, next = null) {
-  if (!req) {
-    next('req parameter is required.')
-  } else if (!schema) {
-    next('schema parameter is required.')
-  } else if (!checkFields) {
-    next('checkFields parameter is required.')
+const assertRequired = function (value, message) {
+  if (!value) {
+    throw new Error(message)
   }
-
-  var workflow = new req.app.utility.workflow(req, null) // eslint-disable-line
-
-  workflow.on('validateFields', function () {
-    var fieldsToSet = {}
-    for (var key in req.body) {
-      if (Object.prototype.hasOwnProperty.call(checkFields, key)) {
-        if (checkFields[key].includes('array')) {
-          fieldsToSet[key] = req.body[key].split(',')
-        } else if (checkFields[key].includes('object')) {
-          fieldsToSet[key] = JSON.parse(req.body[key])
-        } else if (checkFields[key].includes('date')) {
-          fieldsToSet[key] = new Date(req.body[key])
-        } else {
-          fieldsToSet[key] = req.body[key]
-        }
-
-        delete checkFields[key]
-      }
-    }
-
-    var errfor = {}
-    var hasErrors = false
-    for (key in checkFields) {
-      if (checkFields[key].includes('required')) {
-        errfor[key] = '必填欄位'
-        hasErrors = true
-      }
-    }
-    if (hasErrors) {
-      next('有欄位尚未填寫', errfor)
-    } else {
-      return workflow.emit('saveData', fieldsToSet)
-    }
-  })
-
-  workflow.on('saveData', function (fieldsToSet) {
-    new req.app.db.models[schema](fieldsToSet).save(function (err, data) {
-      if (err) next(err, null)
-      else next(null, data)
-    })
-  })
-
-  return workflow.emit('validateFields')
 }
 
-exports.updateById = function (req = null, _id = null, schema = null, checkFields = null, option = null, next = null) {
-  if (!req) {
-    next('req parameter is required.')
-  } else if (!_id) {
-    next('_id parameter is required.')
-  } else if (!schema) {
-    next('schema parameter is required.')
-  } else if (!option) {
-    next('option parameter is required.')
-  } else if (!checkFields) {
-    next('checkFields parameter is required.')
+const getFieldsToSet = function (req, checkFields) {
+  const fieldsToSet = {}
+  const remainingFields = Object.assign({}, checkFields)
+
+  for (const key in req.body) {
+    if (Object.prototype.hasOwnProperty.call(remainingFields, key)) {
+      if (remainingFields[key].includes('array')) {
+        fieldsToSet[key] = req.body[key].split(',')
+      } else if (remainingFields[key].includes('object')) {
+        fieldsToSet[key] = JSON.parse(req.body[key])
+      } else if (remainingFields[key].includes('date')) {
+        fieldsToSet[key] = new Date(req.body[key])
+      } else {
+        fieldsToSet[key] = req.body[key]
+      }
+
+      delete remainingFields[key]
+    }
   }
 
-  var workflow = new req.app.utility.workflow(req, null) // eslint-disable-line
-
-  workflow.on('validateFields', function () {
-    workflow.fieldsToSet = {}
-
-    for (var key in req.body) {
-      if (Object.prototype.hasOwnProperty.call(checkFields, key)) {
-        if (checkFields[key].includes('array')) {
-          workflow.fieldsToSet[key] = req.body[key].split(',')
-        } else if (checkFields[key].includes('object')) {
-          workflow.fieldsToSet[key] = JSON.parse(req.body[key])
-        } else if (checkFields[key].includes('date')) {
-          workflow.fieldsToSet[key] = new Date(req.body[key])
-        } else {
-          workflow.fieldsToSet[key] = req.body[key]
-        }
-
-        delete checkFields[key]
-      }
+  const errfor = {}
+  for (const key in remainingFields) {
+    if (remainingFields[key].includes('required')) {
+      errfor[key] = '必填欄位'
     }
+  }
 
-    var errfor = {}
-    var hasErrors = false
-    for (key in checkFields) {
-      if (checkFields[key].includes('required')) {
-        errfor[key] = '必填欄位'
-        hasErrors = true
-      }
-    }
-    if (hasErrors) {
-      next('有欄位尚未填寫', errfor)
-    } else {
-      return workflow.emit('getData')
-    }
-  })
+  if (Object.keys(errfor).length !== 0) {
+    const err = new Error('有欄位尚未填寫')
+    err.errfor = errfor
+    throw err
+  }
 
-  workflow.on('getData', function () {
-    req.app.db.models[schema].findById(_id)
-      .exec(function (err, data) {
-        if (err) next(err, null)
-
-        if (!data) {
-          next('data not found.', null)
-        }
-
-        return workflow.emit('updateData', data)
-      })
-  })
-
-  workflow.on('updateData', function (originData) {
-    const fieldsToSet = { $set: {} }
-    for (const key in workflow.fieldsToSet) {
-      if (originData[key] !== workflow.fieldsToSet[key]) { // if the field we have in req.body exists, we're gonna update it
-        fieldsToSet.$set[key] = workflow.fieldsToSet[key]
-      }
-    }
-
-    req.app.db.models[schema].findByIdAndUpdate(
-      _id,
-      fieldsToSet,
-      option,
-      function (err, data) {
-        if (err) next(err, null)
-        else next(null, data)
-      })
-  })
-
-  return workflow.emit('validateFields')
+  return fieldsToSet
 }
 
-exports.updateByQuery = function (req = null, query = null, schema = null, checkFields = null, option = null, next = null) {
-  if (!req) {
-    next('req parameter is required.')
-  } else if (!query) {
-    next('query parameter is required.')
-  } else if (!schema) {
-    next('schema parameter is required.')
-  } else if (!option) {
-    next('option parameter is required.')
-  } else if (!checkFields) {
-    next('checkFields parameter is required.')
+const getChangedFields = function (originData, fieldsToSet) {
+  const update = { $set: {} }
+
+  for (const key in fieldsToSet) {
+    if (originData[key] !== fieldsToSet[key]) {
+      update.$set[key] = fieldsToSet[key]
+    }
   }
 
-  var workflow = new req.app.utility.workflow(req, null) // eslint-disable-line
+  return update
+}
 
-  workflow.on('validateFields', function () {
-    workflow.fieldsToSet = {}
+exports.create = async function (req = null, schema = null, checkFields = null) {
+  assertRequired(req, 'req parameter is required.')
+  assertRequired(schema, 'schema parameter is required.')
+  assertRequired(checkFields, 'checkFields parameter is required.')
 
-    for (var key in req.body) {
-      if (Object.prototype.hasOwnProperty.call(checkFields, key)) {
-        if (checkFields[key].includes('array')) {
-          workflow.fieldsToSet[key] = req.body[key].split(',')
-        } else if (checkFields[key].includes('object')) {
-          workflow.fieldsToSet[key] = JSON.parse(req.body[key])
-        } else if (checkFields[key].includes('date')) {
-          workflow.fieldsToSet[key] = new Date(req.body[key])
-        } else {
-          workflow.fieldsToSet[key] = req.body[key]
-        }
+  const fieldsToSet = getFieldsToSet(req, checkFields)
+  return req.app.db.models[schema].create(fieldsToSet)
+}
 
-        delete checkFields[key]
-      }
-    }
+exports.updateById = async function (req = null, _id = null, schema = null, checkFields = null, option = null) {
+  assertRequired(req, 'req parameter is required.')
+  assertRequired(_id, '_id parameter is required.')
+  assertRequired(schema, 'schema parameter is required.')
+  assertRequired(option, 'option parameter is required.')
+  assertRequired(checkFields, 'checkFields parameter is required.')
 
-    var errfor = {}
-    var hasErrors = false
-    for (key in checkFields) {
-      if (checkFields[key].includes('required')) {
-        errfor[key] = '必填欄位'
-        hasErrors = true
-      }
-    }
-    if (hasErrors) {
-      next('有欄位尚未填寫', errfor)
-    } else {
-      return workflow.emit('getData')
-    }
-  })
+  const fieldsToSet = getFieldsToSet(req, checkFields)
+  const originData = await req.app.db.models[schema].findById(_id)
 
-  workflow.on('getData', function () {
-    req.app.db.models[schema].findById(query)
-      .exec(function (err, data) {
-        if (err) next(err, null)
+  if (!originData) {
+    throw new Error('data not found.')
+  }
 
-        if (!data) {
-          next('data not found.', null)
-        }
+  return req.app.db.models[schema].findByIdAndUpdate(
+    _id,
+    getChangedFields(originData, fieldsToSet),
+    option
+  )
+}
 
-        return workflow.emit('updateData', data)
-      })
-  })
+exports.updateByQuery = async function (req = null, query = null, schema = null, checkFields = null, option = null) {
+  assertRequired(req, 'req parameter is required.')
+  assertRequired(query, 'query parameter is required.')
+  assertRequired(schema, 'schema parameter is required.')
+  assertRequired(option, 'option parameter is required.')
+  assertRequired(checkFields, 'checkFields parameter is required.')
 
-  workflow.on('updateData', function (originData) {
-    const fieldsToSet = { $set: {} }
-    for (const key in workflow.fieldsToSet) {
-      if (originData[key] !== workflow.fieldsToSet[key]) { // if the field we have in req.body exists, we're gonna update it
-        fieldsToSet.$set[key] = workflow.fieldsToSet[key]
-      }
-    }
+  const fieldsToSet = getFieldsToSet(req, checkFields)
+  const originData = await req.app.db.models[schema].findOne(query)
 
-    req.app.db.models[schema].update(
-      query,
-      fieldsToSet,
-      option,
-      function (err, numAffected) {
-        if (err) next(err, null)
-        else next(null, numAffected)
-      })
-  })
+  if (!originData) {
+    throw new Error('data not found.')
+  }
 
-  return workflow.emit('validateFields')
+  const updateOptions = Object.assign({}, option)
+  delete updateOptions.multi
+
+  if (option.multi) {
+    return req.app.db.models[schema].updateMany(query, getChangedFields(originData, fieldsToSet), updateOptions)
+  }
+
+  return req.app.db.models[schema].updateOne(query, getChangedFields(originData, fieldsToSet), updateOptions)
 }
