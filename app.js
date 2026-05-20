@@ -52,6 +52,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(passport.initialize())
 app.use(cors({ origin: config.allowedOrigins, credentials: true }))
 app.use(helmet())
+
+// 防止 NoSQL Injection：過濾 $ / . 等 MongoDB 運算子，避免惡意 payload 竄改查詢條件。
+// sanitize() 深度遍歷物件，大型 payload 會造成效能瓶頸。
+// 根本解法：在 Mongoose Schema 層定義嚴格型別與 required，
+// 搭配 Joi / Zod 做輸入驗證，從源頭拒絕非預期欄位，可取代此中介層。
 app.use((req, res, next) => {
   if (req.body) req.body = mongoSanitize.sanitize(req.body)
   if (req.params) req.params = mongoSanitize.sanitize(req.params)
