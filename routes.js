@@ -1,5 +1,11 @@
 'use strict'
 const passport = require('passport')
+const rateLimit = require('express-rate-limit')
+const config = require('./config')
+
+const limiterDefaults = { standardHeaders: true, legacyHeaders: false }
+const authLimiter = rateLimit({ ...config.apiLimits.auth, ...limiterDefaults })
+const contactLimiter = rateLimit({ ...config.apiLimits.contact, ...limiterDefaults })
 
 const ensureAuthenticated = passport.authenticate('jwt', { session: false })
 
@@ -24,14 +30,14 @@ function ensureAdmin (req, res, next) {
 
 exports = module.exports = function (app, passport) {
   // front end
-  app.post('/1/contact/', require('./controllers/contact/index').sendMessage)
+  app.post('/1/contact/', contactLimiter, require('./controllers/contact/index').sendMessage)
 
   // sign up
-  app.post('/1/signup/', require('./controllers/signup/index').signup)
+  app.post('/1/signup/', authLimiter, require('./controllers/signup/index').signup)
 
   // login/out
-  app.post('/1/login/', require('./controllers/login/index').login)
-  app.post('/1/login/forgot/', require('./controllers/login/forgot/index').send)
+  app.post('/1/login/', authLimiter, require('./controllers/login/index').login)
+  app.post('/1/login/forgot/', authLimiter, require('./controllers/login/forgot/index').send)
   app.put('/1/login/reset/:email/:token/', require('./controllers/login/reset/index').set)
 
   app.all('/:prefix/account{/*path}', ensureAuthenticated)

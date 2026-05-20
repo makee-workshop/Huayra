@@ -6,6 +6,8 @@ exports.set = function (req, res) {
   workflow.on('validate', function () {
     if (!req.body.password) {
       workflow.outcome.errfor.password = '請填寫密碼'
+    } else if (req.body.password.length < 8) {
+      workflow.outcome.errfor.password = '密碼長度至少需要 8 個字元'
     }
 
     if (!req.body.confirm) {

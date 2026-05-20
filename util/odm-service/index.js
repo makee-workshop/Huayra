@@ -15,7 +15,13 @@ const getFieldsToSet = function (req, checkFields) {
       if (remainingFields[key].includes('array')) {
         fieldsToSet[key] = req.body[key].split(',')
       } else if (remainingFields[key].includes('object')) {
-        fieldsToSet[key] = JSON.parse(req.body[key])
+        try {
+          fieldsToSet[key] = JSON.parse(req.body[key])
+        } catch {
+          const err = new Error('欄位格式錯誤')
+          err.errfor = { [key]: 'JSON 格式不正確' }
+          throw err
+        }
       } else if (remainingFields[key].includes('date')) {
         fieldsToSet[key] = new Date(req.body[key])
       } else {

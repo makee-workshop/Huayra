@@ -65,7 +65,8 @@ exports.adminGetUsers = function (req, res, next) {
   workflow.on('listUsers', async function () {
     const filters = {}
     if (req.query.search) {
-      const search = new RegExp('^.*?' + req.query.search + '.*$', 'i')
+      const escaped = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const search = new RegExp(escaped, 'i')
       filters.$or = [{ username: search }, { email: search }]
     }
 

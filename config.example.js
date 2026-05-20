@@ -15,6 +15,16 @@ exports.loginAttempts = {
   forIpAndUser: 7,
   logExpiration: '20m'
 }
+exports.apiLimits = {
+  auth: {
+    windowMs: 15 * 60 * 1000,
+    max: 20
+  },
+  contact: {
+    windowMs: 15 * 60 * 1000,
+    max: 5
+  }
+}
 exports.requireAccountVerification = false
 exports.smtp = {
   from: {

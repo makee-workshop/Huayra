@@ -214,6 +214,8 @@ exports.password = function (req, res, next) {
   workflow.on('validate', function () {
     if (!req.body.newPassword) {
       workflow.outcome.errfor.newPassword = '請輸入新密碼'
+    } else if (req.body.newPassword.length < 8) {
+      workflow.outcome.errfor.newPassword = '密碼長度至少需要 8 個字元'
     }
 
     if (!req.body.confirm) {

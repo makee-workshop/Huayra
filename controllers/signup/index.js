@@ -20,6 +20,8 @@ exports.signup = function (req, res) {
 
     if (!req.body.password) {
       workflow.outcome.errfor.password = '請輸入密碼。'
+    } else if (req.body.password.length < 8) {
+      workflow.outcome.errfor.password = '密碼長度至少需要 8 個字元。'
     }
 
     if (workflow.hasErrors()) {
@@ -60,46 +62,34 @@ exports.signup = function (req, res) {
   })
 
   workflow.on('createUser', async function () {
+    const session = await req.app.db.startSession()
     try {
-      const hash = await req.app.db.models.User.encryptPassword(req.body.password)
-      const fieldsToSet = {
-        isActive: true,
-        username: req.body.username,
-        email: req.body.email.toLowerCase(),
-        password: hash,
-        search: [
-          req.body.username,
-          req.body.email
-        ]
-      }
-      workflow.user = await req.app.db.models.User.create(fieldsToSet)
-      workflow.emit('createAccount')
-    } catch (err) {
-      return workflow.emit('exception', err)
-    }
-  })
+      await session.withTransaction(async () => {
+        const hash = await req.app.db.models.User.encryptPassword(req.body.password)
+        const [user] = await req.app.db.models.User.create([{
+          isActive: true,
+          username: req.body.username,
+          email: req.body.email.toLowerCase(),
+          password: hash,
+          search: [req.body.username, req.body.email]
+        }], { session })
 
-  workflow.on('createAccount', async function () {
-    const fieldsToSet = {
-      isVerified: req.app.config.requireAccountVerification ? 'no' : 'yes',
-      'name.full': workflow.user.username,
-      user: {
-        id: workflow.user._id,
-        name: workflow.user.username
-      },
-      search: [
-        workflow.user.username
-      ]
-    }
+        const [account] = await req.app.db.models.Account.create([{
+          isVerified: req.app.config.requireAccountVerification ? 'no' : 'yes',
+          'name.full': user.username,
+          user: { id: user._id, name: user.username },
+          search: [user.username]
+        }], { session })
 
-    try {
-      const account = await req.app.db.models.Account.create(fieldsToSet)
-      // update user with account
-      workflow.user.roles.account = account._id
-      await workflow.user.save()
+        user.roles.account = account._id
+        await user.save({ session })
+        workflow.user = user
+      })
       workflow.emit('sendWelcomeEmail')
     } catch (err) {
       return workflow.emit('exception', err)
+    } finally {
+      session.endSession()
     }
   })
 

@@ -10,6 +10,7 @@ const passport = require('passport')
 const mongoose = require('mongoose')
 const helmet = require('helmet')
 const cors = require('cors')
+const mongoSanitize = require('express-mongo-sanitize')
 
 // create express app
 const app = express()
@@ -51,6 +52,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(passport.initialize())
 app.use(cors({ origin: config.allowedOrigins, credentials: true }))
 app.use(helmet())
+app.use((req, res, next) => {
+  if (req.body) req.body = mongoSanitize.sanitize(req.body)
+  if (req.params) req.params = mongoSanitize.sanitize(req.params)
+  next()
+})
 
 // response locals
 app.use(function (req, res, next) {
