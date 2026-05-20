@@ -49,8 +49,8 @@ app.use(require('method-override')())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(passport.initialize())
-app.use(cors())
-helmet(app)
+app.use(cors({ origin: config.allowedOrigins, credentials: true }))
+app.use(helmet())
 
 // response locals
 app.use(function (req, res, next) {

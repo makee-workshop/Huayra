@@ -45,7 +45,7 @@
     "debug": "^2.6.9",
     "emailjs": "3.7.0",
     "express": "^5.0.0",
-    "helmet": "2.x.x",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^8.5.1",
     "method-override": "2.3.10",
     "mongoose": "8.9.3",
