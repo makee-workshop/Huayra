@@ -11,6 +11,9 @@ const mongoose = require('mongoose')
 const helmet = require('helmet')
 const cors = require('cors')
 const mongoSanitize = require('express-mongo-sanitize')
+const basicAuth = require('express-basic-auth')
+const swaggerUi = require('swagger-ui-express')
+const swaggerSpec = require('./swagger')
 
 // create express app
 const app = express()
@@ -50,16 +53,28 @@ app.use(require('method-override')())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(passport.initialize())
-app.use(cors({ origin: config.allowedOrigins, credentials: true }))
+const allowedOrigins = config.allowedOrigins
+  ? config.allowedOrigins.split(',')
+  : ['http://localhost:3000', 'http://localhost:3001']
+app.use(cors({ origin: allowedOrigins, credentials: true }))
 app.use(helmet())
 
 // 防止 NoSQL Injection：過濾 $ / . 等 MongoDB 運算子，避免惡意 payload 竄改查詢條件。
 // sanitize() 深度遍歷物件，大型 payload 會造成效能瓶頸。
 // 根本解法：在 Mongoose Schema 層定義嚴格型別與 required，
 // 搭配 Joi / Zod 做輸入驗證，從源頭拒絕非預期欄位，可取代此中介層。
-app.use((req, res, next) => {
+// 注意：新版 Node.js 將 req.query 定義為 getter-only，不能直接賦值，
+// 因此對 query 採用 in-place 修改而非替換參考。
+app.use(function (req, res, next) {
   if (req.body) req.body = mongoSanitize.sanitize(req.body)
   if (req.params) req.params = mongoSanitize.sanitize(req.params)
+  if (req.query) {
+    const clean = mongoSanitize.sanitize(Object.assign({}, req.query))
+    Object.keys(req.query).forEach(function (k) {
+      if (k in clean) req.query[k] = clean[k]
+      else delete req.query[k]
+    })
+  }
   next()
 })
 
@@ -83,13 +98,33 @@ require('./passport')(app, passport)
 // setup routes
 require('./routes')(app, passport)
 
+// api docs（需設定 SWAGGER_USER 與 SWAGGER_PASSWORD 環境變數才會啟用）
+if (config.swaggerAuth.user && config.swaggerAuth.password) {
+  app.use(
+    '/api-docs',
+    basicAuth({ users: { [config.swaggerAuth.user]: config.swaggerAuth.password }, challenge: true }),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  )
+}
+
 // setup react
 app.get('*path', function (req, res) {
   res.sendFile(path.join(__dirname, './build/index.html'))
 })
 
-// custom (friendly) error handler
-// app.use(require('./controllers/http/index').http500)
+// 全域錯誤攔截：防止 stack trace 或內部錯誤訊息外洩給客戶端
+// 開發模式（NODE_ENV=development）下保留完整錯誤訊息以利 trace
+app.use(function (err, req, res, next) { // eslint-disable-line no-unused-vars
+  const status = err.status || err.statusCode || 500
+  if (status >= 500) {
+    console.error(err)
+  }
+  const isDev = app.get('env') === 'development'
+  res.status(status).json({
+    errors: [{ message: isDev || status < 500 ? err.message : 'An error occurred' }]
+  })
+})
 
 // setup utilities
 app.utility = {}

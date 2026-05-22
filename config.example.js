@@ -10,10 +10,15 @@ exports.systemEmail = 'your@email.addy'
 exports.cryptoKey = 'k3yb0ardc4t'
 exports.secretkey = 'b1ae027d534'
 exports.expiresIn = '15 days'
+exports.allowedOrigins = ['http://localhost:3000', 'http://localhost:3001']
 exports.loginAttempts = {
   forIp: 50,
   forIpAndUser: 7,
   logExpiration: '20m'
+}
+exports.swaggerAuth = {
+  user: process.env.SWAGGER_USER,
+  password: process.env.SWAGGER_PASSWORD
 }
 exports.apiLimits = {
   auth: {

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon app.js --ignore 'src/**'",
+    "server": "NODE_ENV=development nodemon app.js --ignore 'src/**'",
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -45,6 +45,7 @@
     "debug": "^2.6.9",
     "emailjs": "3.7.0",
     "express": "^5.0.0",
+    "express-basic-auth": "^1.2.1",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.1.0",
@@ -68,6 +69,8 @@
     "redux": "^4.1.0",
     "serve-static": "1.14.x",
     "styled-components": "^6.1.8",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "underscore.string": "^3.3.5"
   },
   "devDependencies": {
