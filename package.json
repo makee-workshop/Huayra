@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "NODE_ENV=development nodemon app.js --ignore 'src/**'",
+    "server": "cross-env NODE_ENV=development nodemon app.js --ignore \"src/**\"",
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -76,6 +76,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.0",
     "concurrently": "^8.0.1",
+    "cross-env": "^10.1.0",
     "nodemon": "^3.0.1",
     "standard": "*",
     "vite": "^6.0.0"
