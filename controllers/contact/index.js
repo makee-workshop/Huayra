@@ -1,5 +1,30 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/contact/:
+ *   post:
+ *     tags: [公開]
+ *     summary: 聯絡表單
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, message]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               message:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.sendMessage = function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
 

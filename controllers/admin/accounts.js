@@ -1,5 +1,43 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/admin/account/{id}:
+ *   put:
+ *     tags: [管理員]
+ *     summary: 更新指定帳號資料（姓名、公司、電話）
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [first, last]
+ *             properties:
+ *               first:
+ *                 type: string
+ *               middle:
+ *                 type: string
+ *               last:
+ *                 type: string
+ *               company:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               zip:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.update = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 

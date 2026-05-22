@@ -1,5 +1,27 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/login/:
+ *   post:
+ *     tags: [公開]
+ *     summary: 登入
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/AuthSuccess'
+ */
 exports.login = function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
 

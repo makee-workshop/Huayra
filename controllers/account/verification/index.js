@@ -84,6 +84,29 @@ exports.init = function (req, res, next) {
   workflow.emit('generateTokenOrRender')
 }
 
+/**
+ * @openapi
+ * /1/account/verification/:
+ *   post:
+ *     tags: [帳號]
+ *     summary: 重新寄送驗證信（可同時更新 email）
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.resendVerification = function (req, res, next) {
   if (req.user.roles.account.isVerified === 'yes') {
     return res.redirect(req.user.defaultReturnUrl())
@@ -175,6 +198,24 @@ exports.resendVerification = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/account/verification/{token}/:
+ *   get:
+ *     tags: [帳號]
+ *     summary: 驗證帳號 email
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: token
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: 驗證成功，重導至首頁
+ */
 exports.verify = async function (req, res, next) {
   try {
     const isValid = await req.app.db.models.User.validatePassword(req.params.token, req.user.roles.account.verificationToken)

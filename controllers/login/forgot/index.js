@@ -1,5 +1,27 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/login/forgot/:
+ *   post:
+ *     tags: [公開]
+ *     summary: 寄送密碼重設信
+ *     description: 無論 email 是否存在皆回傳成功，避免帳號枚舉。
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.send = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 

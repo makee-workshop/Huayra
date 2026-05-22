@@ -4,13 +4,48 @@
  */
 
 /**
-   * POST /1/post
-   *
-   * @method create
-   * @summary 新增一筆資料至 mongodb
-   * @param {String} name. 名稱.
-   * @param {String} content. 內容.
-   */
+ * @openapi
+ * /1/post:
+ *   get:
+ *     tags: [文章]
+ *     summary: 取得所有文章
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           default: 999
+ *       - name: sort
+ *         in: query
+ *         schema:
+ *           type: string
+ *           default: -date
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ *   post:
+ *     tags: [文章]
+ *     summary: 新增文章（JSON body）
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, content]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               preview:
+ *                 type: boolean
+ *                 default: false
+ *                 description: 設為 true 時只回傳預覽，不寫入資料庫
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.create = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -51,13 +86,26 @@ exports.create = function (req, res, next) {
 }
 
 /**
-   * POST /1/post/query
-   *
-   * @method createByQuery
-   * @summary Create a document by Query String (REST Console, jQuery AJAX etc)
-   * @param {String} name. 名稱.
-   * @param {String} content. 內容.
-   */
+ * @openapi
+ * /1/post/query:
+ *   post:
+ *     tags: [文章]
+ *     summary: 新增文章（Query String）
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: content
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.createByQuery = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -92,19 +140,14 @@ exports.createByQuery = function (req, res, next) {
   return workflow.emit('validate')
 }
 
-/**
-   * GET /1/post
-   *
-   * @method readAll
-   * @summary read all posts
-   */
 exports.readAll = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
   // defaults: no limits
   req.query.limit = req.query.limit ? parseInt(req.query.limit) : 999
   // req.query.page = req.query.page ? parseInt(req.query.page) : 1
-  req.query.sort = req.query.sort ? req.query.sort : '-date'
+  const ALLOWED_POST_SORT = ['date', '-date', 'name', '-name']
+  req.query.sort = ALLOWED_POST_SORT.includes(req.query.sort) ? req.query.sort : '-date'
 
   workflow.on('listPost', async function () {
     try {
@@ -129,12 +172,36 @@ exports.readAll = function (req, res, next) {
 }
 
 /**
-   * PUT /1/post/:name/publish
-   *
-   * @method activate
-   * @summary 修改某人的發佈狀態為 true
-   * @param {String} name. 名稱.
-   */
+ * @openapi
+ * /1/post/{name}/publish:
+ *   put:
+ *     tags: [文章]
+ *     summary: 發佈文章（isActive = true）
+ *     parameters:
+ *       - name: name
+ *         in: path
+ *         required: true
+ *         description: 文章名稱（URL encoded）
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ * /1/post/{name}/unpublish:
+ *   put:
+ *     tags: [文章]
+ *     summary: 取消發佈文章（isActive = false）
+ *     parameters:
+ *       - name: name
+ *         in: path
+ *         required: true
+ *         description: 文章名稱（URL encoded）
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.activate = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
   const name = req.params.name.trim()
@@ -158,13 +225,6 @@ exports.activate = function (req, res, next) {
   workflow.emit('updatePost')
 }
 
-/**
-   * PUT /1/post/:name/unpublish
-   *
-   * @method inactivate
-   * @summary 修改某人的發佈狀態為 false
-   * @param {String} name. 名稱.
-   */
 exports.inactivate = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
   const name = req.params.name.trim()
@@ -189,12 +249,22 @@ exports.inactivate = function (req, res, next) {
 }
 
 /**
-   * DELETE /1/post/:id
-   *
-   * @method delete
-   * @summary 刪除指定 id 的 document
-   * @param {String} id.
-   */
+ * @openapi
+ * /1/post/{id}:
+ *   delete:
+ *     tags: [文章]
+ *     summary: 刪除文章
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: 文章 MongoDB ObjectId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.delete = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
   const _id = req.params.id

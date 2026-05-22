@@ -1,5 +1,32 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/signup/:
+ *   post:
+ *     tags: [公開]
+ *     summary: 註冊
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 6
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/AuthSuccess'
+ */
 exports.signup = function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
 

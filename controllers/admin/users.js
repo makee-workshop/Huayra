@@ -1,5 +1,41 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/admin/user/{id}:
+ *   put:
+ *     tags: [管理員]
+ *     summary: 更新指定使用者資料（帳號名稱、email、啟用狀態、角色）
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               isActive:
+ *                 type: boolean
+ *               roles:
+ *                 type: string
+ *                 enum: [account, admin]
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.update = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
   let userObj = null
@@ -199,6 +235,38 @@ exports.update = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/admin/user/{id}/password:
+ *   put:
+ *     tags: [管理員]
+ *     summary: 重設指定使用者密碼
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newPassword, confirm]
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 8
+ *               confirm:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.password = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -242,6 +310,24 @@ exports.password = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/admin/users/{id}:
+ *   delete:
+ *     tags: [管理員]
+ *     summary: 刪除使用者（需 root 群組）
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.delete = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -294,6 +380,39 @@ exports.delete = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/admin/signup/:
+ *   post:
+ *     tags: [管理員]
+ *     summary: 新增使用者
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 6
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *               isActive:
+ *                 type: string
+ *                 enum: [yes, no]
+ *                 default: yes
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.signup = function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
 

@@ -19,6 +19,36 @@ exports.init = function (req, res, next) {
   renderSettings(req, res, next, '')
 }
 
+/**
+ * @openapi
+ * /1/account/settings/:
+ *   put:
+ *     tags: [帳號]
+ *     summary: 更新帳號設定（姓名、公司、電話）
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [first, last]
+ *             properties:
+ *               first:
+ *                 type: string
+ *               last:
+ *                 type: string
+ *               company:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               zip:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.update = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -81,6 +111,31 @@ exports.update = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/account/settings/identity/:
+ *   put:
+ *     tags: [帳號]
+ *     summary: 更新帳號名稱與 email
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.identity = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 
@@ -208,6 +263,32 @@ exports.identity = function (req, res, next) {
   workflow.emit('validate')
 }
 
+/**
+ * @openapi
+ * /1/account/settings/password/:
+ *   put:
+ *     tags: [帳號]
+ *     summary: 修改自己的密碼
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newPassword, confirm]
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 8
+ *               confirm:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.password = function (req, res, next) {
   const workflow = req.app.utility.workflow(req, res)
 

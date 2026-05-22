@@ -1,5 +1,41 @@
 'use strict'
 
+/**
+ * @openapi
+ * /1/login/reset/{email}/{token}/:
+ *   put:
+ *     tags: [公開]
+ *     summary: 重設密碼
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - name: token
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password, confirm]
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *               confirm:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ */
 exports.set = function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
 
