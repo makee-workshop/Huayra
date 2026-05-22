@@ -172,6 +172,19 @@ Example post routes:
 - `POST /2/post`
 - `PUT /2/post/:id`
 
+## API Docs
+
+The project includes an interactive Swagger UI for exploring and testing all backend API endpoints.
+
+The docs are served at `/api-docs` and are **only enabled** when both of the following environment variables are set:
+
+- `SWAGGER_USER` — Basic Auth username
+- `SWAGGER_PASSWORD` — Basic Auth password
+
+Once set, open `http://localhost:3001/api-docs` in your browser and enter the credentials to access the documentation.
+
+If neither variable is configured, the `/api-docs` route is not registered and the page will not be accessible.
+
 ## Scripts
 
 ```bash
