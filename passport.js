@@ -4,6 +4,7 @@ exports = module.exports = function (app, passport) {
   const LocalStrategy = require('passport-local').Strategy
   const JwtStrategy = require('passport-jwt').Strategy
   const ExtractJwt = require('passport-jwt').ExtractJwt
+  const extractJwt = ExtractJwt.fromAuthHeaderAsBearerToken()
 
   passport.use(new LocalStrategy(
     async function (username, password, done) {
@@ -35,7 +36,7 @@ exports = module.exports = function (app, passport) {
   ))
 
   passport.use(new JwtStrategy(
-    { jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: app.config.secretkey, passReqToCallback: true },
+    { jwtFromRequest: extractJwt, secretOrKey: app.config.secretkey, passReqToCallback: true },
     async (request, jwtPayload, done) => {
       try {
         const user = await app.db.models.User.findById(jwtPayload._id).populate('roles.admin').populate('roles.account')
@@ -44,17 +45,17 @@ exports = module.exports = function (app, passport) {
           return done(null, false, { message: 'Unknown user' })
         }
 
-        const token = request.headers.authorization.replace('Bearer ', '')
-        if (app.config.expiresIn) {
-          const now = new Date().getTime()
-          const tokens = user.jwt.filter(j => j.expiredAt > now)
-          if (user.jwt.length !== tokens.length) {
-            user.jwt = tokens
-            await user.save()
-          }
-        }
+        const token = extractJwt(request)
+        const userToken = await app.db.models.UserToken.findOne({
+          user: user._id,
+          tokenHash: app.db.models.UserToken.hashToken(token),
+          $or: [
+            { expiresAt: null },
+            { expiresAt: { $gt: new Date() } }
+          ]
+        })
 
-        if (user.jwt.filter(j => j.token === token).length === 0) {
+        if (!userToken) {
           return done(null, false)
         }
 

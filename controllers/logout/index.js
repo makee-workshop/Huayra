@@ -14,10 +14,12 @@
  */
 exports.logout = async function (req, res) {
   const workflow = req.app.utility.workflow(req, res)
-  const token = req.headers.authorization.replace('Bearer ', '')
-  req.user.jwt = req.user.jwt.filter(j => j.token !== token)
+  const token = req.headers.authorization.replace(/^Bearer\s+/i, '')
   try {
-    await req.user.save()
+    await req.app.db.models.UserToken.deleteOne({
+      user: req.user._id,
+      tokenHash: req.app.db.models.UserToken.hashToken(token)
+    })
     return workflow.emit('response')
   } catch (err) {
     return workflow.emit('exception', err)

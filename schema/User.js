@@ -2,6 +2,30 @@
 const jwt = require('jsonwebtoken')
 const ms = require('ms')
 
+const hasExpiresIn = function (expiresIn) {
+  return expiresIn !== undefined && expiresIn !== null && expiresIn !== ''
+}
+
+const buildJwtOptions = function (expiresIn) {
+  return hasExpiresIn(expiresIn) ? { expiresIn } : {}
+}
+
+const buildExpiresAt = function (expiresIn, issuedAt) {
+  if (!hasExpiresIn(expiresIn)) {
+    return null
+  }
+
+  if (typeof (expiresIn) === 'string') {
+    return new Date(issuedAt.getTime() + ms(expiresIn))
+  }
+
+  if (typeof (expiresIn) === 'number') {
+    return new Date(issuedAt.getTime() + expiresIn * 1000)
+  }
+
+  return null
+}
+
 exports = module.exports = function (app, mongoose) {
   const schema = new mongoose.Schema({
     username: { type: String, unique: true },
@@ -15,11 +39,6 @@ exports = module.exports = function (app, mongoose) {
     timeCreated: { type: Date, default: Date.now },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-    jwt: [{
-      _id: false,
-      token: { type: String },
-      expiredAt: { type: Number }
-    }],
     search: [String]
   })
   schema.methods.canPlayRoleOf = function (role) {
@@ -55,30 +74,24 @@ exports = module.exports = function (app, mongoose) {
     return bcrypt.compare(password, hash)
   }
   schema.methods.generateAuthToken = async function () {
-    let opt = {}
-    let expiredAt = 0
-    if (app.config.expiresIn) {
-      opt = { expiresIn: app.config.expiresIn }
-      if (typeof (app.config.expiresIn) === 'string') {
-        expiredAt = ms(app.config.expiresIn)
-      } else if (typeof (app.config.expiresIn) === 'number') {
-        expiredAt = app.config.expiresIn
-      }
-      expiredAt = new Date().getTime() + expiredAt
-    }
+    const issuedAt = new Date()
+    const expiresIn = app.config.expiresIn
     const token = jwt.sign({
       _id: this._doc._id,
       username: this._doc.username,
       email: this._doc.email,
       roles: this._doc.roles
     }, app.config.secretkey,
-    opt)
+    buildJwtOptions(expiresIn))
 
-    this.jwt = this.jwt.concat({
-      token,
-      expiredAt
+    await app.db.models.UserToken.create({
+      user: this._id,
+      tokenHash: app.db.models.UserToken.hashToken(token),
+      issuedAt,
+      expiresAt: buildExpiresAt(expiresIn, issuedAt),
+      expiresIn: hasExpiresIn(expiresIn) ? expiresIn : null
     })
-    await this.save()
+
     return token
   }
   schema.plugin(require('./plugins/pagedFind'))
